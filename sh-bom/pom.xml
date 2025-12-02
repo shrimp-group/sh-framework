@@ -6,9 +6,9 @@
 
     <parent>
         <groupId>com.wkclz.framework</groupId>
-        <artifactId>sh-parent</artifactId>
-        <version>${revision}</version>
-        <relativePath>../sh-parent</relativePath>
+        <artifactId>sh-framework</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>sh-bom</artifactId>
@@ -21,8 +21,11 @@
 
 
         <!-- 三方依赖 -->
+        <commons-collections4.version>4.5.0</commons-collections4.version>
+        <guava.version>33.5.0-jre</guava.version>
+        <fastjson2.version>2.0.60</fastjson2.version>
+        <hutool.version>5.8.42</hutool.version>
         <lombok.version>1.18.42</lombok.version>
-
 
 
     </properties>
@@ -30,6 +33,29 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons-collections4.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>

@@ -8,32 +8,32 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.0.0</version>
+        <relativePath/>
     </parent>
 
     <groupId>com.wkclz.framework</groupId>
     <artifactId>sh-parent</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
-
     <name>sh-parent</name>
 
     <properties>
+        <revision>5.0.0-SNAPSHOT</revision>
+
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <revision>5.0.0-SNAPSHOT</revision>
-
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
-
             <dependency>
                 <groupId>com.wkclz.framework</groupId>
                 <artifactId>sh-bom</artifactId>
                 <version>${revision}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.framework</groupId>
@@ -44,7 +44,5 @@
 
         </dependencies>
     </dependencyManagement>
-
-
 
 </project>
