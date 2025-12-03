@@ -8,7 +8,6 @@
         <groupId>com.wkclz.framework</groupId>
         <artifactId>sh-framework</artifactId>
         <version>5.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>sh-bom</artifactId>
