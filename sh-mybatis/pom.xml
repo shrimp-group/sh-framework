@@ -21,6 +21,11 @@
 
 
     <dependencies>
+        <dependency>
+            <groupId>com.wkclz.framework</groupId>
+            <artifactId>sh-core</artifactId>
+        </dependency>
+
         <!-- 数据库工具 -->
         <dependency>
             <groupId>com.alibaba</groupId>
