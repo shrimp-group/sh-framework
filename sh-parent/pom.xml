@@ -16,7 +16,6 @@
     <artifactId>sh-parent</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
-    <name>sh-parent</name>
 
     <properties>
         <revision>5.0.0-SNAPSHOT</revision>

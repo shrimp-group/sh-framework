@@ -22,6 +22,7 @@
         <module>sh-parent</module>
         <module>sh-bom</module>
         <module>sh-core</module>
+        <module>sh-mybatis</module>
     </modules>
 
 </project>
