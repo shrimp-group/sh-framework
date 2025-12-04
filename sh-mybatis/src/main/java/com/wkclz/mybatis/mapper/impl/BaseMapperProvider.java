@@ -562,18 +562,19 @@ public class BaseMapperProvider {
 
     /**
      * 根据ID查询单条数据
-     * @param entity 实体对象，包含id字段
+     * @param params 包含id和entityClass的参数
      * @return SQL字符串
      */
-    public String selectById(BaseEntity entity) {
-        Long id = (Long) getFieldValue(entity, PRIMARY_KEY);
+    public String selectById(java.util.Map<String, Object> params) {
+        Long id = (Long) params.get("id");
+        Class<?> entityClass = (Class<?>) params.get("entityClass");
         
-        if (id == null) {
+        if (id == null || entityClass == null) {
             return "";
         }
         
-        String tableName = getTableName(entity.getClass());
-        String sql = "SELECT * FROM " + tableName + " WHERE " + PRIMARY_KEY + " = #{" + PRIMARY_KEY + "} AND " + DELETED_FIELD + " = 0";
+        String tableName = getTableName(entityClass);
+        String sql = "SELECT * FROM " + tableName + " WHERE " + PRIMARY_KEY + " = #{id} AND " + DELETED_FIELD + " = 0";
         
         log.debug("SelectById SQL: {}", sql);
         return sql;
@@ -581,17 +582,18 @@ public class BaseMapperProvider {
 
     /**
      * 根据ID列表查询多条数据
-     * @param entity 实体对象，包含ids字段
+     * @param params 包含ids和entityClass的参数
      * @return SQL字符串
      */
-    public String selectByIds(BaseEntity entity) {
-        List<Long> ids = (List<Long>) getFieldValue(entity, "ids");
+    public String selectByIds(java.util.Map<String, Object> params) {
+        List<Long> ids = (List<Long>) params.get("ids");
+        Class<?> entityClass = (Class<?>) params.get("entityClass");
         
-        if (ids == null || ids.isEmpty()) {
+        if (ids == null || ids.isEmpty() || entityClass == null) {
             return "";
         }
         
-        String tableName = getTableName(entity.getClass());
+        String tableName = getTableName(entityClass);
         String sql = "SELECT * FROM " + tableName + " WHERE " + PRIMARY_KEY + " IN <foreach collection=\"ids\" item=\"id\" open=\"(\" separator=\",\" close=\")\">#{id}</foreach> AND " + DELETED_FIELD + " = 0";
         
         log.debug("SelectByIds SQL: {}", sql);
@@ -600,15 +602,17 @@ public class BaseMapperProvider {
 
     /**
      * 查询所有数据
-     * @param entity 实体对象
+     * @param params 包含entityClass的参数
      * @return SQL字符串
      */
-    public String selectAll(BaseEntity entity) {
-        if (entity == null) {
+    public String selectAll(java.util.Map<String, Object> params) {
+        Class<?> entityClass = (Class<?>) params.get("entityClass");
+        
+        if (entityClass == null) {
             return "";
         }
         
-        String tableName = getTableName(entity.getClass());
+        String tableName = getTableName(entityClass);
         String sql = "SELECT * FROM " + tableName + " WHERE " + DELETED_FIELD + " = 0 ORDER BY " + PRIMARY_KEY + " DESC";
         
         log.debug("SelectAll SQL: {}", sql);
