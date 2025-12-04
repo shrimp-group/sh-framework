@@ -1,6 +1,7 @@
 package com.wkclz.mybatis.mapper.impl;
 
 import com.wkclz.core.base.BaseEntity;
+import com.wkclz.core.user.UserContext;
 import com.wkclz.mybatis.annotation.Blob;
 import lombok.extern.slf4j.Slf4j;
 
@@ -256,6 +257,12 @@ public class BaseMapperProvider {
         StringBuilder columns = new StringBuilder();
         StringBuilder values = new StringBuilder();
         
+        // 自动添加创建人、创建时间、更新人、更新时间
+        boolean hasCreateBy = false;
+        boolean hasCreateTime = false;
+        boolean hasUpdateBy = false;
+        boolean hasUpdateTime = false;
+        
         for (Field field : fields) {
             String fieldName = field.getName();
             // 跳过特殊字段
@@ -281,6 +288,56 @@ public class BaseMapperProvider {
             values.append("#{");
             values.append(fieldName);
             values.append("}");
+            
+            // 标记已存在的字段
+            if ("createBy".equals(fieldName)) {
+                hasCreateBy = true;
+            } else if ("createTime".equals(fieldName)) {
+                hasCreateTime = true;
+            } else if ("updateBy".equals(fieldName)) {
+                hasUpdateBy = true;
+            } else if ("updateTime".equals(fieldName)) {
+                hasUpdateTime = true;
+            }
+        }
+        
+        // 添加缺失的自动赋值字段
+        String userCode = UserContext.getUserCode();
+        if (userCode != null) {
+            if (!hasCreateBy) {
+                if (columns.length() > 0) {
+                    columns.append(", ");
+                    values.append(", ");
+                }
+                columns.append("create_by");
+                values.append("'").append(userCode).append("'");
+            }
+            if (!hasUpdateBy) {
+                if (columns.length() > 0) {
+                    columns.append(", ");
+                    values.append(", ");
+                }
+                columns.append("update_by");
+                values.append("'").append(userCode).append("'");
+            }
+        }
+        
+        if (!hasCreateTime) {
+            if (columns.length() > 0) {
+                columns.append(", ");
+                values.append(", ");
+            }
+            columns.append("create_time");
+            values.append("NOW()");
+        }
+        
+        if (!hasUpdateTime) {
+            if (columns.length() > 0) {
+                columns.append(", ");
+                values.append(", ");
+            }
+            columns.append("update_time");
+            values.append("NOW()");
         }
         
         String sql = "INSERT INTO " + tableName + " (" + columns + ") VALUES (" + values + ")";
@@ -305,6 +362,12 @@ public class BaseMapperProvider {
         List<Field> fields = getEntityFields(firstEntity.getClass());
         List<String> columnNames = new ArrayList<>();
         
+        // 自动添加创建人、创建时间、更新人、更新时间
+        boolean hasCreateBy = false;
+        boolean hasCreateTime = false;
+        boolean hasUpdateBy = false;
+        boolean hasUpdateTime = false;
+        
         for (Field field : fields) {
             String fieldName = field.getName();
             // 跳过特殊字段
@@ -313,6 +376,36 @@ public class BaseMapperProvider {
             }
             
             columnNames.add(camelToUnderline(fieldName));
+            
+            // 标记已存在的字段
+            if ("createBy".equals(fieldName)) {
+                hasCreateBy = true;
+            } else if ("createTime".equals(fieldName)) {
+                hasCreateTime = true;
+            } else if ("updateBy".equals(fieldName)) {
+                hasUpdateBy = true;
+            } else if ("updateTime".equals(fieldName)) {
+                hasUpdateTime = true;
+            }
+        }
+        
+        // 添加缺失的自动赋值字段
+        String userCode = UserContext.getUserCode();
+        if (userCode != null) {
+            if (!hasCreateBy) {
+                columnNames.add("create_by");
+            }
+            if (!hasUpdateBy) {
+                columnNames.add("update_by");
+            }
+        }
+        
+        if (!hasCreateTime) {
+            columnNames.add("create_time");
+        }
+        
+        if (!hasUpdateTime) {
+            columnNames.add("update_time");
         }
         
         StringBuilder columns = new StringBuilder();
@@ -333,11 +426,24 @@ public class BaseMapperProvider {
                 if (j > 0) {
                     values.append(", ");
                 }
-                values.append("#{entities[");
-                values.append(i);
-                values.append(".");
-                values.append(getFieldNameFromColumnName(columnNames.get(j)));
-                values.append("}");
+                String columnName = columnNames.get(j);
+                
+                // 处理自动赋值字段
+                if ("create_by".equals(columnName) && !hasCreateBy) {
+                    values.append("'").append(userCode).append("'");
+                } else if ("create_time".equals(columnName) && !hasCreateTime) {
+                    values.append("NOW()");
+                } else if ("update_by".equals(columnName) && !hasUpdateBy) {
+                    values.append("'").append(userCode).append("'");
+                } else if ("update_time".equals(columnName) && !hasUpdateTime) {
+                    values.append("NOW()");
+                } else {
+                    values.append("#{entities[");
+                    values.append(i);
+                    values.append(".");
+                    values.append(getFieldNameFromColumnName(columnName));
+                    values.append("}");
+                }
             }
             values.append(")");
         }
@@ -397,7 +503,15 @@ public class BaseMapperProvider {
         // 处理updateBy字段
         Object updateBy = getFieldValue(entity, UPDATE_BY_FIELD);
         if (updateBy != null) {
-            sql.append(", " + UPDATE_BY_FIELD + " = #{" + UPDATE_BY_FIELD + "}");
+            sql.append(", " + UPDATE_BY_FIELD + " = #{");
+            sql.append(UPDATE_BY_FIELD);
+            sql.append("}");
+        } else {
+            // 自动从UserContext获取updateBy
+            String userCode = UserContext.getUserCode();
+            if (userCode != null) {
+                sql.append(", " + UPDATE_BY_FIELD + " = '" + userCode + "'");
+            }
         }
         
         // 添加乐观锁条件
@@ -432,6 +546,12 @@ public class BaseMapperProvider {
         Object updateBy = getFieldValue(entity, UPDATE_BY_FIELD);
         if (updateBy != null) {
             sql.append(", " + UPDATE_BY_FIELD + " = #{" + UPDATE_BY_FIELD + "}");
+        } else {
+            // 自动从UserContext获取updateBy
+            String userCode = UserContext.getUserCode();
+            if (userCode != null) {
+                sql.append(", " + UPDATE_BY_FIELD + " = '" + userCode + "'");
+            }
         }
         
         // 构建ids IN条件
@@ -472,6 +592,15 @@ public class BaseMapperProvider {
         // 添加更新时间和version自增
         updateSet.append(", " + UPDATE_TIME_FIELD + " = NOW()");
         updateSet.append(", version = version + 1");
+        
+        // 处理updateBy字段 - 如果实体中没有设置，则自动从UserContext获取
+        Object updateBy = getFieldValue(entity, UPDATE_BY_FIELD);
+        if (updateBy == null) {
+            String userCode = UserContext.getUserCode();
+            if (userCode != null) {
+                updateSet.append(", " + UPDATE_BY_FIELD + " = '" + userCode + "'");
+            }
+        }
         
         // 获取id和version字段值
         Object id = getFieldValue(entity, PRIMARY_KEY);
@@ -585,8 +714,23 @@ public class BaseMapperProvider {
             updateSet.append("}");
         }
         
+        // 处理updateBy字段 - 如果实体中没有设置，则自动从UserContext获取
+        Object updateBy = getFieldValue(entity, UPDATE_BY_FIELD);
+        if (updateBy == null) {
+            String userCode = UserContext.getUserCode();
+            if (userCode != null) {
+                if (updateSet.length() > 0) {
+                    updateSet.append(", ");
+                }
+                updateSet.append(UPDATE_BY_FIELD + " = '" + userCode + "'");
+            }
+        }
+        
         // 添加更新时间
-        updateSet.append(", " + UPDATE_TIME_FIELD + " = NOW()");
+        if (updateSet.length() > 0) {
+            updateSet.append(", ");
+        }
+        updateSet.append(UPDATE_TIME_FIELD + " = NOW()");
         
         // 构建ids IN条件
         String sql = "UPDATE " + tableName + " SET " + updateSet + " WHERE " + PRIMARY_KEY + " IN <foreach collection=\"ids\" item=\"id\" open=\"(\" separator=\",\" close=\")\">#{id}</foreach> AND " + DELETED_FIELD + " = 0";
