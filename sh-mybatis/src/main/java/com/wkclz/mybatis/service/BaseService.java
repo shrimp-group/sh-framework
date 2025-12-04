@@ -3,7 +3,6 @@ package com.wkclz.mybatis.service;
 import com.wkclz.core.base.BaseEntity;
 import com.wkclz.core.base.PageData;
 import com.wkclz.mybatis.mapper.BaseMapper;
-import org.apache.ibatis.session.RowBounds;
 import java.util.List;
 
 /**
