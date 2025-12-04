@@ -2,6 +2,7 @@ package com.wkclz.mybatis.service.impl;
 
 import com.wkclz.core.base.BaseEntity;
 import com.wkclz.core.base.PageData;
+import com.wkclz.mybatis.exception.MyBatisException;
 import com.wkclz.mybatis.mapper.BaseMapper;
 import com.wkclz.mybatis.service.BaseService;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class BaseServiceImpl<T extends BaseEntity> implements BaseService<T> {
     @Override
     public BaseMapper<T> getMapper() {
         // 子类需要实现此方法，返回对应的Mapper实例
-        throw new UnsupportedOperationException("子类必须实现getMapper()方法");
+        throw new MyBatisException("子类必须实现getMapper()方法");
     }
 
     /**
