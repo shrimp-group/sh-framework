@@ -65,8 +65,8 @@ public interface BaseMapper<T extends BaseEntity> {
     List<T> selectByEntity(T entity);
     
     @Desc("根据实体条件分页查询数据，不带 Blob 字段")
-    @SelectProvider(type = BaseMapperProvider.class, method = "selectByEntityWithPage")
-    List<T> selectByEntityWithPage(T entity);
+    @SelectProvider(type = BaseMapperProvider.class, method = "selectByEntityWithLimit")
+    List<T> selectByEntityWithLimit(T entity);
     
     @Desc("根据实体条件统计数据数量")
     @SelectProvider(type = BaseMapperProvider.class, method = "selectCountByEntity")

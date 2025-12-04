@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * BaseMapperProvider 实现类，提供数据库基本操作的 SQL 构建
@@ -20,6 +22,12 @@ public class BaseMapperProvider {
     private static final String CREATE_TIME_FIELD = "create_time";
     private static final String UPDATE_TIME_FIELD = "update_time";
     private static final String UPDATE_BY_FIELD = "update_by";
+    
+    // 特殊字段集合，这些字段不会作为SQL查询条件或插入/更新字段
+    private static final Set<String> SPECIAL_FIELDS = new HashSet<>(Arrays.asList(
+        "timeFrom", "timeTo", "orderBy", "ids", "keyword", "pageNum", "pageSize", 
+        "offset", "limit", "deleted"
+    ));
 
     /**
      * 将类名转换为下划线格式的表名
@@ -144,9 +152,7 @@ public class BaseMapperProvider {
             String fieldName = field.getName();
 
             // 跳过特殊字段
-            if ("timeFrom".equals(fieldName) || "timeTo".equals(fieldName) || "orderBy".equals(fieldName) ||
-                "ids".equals(fieldName) || "keyword".equals(fieldName) || "pageNum".equals(fieldName) ||
-                "pageSize".equals(fieldName) || "offset".equals(fieldName) || "limit".equals(fieldName) || "deleted".equals(fieldName)) {
+            if (SPECIAL_FIELDS.contains(fieldName)) {
                 continue;
             }
 
@@ -163,11 +169,11 @@ public class BaseMapperProvider {
 
             // 判断字段类型，处理不同类型的查询条件
             if (value instanceof String) {
-                // 字符串类型，使用like查询
+                // 字符串类型，使用等于查询
                 whereClause.append(camelToUnderline(fieldName));
-                whereClause.append(" LIKE CONCAT('%', #{");
+                whereClause.append(" = #{");
                 whereClause.append(fieldName);
-                whereClause.append("}, '%')");
+                whereClause.append("}");
             } else if (value instanceof List) {
                 // 列表类型，使用in查询
                 List<?> listValue = (List<?>) value;
@@ -218,9 +224,7 @@ public class BaseMapperProvider {
         for (Field field : fields) {
             String fieldName = field.getName();
             // 跳过特殊字段
-            if ("timeFrom".equals(fieldName) || "timeTo".equals(fieldName) || "orderBy".equals(fieldName) ||
-                "ids".equals(fieldName) || "keyword".equals(fieldName) || "pageNum".equals(fieldName) ||
-                "pageSize".equals(fieldName) || "offset".equals(fieldName) || "limit".equals(fieldName)) {
+            if (SPECIAL_FIELDS.contains(fieldName)) {
                 continue;
             }
             
@@ -269,9 +273,7 @@ public class BaseMapperProvider {
         for (Field field : fields) {
             String fieldName = field.getName();
             // 跳过特殊字段
-            if ("timeFrom".equals(fieldName) || "timeTo".equals(fieldName) || "orderBy".equals(fieldName) ||
-                "ids".equals(fieldName) || "keyword".equals(fieldName) || "pageNum".equals(fieldName) ||
-                "pageSize".equals(fieldName) || "offset".equals(fieldName) || "limit".equals(fieldName)) {
+            if (SPECIAL_FIELDS.contains(fieldName)) {
                 continue;
             }
             
@@ -417,10 +419,8 @@ public class BaseMapperProvider {
         
         for (Field field : fields) {
             String fieldName = field.getName();
-            // 跳过主键、特殊字段以及deleted字段
-            if (PRIMARY_KEY.equals(fieldName) || "timeFrom".equals(fieldName) || "timeTo".equals(fieldName) || "orderBy".equals(fieldName) ||
-                "ids".equals(fieldName) || "keyword".equals(fieldName) || "pageNum".equals(fieldName) ||
-                "pageSize".equals(fieldName) || "offset".equals(fieldName) || "limit".equals(fieldName) || "deleted".equals(fieldName) || VERSION_FIELD.equals(fieldName)) {
+            // 跳过主键、特殊字段以及version字段
+            if (PRIMARY_KEY.equals(fieldName) || SPECIAL_FIELDS.contains(fieldName) || VERSION_FIELD.equals(fieldName)) {
                 continue;
             }
             
@@ -468,10 +468,8 @@ public class BaseMapperProvider {
         
         for (Field field : fields) {
             String fieldName = field.getName();
-            // 跳过主键、特殊字段以及deleted字段
-            if (PRIMARY_KEY.equals(fieldName) || "timeFrom".equals(fieldName) || "timeTo".equals(fieldName) || "orderBy".equals(fieldName) ||
-                "ids".equals(fieldName) || "keyword".equals(fieldName) || "pageNum".equals(fieldName) ||
-                "pageSize".equals(fieldName) || "offset".equals(fieldName) || "limit".equals(fieldName) || "deleted".equals(fieldName) || VERSION_FIELD.equals(fieldName)) {
+            // 跳过主键、特殊字段以及version字段
+            if (PRIMARY_KEY.equals(fieldName) || SPECIAL_FIELDS.contains(fieldName) || VERSION_FIELD.equals(fieldName)) {
                 continue;
             }
             
@@ -528,10 +526,8 @@ public class BaseMapperProvider {
         
         for (Field field : fields) {
             String fieldName = field.getName();
-            // 跳过主键、特殊字段以及deleted字段
-            if (PRIMARY_KEY.equals(fieldName) || "timeFrom".equals(fieldName) || "timeTo".equals(fieldName) || "orderBy".equals(fieldName) ||
-                "ids".equals(fieldName) || "keyword".equals(fieldName) || "pageNum".equals(fieldName) ||
-                "pageSize".equals(fieldName) || "offset".equals(fieldName) || "limit".equals(fieldName) || "deleted".equals(fieldName) || VERSION_FIELD.equals(fieldName)) {
+            // 跳过主键、特殊字段以及version字段
+            if (PRIMARY_KEY.equals(fieldName) || SPECIAL_FIELDS.contains(fieldName) || VERSION_FIELD.equals(fieldName)) {
                 continue;
             }
             
@@ -566,19 +562,18 @@ public class BaseMapperProvider {
 
     /**
      * 根据ID查询单条数据
-     * @param params 包含id和entityClass的参数
+     * @param entity 实体对象，包含id字段
      * @return SQL字符串
      */
-    public String selectById(java.util.Map<String, Object> params) {
-        Long id = (Long) params.get("id");
-        Class<?> entityClass = (Class<?>) params.get("entityClass");
+    public String selectById(BaseEntity entity) {
+        Long id = (Long) getFieldValue(entity, PRIMARY_KEY);
         
-        if (id == null || entityClass == null) {
+        if (id == null) {
             return "";
         }
         
-        String tableName = getTableName(entityClass);
-        String sql = "SELECT * FROM " + tableName + " WHERE " + PRIMARY_KEY + " = #{id} AND " + DELETED_FIELD + " = 0";
+        String tableName = getTableName(entity.getClass());
+        String sql = "SELECT * FROM " + tableName + " WHERE " + PRIMARY_KEY + " = #{" + PRIMARY_KEY + "} AND " + DELETED_FIELD + " = 0";
         
         log.debug("SelectById SQL: {}", sql);
         return sql;
@@ -586,18 +581,17 @@ public class BaseMapperProvider {
 
     /**
      * 根据ID列表查询多条数据
-     * @param params 包含ids和entityClass的参数
+     * @param entity 实体对象，包含ids字段
      * @return SQL字符串
      */
-    public String selectByIds(java.util.Map<String, Object> params) {
-        List<Long> ids = (List<Long>) params.get("ids");
-        Class<?> entityClass = (Class<?>) params.get("entityClass");
+    public String selectByIds(BaseEntity entity) {
+        List<Long> ids = (List<Long>) getFieldValue(entity, "ids");
         
-        if (ids == null || ids.isEmpty() || entityClass == null) {
+        if (ids == null || ids.isEmpty()) {
             return "";
         }
         
-        String tableName = getTableName(entityClass);
+        String tableName = getTableName(entity.getClass());
         String sql = "SELECT * FROM " + tableName + " WHERE " + PRIMARY_KEY + " IN <foreach collection=\"ids\" item=\"id\" open=\"(\" separator=\",\" close=\")\">#{id}</foreach> AND " + DELETED_FIELD + " = 0";
         
         log.debug("SelectByIds SQL: {}", sql);
@@ -606,17 +600,15 @@ public class BaseMapperProvider {
 
     /**
      * 查询所有数据
-     * @param params 包含entityClass的参数
+     * @param entity 实体对象
      * @return SQL字符串
      */
-    public String selectAll(java.util.Map<String, Object> params) {
-        Class<?> entityClass = (Class<?>) params.get("entityClass");
-        
-        if (entityClass == null) {
+    public String selectAll(BaseEntity entity) {
+        if (entity == null) {
             return "";
         }
         
-        String tableName = getTableName(entityClass);
+        String tableName = getTableName(entity.getClass());
         String sql = "SELECT * FROM " + tableName + " WHERE " + DELETED_FIELD + " = 0 ORDER BY " + PRIMARY_KEY + " DESC";
         
         log.debug("SelectAll SQL: {}", sql);
@@ -651,7 +643,7 @@ public class BaseMapperProvider {
      * @param entity 实体对象
      * @return SQL字符串
      */
-    public String selectByEntityWithPage(BaseEntity entity) {
+    public String selectByEntityWithLimit(BaseEntity entity) {
         String tableName = getTableName(entity.getClass());
         
         String whereClause = buildWhereClause(entity);
