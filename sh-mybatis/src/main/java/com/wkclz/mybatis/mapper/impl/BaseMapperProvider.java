@@ -1,14 +1,11 @@
 package com.wkclz.mybatis.mapper.impl;
 
 import com.wkclz.core.base.BaseEntity;
+import com.wkclz.mybatis.annotation.Blob;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * BaseMapperProvider 实现类，提供数据库基本操作的 SQL 构建
@@ -136,6 +133,39 @@ public class BaseMapperProvider {
             return null;
         }
     }
+    
+    /**
+     * 获取实体类中所有不带有 @Blob 注解的字段（用于 SELECT 语句）
+     * @param entityClass 实体类
+     * @return 字段列表（下划线命名）
+     */
+    private List<String> getSelectFields(Class<?> entityClass) {
+        List<String> selectFields = new ArrayList<>();
+        List<Field> fields = getEntityFields(entityClass);
+        
+        for (Field field : fields) {
+            // 跳过带有 @Blob 注解的字段
+            if (field.isAnnotationPresent(Blob.class)) {
+                continue;
+            }
+            
+            String fieldName = field.getName();
+            // 添加字段（转换为下划线命名）
+            selectFields.add(camelToUnderline(fieldName));
+        }
+        
+        return selectFields;
+    }
+    
+    /**
+     * 构建 SELECT 语句的字段部分
+     * @param entityClass 实体类
+     * @return 字段列表字符串，如 "id, name, age"
+     */
+    private String buildSelectFields(Class<?> entityClass) {
+        List<String> selectFields = getSelectFields(entityClass);
+        return String.join(", ", selectFields);
+    }
 
     /**
      * 构建查询条件，处理null和空字符串
@@ -153,6 +183,11 @@ public class BaseMapperProvider {
 
             // 跳过特殊字段
             if (SPECIAL_FIELDS.contains(fieldName)) {
+                continue;
+            }
+            
+            // 跳过带有 @Blob 注解的字段，这些字段不出现在 List 查询中
+            if (field.isAnnotationPresent(Blob.class)) {
                 continue;
             }
 
@@ -574,7 +609,8 @@ public class BaseMapperProvider {
         }
         
         String tableName = getTableName(entityClass);
-        String sql = "SELECT * FROM " + tableName + " WHERE " + PRIMARY_KEY + " = #{id} AND " + DELETED_FIELD + " = 0";
+        String selectFields = buildSelectFields(entityClass);
+        String sql = "SELECT " + selectFields + " FROM " + tableName + " WHERE " + PRIMARY_KEY + " = #{id} AND " + DELETED_FIELD + " = 0";
         
         log.debug("SelectById SQL: {}", sql);
         return sql;
@@ -594,7 +630,8 @@ public class BaseMapperProvider {
         }
         
         String tableName = getTableName(entityClass);
-        String sql = "SELECT * FROM " + tableName + " WHERE " + PRIMARY_KEY + " IN <foreach collection=\"ids\" item=\"id\" open=\"(\" separator=\",\" close=\")\">#{id}</foreach> AND " + DELETED_FIELD + " = 0";
+        String selectFields = buildSelectFields(entityClass);
+        String sql = "SELECT " + selectFields + " FROM " + tableName + " WHERE " + PRIMARY_KEY + " IN <foreach collection=\"ids\" item=\"id\" open=\"(\" separator=\",\" close=\")\">#{id}</foreach> AND " + DELETED_FIELD + " = 0";
         
         log.debug("SelectByIds SQL: {}", sql);
         return sql;
@@ -613,7 +650,8 @@ public class BaseMapperProvider {
         }
         
         String tableName = getTableName(entityClass);
-        String sql = "SELECT * FROM " + tableName + " WHERE " + DELETED_FIELD + " = 0 ORDER BY " + PRIMARY_KEY + " DESC";
+        String selectFields = buildSelectFields(entityClass);
+        String sql = "SELECT " + selectFields + " FROM " + tableName + " WHERE " + DELETED_FIELD + " = 0 ORDER BY " + PRIMARY_KEY + " DESC";
         
         log.debug("SelectAll SQL: {}", sql);
         return sql;
@@ -625,10 +663,12 @@ public class BaseMapperProvider {
      * @return SQL字符串
      */
     public String selectByEntity(BaseEntity entity) {
-        String tableName = getTableName(entity.getClass());
+        Class<?> entityClass = entity.getClass();
+        String tableName = getTableName(entityClass);
         
+        String selectFields = buildSelectFields(entityClass);
         String whereClause = buildWhereClause(entity);
-        String sql = "SELECT * FROM " + tableName + " WHERE " + whereClause;
+        String sql = "SELECT " + selectFields + " FROM " + tableName + " WHERE " + whereClause;
         
         // 处理排序
         Object orderBy = getFieldValue(entity, "orderBy");
@@ -648,10 +688,12 @@ public class BaseMapperProvider {
      * @return SQL字符串
      */
     public String selectByEntityWithLimit(BaseEntity entity) {
-        String tableName = getTableName(entity.getClass());
+        Class<?> entityClass = entity.getClass();
+        String tableName = getTableName(entityClass);
         
+        String selectFields = buildSelectFields(entityClass);
         String whereClause = buildWhereClause(entity);
-        String sql = "SELECT * FROM " + tableName + " WHERE " + whereClause;
+        String sql = "SELECT " + selectFields + " FROM " + tableName + " WHERE " + whereClause;
         
         // 处理排序
         Object orderBy = getFieldValue(entity, "orderBy");
@@ -689,10 +731,12 @@ public class BaseMapperProvider {
      * @return SQL字符串
      */
     public String selectOneByEntity(BaseEntity entity) {
-        String tableName = getTableName(entity.getClass());
+        Class<?> entityClass = entity.getClass();
+        String tableName = getTableName(entityClass);
         
+        String selectFields = buildSelectFields(entityClass);
         String whereClause = buildWhereClause(entity);
-        String sql = "SELECT * FROM " + tableName + " WHERE " + whereClause + " LIMIT 1";
+        String sql = "SELECT " + selectFields + " FROM " + tableName + " WHERE " + whereClause + " LIMIT 1";
         
         log.debug("SelectOneByEntity SQL: {}", sql);
         return sql;
