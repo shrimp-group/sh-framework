@@ -305,7 +305,7 @@ public class BaseMapperProvider {
         String userCode = UserContext.getUserCode();
         if (userCode != null) {
             if (!hasCreateBy) {
-                if (columns.length() > 0) {
+                if (!columns.isEmpty()) {
                     columns.append(", ");
                     values.append(", ");
                 }
@@ -313,7 +313,7 @@ public class BaseMapperProvider {
                 values.append("'").append(userCode).append("'");
             }
             if (!hasUpdateBy) {
-                if (columns.length() > 0) {
+                if (!columns.isEmpty()) {
                     columns.append(", ");
                     values.append(", ");
                 }
@@ -323,7 +323,7 @@ public class BaseMapperProvider {
         }
         
         if (!hasCreateTime) {
-            if (columns.length() > 0) {
+            if (!columns.isEmpty()) {
                 columns.append(", ");
                 values.append(", ");
             }
@@ -332,7 +332,7 @@ public class BaseMapperProvider {
         }
         
         if (!hasUpdateTime) {
-            if (columns.length() > 0) {
+            if (!columns.isEmpty()) {
                 columns.append(", ");
                 values.append(", ");
             }
