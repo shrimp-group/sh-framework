@@ -1,7 +1,7 @@
 package com.wkclz.core.base;
 
 import com.wkclz.core.annotation.Desc;
-import com.wkclz.core.util.BeanUtil;
+import com.wkclz.tool.utils.BeanUtil;
 import lombok.Data;
 
 import java.time.LocalDateTime;

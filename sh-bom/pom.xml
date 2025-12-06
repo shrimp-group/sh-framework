@@ -24,6 +24,7 @@
         <guava.version>33.5.0-jre</guava.version>
         <fastjson2.version>2.0.60</fastjson2.version>
         <hutool.version>5.8.42</hutool.version>
+        <zxing.version>3.5.4</zxing.version>
         <lombok.version>1.18.42</lombok.version>
 
 
@@ -60,6 +61,18 @@
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>${zxing.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>javase</artifactId>
+                <version>${zxing.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>com.alibaba</groupId>
