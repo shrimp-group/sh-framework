@@ -24,6 +24,7 @@
         <module>sh-tool</module>
         <module>sh-core</module>
         <module>sh-mybatis</module>
+        <module>sh-demo</module>
     </modules>
 
 </project>
