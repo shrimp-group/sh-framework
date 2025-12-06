@@ -16,7 +16,6 @@
     <artifactId>sh-parent</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
-    <name>sh-parent</name>
 
     <properties>
         <revision>5.0.0-SNAPSHOT</revision>
@@ -37,6 +36,11 @@
                 <version>${revision}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.wkclz.framework</groupId>
+                <artifactId>sh-tool</artifactId>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.framework</groupId>

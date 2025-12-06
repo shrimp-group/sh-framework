@@ -1,4 +1,4 @@
-package com.wkclz.core.base;
+package com.wkclz.tool.bean;
 
 import lombok.Data;
 

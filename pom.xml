@@ -21,6 +21,7 @@
     <modules>
         <module>sh-parent</module>
         <module>sh-bom</module>
+        <module>sh-tool</module>
         <module>sh-core</module>
     </modules>
 

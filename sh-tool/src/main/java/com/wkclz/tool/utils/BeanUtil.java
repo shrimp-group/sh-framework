@@ -1,8 +1,7 @@
-package com.wkclz.core.util;
+package com.wkclz.tool.utils;
 
 
-import com.wkclz.core.base.BaseEntity;
-import com.wkclz.core.base.JavaField;
+import com.wkclz.tool.bean.JavaField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -30,7 +29,7 @@ public class BeanUtil {
 
 
     // BaseEntity 字段缓存
-    private static List<String> BASE_ENTITY_FIELD = null;
+    private static Map<Class, List<String>> ENTITY_FIELD = new HashMap<>();
     private static final Map<Class<?>, Map<String, JavaField>> CLASS_METHOD_CACHE = new HashMap<>();
 
     /**
@@ -223,7 +222,7 @@ public class BeanUtil {
     /**
      * 从业务实体中，获取业务字段的 getter 方法
      */
-    public static synchronized <T extends BaseEntity> Map<String, JavaField> getGetters(Class<T> clazz) {
+    public static synchronized Map<String, JavaField> getGetters(Class<?> clazz) {
         if (clazz == null) {
             throw new RuntimeException("getBizFields clazz can not be null");
         }
@@ -233,7 +232,7 @@ public class BeanUtil {
             return cachedMethods;
         }
 
-        Class<? super T> superclass = clazz.getSuperclass();
+        Class<?> superclass = clazz.getSuperclass();
         Field[] superFields = superclass.getDeclaredFields();
         Method[] superMethods = superclass.getDeclaredMethods();
 
@@ -274,20 +273,17 @@ public class BeanUtil {
     /**
      * 获取 BaseEntity 的字段，方便在业务实体中排除
      */
-    private static List<String> getBaseEntityField() {
-        if (BASE_ENTITY_FIELD != null) {
-            return BASE_ENTITY_FIELD;
+    private synchronized static List<String> getEntityField(Class<?> clazz) {
+        List<String> fields = ENTITY_FIELD.get(clazz);
+        if (fields != null) {
+            return fields;
         }
-        synchronized (BaseEntity.class) {
-            if (BASE_ENTITY_FIELD != null) {
-                return BASE_ENTITY_FIELD;
-            }
-            // List<String> extFields = Arrays.asList("id", "sort", "remark", "version");
-            Field[] declaredFields = BaseEntity.class.getDeclaredFields();
-            // BASE_ENTITY_FIELD = Arrays.stream(declaredFields).map(Field::getName).filter(t -> !extFields.contains(t)).toList();
-            BASE_ENTITY_FIELD = Arrays.stream(declaredFields).map(Field::getName).toList();
-            return BASE_ENTITY_FIELD;
-        }
+        // List<String> extFields = Arrays.asList("id", "sort", "remark", "version");
+        Field[] declaredFields = clazz.getDeclaredFields();
+        // BASE_ENTITY_FIELD = Arrays.stream(declaredFields).map(Field::getName).filter(t -> !extFields.contains(t)).toList();
+        List<String> list = Arrays.stream(declaredFields).map(Field::getName).toList();
+        ENTITY_FIELD.put(clazz, list);
+        return list;
     }
 
 }
