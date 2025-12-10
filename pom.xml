@@ -23,6 +23,7 @@
         <module>sh-bom</module>
         <module>sh-tool</module>
         <module>sh-core</module>
+        <module>sh-mybatis</module>
     </modules>
 
 </project>

@@ -222,7 +222,7 @@ public class BeanUtil {
     /**
      * 从业务实体中，获取业务字段的 getter 方法
      */
-    public static synchronized Map<String, JavaField> getGetters(Class<?> clazz) {
+    public static synchronized Map<String, JavaField> getJavaField(Class<?> clazz) {
         if (clazz == null) {
             throw new RuntimeException("getBizFields clazz can not be null");
         }
@@ -250,20 +250,25 @@ public class BeanUtil {
         // List<String> baseEntityField = getBaseEntityField();
         Map<String, JavaField> getters = new HashMap<>();
         for (Field field : fields) {
+            JavaField f = new JavaField();
+            f.setClazz(field.getType());
+
             String name = field.getName();
+            f.setFieldName(name);
             // if (baseEntityField.contains(field.getName())) {
             //     continue;
             // }
             String getter = "get" + name.substring(0, 1).toUpperCase() + name.substring(1);
+            String setter = "set" + getter.substring(3);
             for (Method method : methods) {
                 if (getter.equals(method.getName())) {
-                    JavaField f = new JavaField();
-                    f.setName(name);
                     f.setGetter(method);
-                    f.setClazz(field.getType());
-                    getters.put(name, f);
+                }
+                if (setter.equals(method.getName())) {
+                    f.setSetter(method);
                 }
             }
+            getters.put(name, f);
         }
         CLASS_METHOD_CACHE.put(clazz, getters);
         return getters;
