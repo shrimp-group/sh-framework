@@ -1,5 +1,6 @@
 package com.wkclz.mybatis.mapper.impl;
 
+import com.wkclz.core.exception.ValidationException;
 import com.wkclz.mybatis.bean.DbEntityProperty;
 import com.wkclz.tool.bean.JavaField;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +25,12 @@ public class SelectByIdMapperProvider extends BaseMapperProvider {
      */
     public String selectById(Map<String, Object> params, ProviderContext context) {
         Long id = (Long) params.get("id");
+        if (id == null) {
+            throw ValidationException.of("ID不能为空");
+        }
         Class<?> entityClass = getEntityClassFromContext(context);
-        
-        if (id == null || entityClass == null) {
-            return "";
+        if (entityClass == null) {
+            throw ValidationException.of("无法确认查询实体");
         }
 
         DbEntityProperty property = getDbEntityProperty(entityClass);

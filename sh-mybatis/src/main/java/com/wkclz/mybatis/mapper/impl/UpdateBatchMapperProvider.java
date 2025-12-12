@@ -62,25 +62,12 @@ public class UpdateBatchMapperProvider extends BaseMapperProvider {
         
         // 构建ids IN条件
         Object idsObj = property.getIdsField().getField().get(entity);
-        if (!(idsObj instanceof List)) {
+        if (!(idsObj instanceof List<?> ids)) {
             return "";
         }
-        List<?> ids = (List<?>) idsObj;
         String inClause = buildInClause(ids, "ids");
-        
-        StringBuilder sqlBuilder = new StringBuilder();
-        sqlBuilder.append("UPDATE ")
-                .append(tableName)
-                .append(" SET ")
-                .append(updateSet)
-                .append(" WHERE ")
-                .append(primaryKey)
-                .append(" IN ")
-                .append(inClause)
-                .append(" AND ")
-                .append(deleted)
-                .append(" = 0");
-        String sql = sqlBuilder.toString();
+
+        String sql = "UPDATE " + tableName + " SET " + updateSet + " WHERE " + primaryKey + " IN " + inClause + " AND " + deleted + " = 0";
         
         log.debug("UpdateBatch SQL: {}", sql);
         return sql;

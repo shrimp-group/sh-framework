@@ -1,6 +1,7 @@
 package com.wkclz.mybatis.mapper.impl;
 
 import com.wkclz.core.base.BaseEntity;
+import com.wkclz.core.exception.ValidationException;
 import com.wkclz.mybatis.bean.DbEntityProperty;
 import com.wkclz.tool.bean.JavaField;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,9 @@ public class DeleteByIdsMapperProvider extends BaseMapperProvider {
      * @return SQL字符串
      */
     public String deleteByIds(BaseEntity entity) throws IllegalAccessException {
+        if (entity == null) {
+            throw ValidationException.of("实体对象不能为空");
+        }
         DbEntityProperty property = getDbEntityProperty(entity.getClass());
         String tableName = property.getTableName();
         String primaryKey = DbEntityProperty.PRIMARY_KEY;
@@ -27,8 +31,14 @@ public class DeleteByIdsMapperProvider extends BaseMapperProvider {
 
         // 获取ids字段值
         Object ids = property.getIdsField().getField().get(entity);
-        if (!(ids instanceof List)) {
-            return "";
+        if (ids == null) {
+            throw ValidationException.of("ids不能为空");
+        }
+        if (!(ids instanceof List<?> idList)) {
+            throw ValidationException.of("ids必须是List类型");
+        }
+        if (idList.isEmpty()) {
+            throw ValidationException.of("ids列表不能为空");
         }
         
         StringBuilder sql = new StringBuilder();
@@ -42,7 +52,6 @@ public class DeleteByIdsMapperProvider extends BaseMapperProvider {
         }
 
         // 构建ids IN条件
-        List<?> idList = (List<?>) ids;
         String inClause = buildInClause(idList, "ids");
         sql.append(" WHERE ").append(primaryKey).append(" IN ").append(inClause).append(" AND ").append(deleted).append(" = 0");
         

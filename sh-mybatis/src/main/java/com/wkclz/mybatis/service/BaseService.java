@@ -19,6 +19,9 @@ import java.util.List;
 @Transactional
 public abstract class BaseService<T extends BaseEntity, M extends BaseMapper<T>> {
 
+    // 每次处理的最大条数
+    private static final int BATCH_SIZE = 1000;
+
     @Autowired
     protected M mapper;
 
@@ -32,12 +35,21 @@ public abstract class BaseService<T extends BaseEntity, M extends BaseMapper<T>>
     }
 
     /**
-     * 批量插入数据
+     * 批量插入数据，每次最多处理1000条
      * @param entities 实体对象列表
      * @return 插入结果
      */
     public int insertBatch(List<T> entities) {
-        return mapper.insertBatch(entities);
+        if (entities == null || entities.isEmpty()) {
+            return 0;
+        }
+        int totalInserted = 0;
+        for (int i = 0; i < entities.size(); i += BATCH_SIZE) {
+            int endIndex = Math.min(i + BATCH_SIZE, entities.size());
+            List<T> batchEntities = entities.subList(i, endIndex);
+            totalInserted += mapper.insertBatch(batchEntities);
+        }
+        return totalInserted;
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.wkclz.mybatis.mapper.impl;
 
 import com.wkclz.core.base.BaseEntity;
+import com.wkclz.core.exception.ValidationException;
 import com.wkclz.mybatis.bean.DbEntityProperty;
 import com.wkclz.tool.bean.JavaField;
 import lombok.extern.slf4j.Slf4j;
@@ -17,18 +18,20 @@ public class UpdateByIdMapperProvider extends BaseMapperProvider {
      * @return SQL字符串
      */
     public String updateById(BaseEntity entity) throws IllegalAccessException {
+        if (entity == null) {
+            throw ValidationException.of("实体对象不能为空");
+        }
         DbEntityProperty property = getDbEntityProperty(entity.getClass());
+        // 获取id
+        Object id = property.getIdField().getField().get(entity);
+        if (id == null) {
+            throw ValidationException.of("ID不能为空");
+        }
+
         String tableName = property.getTableName();
         String primaryKey = DbEntityProperty.PRIMARY_KEY;
         String deleted = DbEntityProperty.DELETED_FIELD;
         String version = DbEntityProperty.VERSION_FIELD;
-
-        // 获取id
-        Object id = property.getIdField().getField().get(entity);
-        if (id == null) {
-            return "";
-        }
-
         StringBuilder updateSet = new StringBuilder();
         
         for (JavaField field : property.getUpdateFields()) {
