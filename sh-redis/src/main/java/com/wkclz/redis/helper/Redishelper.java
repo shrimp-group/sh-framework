@@ -209,6 +209,53 @@ public class Redishelper {
     }
 
     /**
+     * 从列表左侧弹出元素
+     *
+     * @param key 键
+     * @return 弹出的元素
+     */
+    public Object lPop(String key) {
+        try {
+            return redisTemplate.opsForList().leftPop(key);
+        } catch (Exception e) {
+            log.error("Redis lPop error: ", e);
+            return null;
+        }
+    }
+
+    /**
+     * 从列表左侧弹出元素（阻塞式）
+     *
+     * @param key     键
+     * @param timeout 超时时间
+     * @param timeUnit 时间单位
+     * @return 弹出的元素，如果超时则返回 null
+     */
+    public Object bLPop(String key, long timeout, TimeUnit timeUnit) {
+        try {
+            return redisTemplate.opsForList().leftPop(key, timeout, timeUnit);
+        } catch (Exception e) {
+            log.error("Redis bLPop error: ", e);
+            return null;
+        }
+    }
+
+    /**
+     * 获取列表的长度
+     *
+     * @param key 键
+     * @return 列表长度
+     */
+    public long lLen(String key) {
+        try {
+            return redisTemplate.opsForList().size(key);
+        } catch (Exception e) {
+            log.error("Redis lLen error: ", e);
+            return 0;
+        }
+    }
+
+    /**
      * 获取列表范围内的元素
      *
      * @param key   键
