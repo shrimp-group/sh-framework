@@ -1,7 +1,7 @@
 package com.wkclz.redis.helper;
 
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class Redishelper {
 
-    @Autowired
+    @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
     // ============================ String ============================
@@ -55,6 +55,26 @@ public class Redishelper {
             return true;
         } catch (Exception e) {
             log.error("Redis set error: ", e);
+            return false;
+        }
+    }
+
+    /**
+     * 保存字符串并设置过期时间（如果键不存在）
+     * 原子操作，相当于SETNX + EXPIRE
+     *
+     * @param key      键
+     * @param value    值
+     * @param timeout  过期时间
+     * @param timeUnit 时间单位
+     * @return 是否成功
+     */
+    public boolean setIfAbsent(String key, Object value, long timeout, TimeUnit timeUnit) {
+        try {
+            Boolean result = redisTemplate.opsForValue().setIfAbsent(key, value, timeout, timeUnit);
+            return result != null && result;
+        } catch (Exception e) {
+            log.error("Redis setIfAbsent error: ", e);
             return false;
         }
     }
