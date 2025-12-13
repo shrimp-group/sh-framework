@@ -80,6 +80,21 @@ public class Redishelper {
     }
 
     /**
+     * 自增
+     *
+     * @param key 键
+     * @return 自增后的值
+     */
+    public Long increment(String key) {
+        try {
+            return redisTemplate.opsForValue().increment(key);
+        } catch (Exception e) {
+            log.error("Redis increment error: ", e);
+            return null;
+        }
+    }
+
+    /**
      * 获取字符串
      *
      * @param key 键

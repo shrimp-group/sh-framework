@@ -24,12 +24,21 @@ public class RedisLock {
     
     // Lua脚本：释放锁
     private static final String RELEASE_LOCK_SCRIPT = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
-    private final DefaultRedisScript<Long> releaseLockScript;
+    private DefaultRedisScript<Long> releaseLockScript = null;
     
-    public RedisLock() {
-        releaseLockScript = new DefaultRedisScript<>();
-        releaseLockScript.setScriptText(RELEASE_LOCK_SCRIPT);
-        releaseLockScript.setResultType(Long.class);
+    /**
+     * 初始化释放锁脚本
+     */
+    private void initReleaseLockScript() {
+        if (releaseLockScript == null) {
+            synchronized (this) {
+                if (releaseLockScript == null) {
+                    releaseLockScript = new DefaultRedisScript<>();
+                    releaseLockScript.setScriptText(RELEASE_LOCK_SCRIPT);
+                    releaseLockScript.setResultType(Long.class);
+                }
+            }
+        }
     }
 
     /**
@@ -74,6 +83,9 @@ public class RedisLock {
         }
 
         try {
+            // 懒加载初始化释放锁脚本
+            initReleaseLockScript();
+            
             // 使用Lua脚本确保原子性
             Long result = redisTemplate.execute(
                 releaseLockScript,
