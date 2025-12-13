@@ -1,4 +1,8 @@
 
+# spring
+application-local.yml
+
+
 # maven
 target
 .flattened-pom.xml
@@ -6,3 +10,6 @@ target
 # idea
 .idea
 
+
+# Mac
+.DS_Store
