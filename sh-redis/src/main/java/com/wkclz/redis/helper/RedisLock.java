@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisLock {
 
     @Autowired
-    private Redishelper redishelper;
+    private RedisHelper redisHelper;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     
@@ -59,7 +59,7 @@ public class RedisLock {
         
         try {
             // 尝试获取锁，使用SETNX命令的逻辑（原子操作）
-            boolean locked = redishelper.setIfAbsent(lockKey, requestId, lockTime, timeUnit);
+            boolean locked = redisHelper.setIfAbsent(lockKey, requestId, lockTime, timeUnit);
             if (locked) {
                 return requestId;
             }
