@@ -25,6 +25,7 @@
         <fastjson2.version>2.0.60</fastjson2.version>
         <hutool.version>5.8.42</hutool.version>
         <zxing.version>3.5.4</zxing.version>
+        <jjwt.version>0.13.0</jjwt.version>
         <lombok.version>1.18.42</lombok.version>
 
 
@@ -71,6 +72,23 @@
                 <groupId>com.google.zxing</groupId>
                 <artifactId>javase</artifactId>
                 <version>${zxing.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
             </dependency>
 
 
