@@ -57,6 +57,11 @@
                 <artifactId>sh-redis</artifactId>
                 <version>${revision}</version>
             </dependency>
+            <dependency>
+                <groupId>com.wkclz.framework</groupId>
+                <artifactId>sh-web</artifactId>
+                <version>${revision}</version>
+            </dependency>
 
 
         </dependencies>
