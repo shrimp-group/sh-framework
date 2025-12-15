@@ -1,9 +1,8 @@
 package com.wkclz.redis.queue;
 
-import com.wkclz.redis.helper.Redishelper;
+import com.wkclz.redis.helper.RedisHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
@@ -13,11 +12,11 @@ import java.util.concurrent.TimeUnit;
  * @param <T> 消息类型
  */
 @Slf4j
-@Component
+// @Component
 public class RedisMessageQueueImpl<T> implements RedisMessageQueue<T> {
     
     @Autowired
-    private Redishelper redishelper;
+    private RedisHelper redisHelper;
     
     private final String queueName;
     private final Class<T> messageType;
@@ -56,7 +55,7 @@ public class RedisMessageQueueImpl<T> implements RedisMessageQueue<T> {
         
         try {
             // 直接使用 Redishelper 保存对象，利用 RedisTemplate 的序列化机制
-            redishelper.lPush(getQueueKey(), message);
+            redisHelper.lPush(getQueueKey(), message);
             return true;
         } catch (Exception e) {
             log.error("Redis sendMessage error: ", e);
@@ -73,7 +72,7 @@ public class RedisMessageQueueImpl<T> implements RedisMessageQueue<T> {
     public T receiveMessageNonBlocking() {
         try {
             // 使用 Redis 的 LPOP 命令从队列头部获取消息（非阻塞）
-            Object messageObj = redishelper.lPop(getQueueKey());
+            Object messageObj = redisHelper.lPop(getQueueKey());
             if (messageObj != null) {
                 // 直接转换类型，利用 RedisTemplate 的反序列化机制
                 return messageType.cast(messageObj);
@@ -88,7 +87,7 @@ public class RedisMessageQueueImpl<T> implements RedisMessageQueue<T> {
     public T receiveMessage(long timeout, TimeUnit timeUnit) throws InterruptedException {
         try {
             // 使用 Redis 的 BLPOP 命令从队列头部获取消息（阻塞式）
-            Object messageObj = redishelper.bLPop(getQueueKey(), timeout, timeUnit);
+            Object messageObj = redisHelper.bLPop(getQueueKey(), timeout, timeUnit);
             if (messageObj != null) {
                 // 直接转换类型，利用 RedisTemplate 的反序列化机制
                 return messageType.cast(messageObj);
@@ -103,7 +102,7 @@ public class RedisMessageQueueImpl<T> implements RedisMessageQueue<T> {
     public long getMessageCount() {
         try {
             // 使用 Redis 的 LLEN 命令获取队列长度
-            return redishelper.lLen(getQueueKey());
+            return redisHelper.lLen(getQueueKey());
         } catch (Exception e) {
             log.error("Redis getMessageCount error: ", e);
             return 0;
@@ -114,7 +113,7 @@ public class RedisMessageQueueImpl<T> implements RedisMessageQueue<T> {
     public void clear() {
         try {
             // 使用 Redis 的 DEL 命令清空队列
-            redishelper.delete(getQueueKey());
+            redisHelper.delete(getQueueKey());
         } catch (Exception e) {
             log.error("Redis clearQueue error: ", e);
         }

@@ -1,6 +1,6 @@
 package com.wkclz.redis.queue;
 
-import com.wkclz.redis.helper.Redishelper;
+import com.wkclz.redis.helper.RedisHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 public class RedisMessageQueueManager {
     
     @Autowired
-    private Redishelper redishelper;
+    private RedisHelper redisHelper;
     
     // 线程池，用于消息消费
     private final ExecutorService executorService = Executors.newCachedThreadPool();

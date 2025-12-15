@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisIdGenerator {
 
     @Autowired
-    private Redishelper redishelper;
+    private RedisHelper redisHelper;
     
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -103,7 +103,7 @@ public class RedisIdGenerator {
         
         try {
             // 获取当前时间戳对应的序列号
-            Long sequence = redishelper.increment(key);
+            Long sequence = redisHelper.increment(key);
             if (sequence == null) {
                 sequence = 1L;
             }
@@ -125,7 +125,7 @@ public class RedisIdGenerator {
             lastSequence = sequence;
             
             // 设置键的过期时间（当前时间 + 5秒）
-            redishelper.set(key, sequence, 5, TimeUnit.SECONDS);
+            redisHelper.set(key, sequence, 5, TimeUnit.SECONDS);
             
             // 计算相对时间戳（当前时间戳 - 基础时间）
             long relativeTimestamp = timestamp - BASE_TIME;

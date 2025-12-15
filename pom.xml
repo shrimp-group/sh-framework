@@ -25,6 +25,7 @@
         <module>sh-core</module>
         <module>sh-mybatis</module>
         <module>sh-redis</module>
+        <module>sh-web</module>
         <module>sh-demo</module>
     </modules>
 

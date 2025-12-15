@@ -1,17 +1,15 @@
 package com.wkclz.redis.queue;
 
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
 
 /**
  * Redis 消息队列使用示例
  */
-@Component
+// @Component
 public class RedisMessageQueueExample {
     
     @Autowired
