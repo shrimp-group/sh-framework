@@ -59,6 +59,21 @@
             </dependency>
             <dependency>
                 <groupId>com.wkclz.framework</groupId>
+                <artifactId>sh-spring</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.wkclz.framework</groupId>
+                <artifactId>sh-xxljob</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.wkclz.framework</groupId>
+                <artifactId>sh-mqtt</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.wkclz.framework</groupId>
                 <artifactId>sh-web</artifactId>
                 <version>${revision}</version>
             </dependency>

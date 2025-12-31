@@ -25,14 +25,17 @@
         <fastjson2.version>2.0.60</fastjson2.version>
         <hutool.version>5.8.42</hutool.version>
         <zxing.version>3.5.4</zxing.version>
+        <jjwt.version>0.13.0</jjwt.version>
+        <xxl-job-core.version>3.3.1</xxl-job-core.version>
+        <bcprov-jdk18on.version>1.83</bcprov-jdk18on.version>
+        <mqttv3.version>1.2.5</mqttv3.version>
+        <jakarta.mail.version>2.0.2</jakarta.mail.version>
         <lombok.version>1.18.42</lombok.version>
-
 
         <druid-spring-boot-4-starter.version>1.2.28-SNAPSHOT</druid-spring-boot-4-starter.version>
         <mysql-connector-j.version>9.5.0</mysql-connector-j.version>
         <mybatis-spring-boot-starter.version>4.0.0</mybatis-spring-boot-starter.version>
         <pagehelper-spring-boot-starter.version>2.1.1</pagehelper-spring-boot-starter.version>
-
 
     </properties>
 
@@ -72,6 +75,46 @@
                 <artifactId>javase</artifactId>
                 <version>${zxing.version}</version>
             </dependency>
+
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>${xxl-job-core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>jakarta.mail</artifactId>
+                <version>${jakarta.mail.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>${bcprov-jdk18on.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.paho</groupId>
+                <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+                <version>${mqttv3.version}</version>
+            </dependency>
+
 
 
             <dependency>
@@ -119,6 +162,7 @@
                 <artifactId>lettuce-core</artifactId>
                 <version>${lettuce-core.version}</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 

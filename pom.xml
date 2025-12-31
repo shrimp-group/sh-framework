@@ -25,7 +25,10 @@
         <module>sh-core</module>
         <module>sh-mybatis</module>
         <module>sh-redis</module>
+        <module>sh-spring</module>
         <module>sh-web</module>
+        <module>sh-xxljob</module>
+        <module>sh-mqtt</module>
         <module>sh-demo</module>
     </modules>
 

@@ -1,6 +1,7 @@
 package com.wkclz.core.base;
 
 import com.wkclz.core.enums.ResultCode;
+import com.wkclz.core.exception.CommonException;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -56,8 +57,16 @@ public class R<T> implements Serializable {
         return new R<>(ResultCode.ERROR, null);
     }
 
+    public static <T> R<T> error(CommonException commonException) {
+        return new R<>(commonException.getCode(), commonException.getMessage(), null);
+    }
+
     public static <T> R<T> error(String message) {
         return new R<>(ResultCode.ERROR.getCode(), message, null);
+    }
+
+    public static <T> R<T> error(int code, String message) {
+        return new R<>(code, message, null);
     }
 
     public static <T> R<T> error(String template, Object... args) {
