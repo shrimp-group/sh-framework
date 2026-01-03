@@ -18,7 +18,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author shrimp
@@ -36,6 +38,9 @@ public class RestHelper {
     }
 
 
+    public static List<RestInfo> getMapping() {
+        return getMapping(null, null, null);
+    }
     public static List<RestInfo> getMapping(String packagePath) {
         return getMapping(packagePath, null, null);
     }
@@ -61,6 +66,7 @@ public class RestHelper {
         Set<Class<?>> classes = ClassUtil.getClasses(packagePath);
         // Rest 服务类
         List<Class<?>> restClassList = classes.stream().filter(clazz -> clazz.isAnnotationPresent(RestController.class) || clazz.isAnnotationPresent(Controller.class)).toList();
+        List<Class<?>> routerClassList = classes.stream().filter(clazz -> clazz.isAnnotationPresent(Router.class)).toList();
         for (Class<?> clazz : restClassList) {
             // 大 Rest 上的 RequestMapping
             String prefix = null;
@@ -84,12 +90,13 @@ public class RestHelper {
             for (Method method : methods) {
                 RestInfo rest = getRest(method, prefix);
                 if (rest != null) {
+                    rest.setClazz(clazz);
                     rests.add(rest);
                 }
             }
         }
 
-        appendDesc(classes, rests);
+        appendDesc(routerClassList, rests);
 
         if (StringUtils.isNotBlank(filter)) {
             rests = rests.stream().filter(t -> t.getUri().contains(filter)).toList();
@@ -171,6 +178,7 @@ public class RestHelper {
 
         // 方法名
         String restName = uri.substring(1);
+        restName = restName.replace("-", "_");
         restName = restName.replace("/", "_");
         restName = restName.replace("{", "");
         restName = restName.replace("}", "");
@@ -180,35 +188,71 @@ public class RestHelper {
         return restInfo;
     }
 
-    private static void appendDesc(Set<Class<?>> classes, List<RestInfo> rests) {
-        if (CollectionUtils.isEmpty(classes) || CollectionUtils.isEmpty(rests)) {
+    private static void appendDesc(List<Class<?>> routerClassList, List<RestInfo> rests) {
+        if (CollectionUtils.isEmpty(routerClassList) || CollectionUtils.isEmpty(rests)) {
             return;
         }
-        List<Class<?>> routersClassList = classes.stream().filter(clazz -> clazz.isAnnotationPresent(Router.class)).toList();
-        for (Class<?> routerClazz : routersClassList) {
+
+        Map<String, List<RestInfo>> restsMap = rests.stream().collect(Collectors.groupingBy(RestInfo::getUri));
+        for (Class<?> routerClazz : routerClassList) {
             Field[] fields = routerClazz.getDeclaredFields();
             try {
                 Router routerAnno = routerClazz.getAnnotation(Router.class);
                 String module = null;
+                String prefix = null;
                 if (routerAnno != null) {
-                    module = routerAnno.value();
+                    module = routerAnno.module();
+                    prefix = routerAnno.prefix();
+                    if (StringUtils.isBlank(routerAnno.prefix())) {
+                        prefix = "";
+                    }
                 }
+
+
+                // 填充 module
+                if (module != null) {
+                    // 获取 routerClazz 的包名
+                    String routerPackage = routerClazz.getPackageName();
+
+                    for (RestInfo rest : rests) {
+                        if (rest.getClazz() == null) {
+                            continue;
+                        }
+                        String restPackage = rest.getClazz().getPackageName();
+                        if (restPackage.startsWith(routerPackage)) {
+                            rest.setModule(module);
+                            rest.setAppCode(module);
+                        }
+                    }
+                }
+
+                // 填充 desc
                 for (Field field : fields) {
                     String val = "";
                     Object o = field.get(val);
                     if (o == null) {
                         continue;
                     }
-                    String value = o.toString();
+                    Desc desc = field.getAnnotation(Desc.class);
+                    if (desc == null) {
+                        continue;
+                    }
+                    String value = desc.value();
+                    if (StringUtils.isBlank(value)) {
+                        continue;
+                    }
+
+
+                    String uri = o.toString();
+                    String fullUri = prefix + uri;
                     // 找到 restInfo
-                    List<RestInfo> infos = rests.stream().filter(t -> t.getUri().equals(value)).toList();
-                    if (infos.size() == 1) {
-                        RestInfo restInfo = infos.get(0);
-                        Desc desc = field.getAnnotation(Desc.class);
-                        if (desc != null) {
-                            restInfo.setName(desc.value());
-                        }
-                        restInfo.setModule(module);
+                    List<RestInfo> restInfos = restsMap.get(fullUri);
+                    if (CollectionUtils.isEmpty(restInfos)) {
+                        continue;
+                    }
+                    for (RestInfo restInfo : restInfos) {
+                        restInfo.setDesc(value);
+                        restInfo.setWriteFlag(uri.startsWith("/public")?1:0);
                     }
                 }
             } catch (IllegalAccessException e) {

@@ -1,6 +1,8 @@
 package com.wkclz.redis.helper;
 
+import com.wkclz.core.exception.SystemException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -75,14 +77,24 @@ public class RedisIdGenerator {
     
     // 62进制字符集
     private static final char[] BASE62_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-    
+
+
+    public String generateIdWithPrefix(String prefix) {
+        if (StringUtils.isBlank(prefix)) {
+            throw SystemException.of("prefix 不能为空！");
+        }
+        String s = generateIdWithType(prefix);
+        return prefix + s;
+    }
+
+
     /**
      * 生成ID
      *
      * @param businessType 业务类型
      * @return 生成的ID
      */
-    public String generateId(String businessType) {
+    public String generateIdWithType(String businessType) {
         if (businessType == null || businessType.isEmpty()) {
             businessType = "default";
         }
