@@ -15,6 +15,13 @@ import java.lang.annotation.*;
 public @interface Router {
 
     // 注解只有一个变量时 变量名必须为value
-    String value();
+
+    // 需要有多个变量
+
+    // 模块
+    String module();
+
+    // 前缀
+    String prefix();
 
 }

@@ -7,6 +7,7 @@ import java.io.Serializable;
 @Data
 public class RestInfo implements Serializable {
 
+    private Class<?> clazz;
     private String appCode;
     private String code;
     private String module;
