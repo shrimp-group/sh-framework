@@ -1,4 +1,4 @@
-package com.wkclz.pring.config;
+package com.wkclz.spring.config;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.thread.ThreadUtil;

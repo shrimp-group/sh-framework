@@ -1,4 +1,4 @@
-package com.wkclz.pring.config;
+package com.wkclz.spring.config;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;

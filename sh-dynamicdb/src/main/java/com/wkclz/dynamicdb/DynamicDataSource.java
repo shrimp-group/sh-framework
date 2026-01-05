@@ -6,7 +6,7 @@ import com.wkclz.core.exception.SystemException;
 import com.wkclz.dynamicdb.bean.DefaultDataSourceConfig;
 import com.wkclz.dynamicdb.config.DynamicDataSourceConfig;
 import com.wkclz.mybatis.bean.DataSourceInfo;
-import com.wkclz.pring.config.SpringContextHolder;
+import com.wkclz.spring.config.SpringContextHolder;
 import com.wkclz.tool.utils.MapUtil;
 import lombok.extern.slf4j.Slf4j;
 

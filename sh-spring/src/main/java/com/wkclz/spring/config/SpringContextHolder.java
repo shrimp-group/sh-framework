@@ -1,4 +1,4 @@
-package com.wkclz.pring.config;
+package com.wkclz.spring.config;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;

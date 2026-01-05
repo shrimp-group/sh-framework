@@ -1,4 +1,4 @@
-package com.wkclz.pring;
+package com.wkclz.spring;
 
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;

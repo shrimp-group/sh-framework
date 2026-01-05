@@ -1,4 +1,4 @@
-package com.wkclz.pring.utils;
+package com.wkclz.spring.utils;
 
 import com.wkclz.core.exception.SystemException;
 import freemarker.cache.ClassTemplateLoader;

@@ -1,8 +1,8 @@
-package com.wkclz.pring.helper;
+package com.wkclz.spring.helper;
 
 
 import com.wkclz.core.exception.SystemException;
-import com.wkclz.pring.config.Sys;
+import com.wkclz.spring.config.Sys;
 import com.wkclz.tool.utils.SnowflakeIdWorker;
 
 import java.net.NetworkInterface;
