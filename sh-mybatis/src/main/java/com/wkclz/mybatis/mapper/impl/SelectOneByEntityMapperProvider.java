@@ -19,13 +19,11 @@ public class SelectOneByEntityMapperProvider extends BaseMapperProvider {
      * @return SQL字符串
      */
     public String selectOneByEntity(BaseEntity entity) throws IllegalAccessException {
-        Class<?> entityClass = entity.getClass();
         DbEntityProperty property = getDbEntityProperty(entity.getClass());
         String tableName = property.getTableName();
-        String primaryKey = DbEntityProperty.PRIMARY_KEY;
 
 
-        List<String> selectFields = property.getFields().stream().map(JavaField::getColumnName).toList();
+        List<String> selectFields = property.getSelectObjFields().stream().map(JavaField::getColumnName).toList();
         String selectFieldsStr = String.join(",", selectFields);
 
         String whereClause = buildWhereClause(entity);

@@ -1,8 +1,7 @@
 package com.wkclz.core.exception;
 
 import com.wkclz.core.enums.ResultCode;
-
-import java.text.MessageFormat;
+import com.wkclz.tool.utils.StringFormat;
 
 /**
  * API异常类
@@ -36,7 +35,7 @@ public class ApiException extends CommonException {
     
     // 静态方法，支持字符串模板
     public static ApiException of(String message, Object... args) {
-        return new ApiException(MessageFormat.format(message, args));
+        return new ApiException(StringFormat.of(message, args));
     }
     
     public static ApiException of(ResultCode resultCode) {
@@ -44,6 +43,6 @@ public class ApiException extends CommonException {
     }
     
     public static ApiException of(int code, String message, Object... args) {
-        return new ApiException(code, MessageFormat.format(message, args));
+        return new ApiException(code, StringFormat.of(message, args));
     }
 }

@@ -1,8 +1,7 @@
 package com.wkclz.core.exception;
 
 import com.wkclz.core.enums.ResultCode;
-
-import java.text.MessageFormat;
+import com.wkclz.tool.utils.StringFormat;
 
 /**
  * 资源未找到异常类
@@ -36,7 +35,7 @@ public class NotFoundException extends CommonException {
     
     // 静态方法，支持字符串模板
     public static NotFoundException of(String message, Object... args) {
-        return new NotFoundException(MessageFormat.format(message, args));
+        return new NotFoundException(StringFormat.of(message, args));
     }
     
     public static NotFoundException of(ResultCode resultCode) {
@@ -44,6 +43,6 @@ public class NotFoundException extends CommonException {
     }
     
     public static NotFoundException of(int code, String message, Object... args) {
-        return new NotFoundException(code, MessageFormat.format(message, args));
+        return new NotFoundException(code, StringFormat.of(message, args));
     }
 }

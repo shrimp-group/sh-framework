@@ -1,8 +1,7 @@
 package com.wkclz.core.exception;
 
 import com.wkclz.core.enums.ResultCode;
-
-import java.text.MessageFormat;
+import com.wkclz.tool.utils.StringFormat;
 
 /**
  * 未授权异常类
@@ -36,7 +35,7 @@ public class UnauthorizedException extends CommonException {
     
     // 静态方法，支持字符串模板
     public static UnauthorizedException of(String message, Object... args) {
-        return new UnauthorizedException(MessageFormat.format(message, args));
+        return new UnauthorizedException(StringFormat.of(message, args));
     }
     
     public static UnauthorizedException of(ResultCode resultCode) {
@@ -44,6 +43,6 @@ public class UnauthorizedException extends CommonException {
     }
     
     public static UnauthorizedException of(int code, String message, Object... args) {
-        return new UnauthorizedException(code, MessageFormat.format(message, args));
+        return new UnauthorizedException(code, StringFormat.of(message, args));
     }
 }

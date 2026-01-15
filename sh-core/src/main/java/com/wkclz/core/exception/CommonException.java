@@ -1,8 +1,7 @@
 package com.wkclz.core.exception;
 
 import com.wkclz.core.enums.ResultCode;
-
-import java.text.MessageFormat;
+import com.wkclz.tool.utils.StringFormat;
 
 /**
  * 业务异常基类
@@ -43,7 +42,7 @@ public class CommonException extends RuntimeException {
     
     // 静态方法，支持字符串模板
     public static CommonException of(String message, Object... args) {
-        return new CommonException(MessageFormat.format(message, args));
+        return new CommonException(StringFormat.of(message, args));
     }
     
     public static CommonException of(ResultCode resultCode) {
@@ -51,7 +50,7 @@ public class CommonException extends RuntimeException {
     }
     
     public static CommonException of(int code, String message, Object... args) {
-        return new CommonException(code, MessageFormat.format(message, args));
+        return new CommonException(code, StringFormat.of(message, args));
     }
     
     public int getCode() {

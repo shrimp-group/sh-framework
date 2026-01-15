@@ -1,8 +1,7 @@
 package com.wkclz.core.exception;
 
 import com.wkclz.core.enums.ResultCode;
-
-import java.text.MessageFormat;
+import com.wkclz.tool.utils.StringFormat;
 
 /**
  * 用户异常类
@@ -36,7 +35,7 @@ public class UserException extends CommonException {
     
     // 静态方法，支持字符串模板
     public static UserException of(String message, Object... args) {
-        return new UserException(MessageFormat.format(message, args));
+        return new UserException(StringFormat.of(message, args));
     }
     
     public static UserException of(ResultCode resultCode) {
@@ -44,6 +43,6 @@ public class UserException extends CommonException {
     }
     
     public static UserException of(int code, String message, Object... args) {
-        return new UserException(code, MessageFormat.format(message, args));
+        return new UserException(code, StringFormat.of(message, args));
     }
 }

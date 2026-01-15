@@ -33,11 +33,11 @@ public enum DataTypeEnum {
     LONGTEXT("String", "string", "TEXTAREA"),
     JSON("String", "string", "TEXTAREA"),
 
-    TIME("Date", "number", "NUMBER"),
-    DATE("Date", "date", "DATE"),
-    DATETIME("Date", "datetime", "DATETIME"),
-    TIMESTAMP("Date", "number", "NUMBER"),
-    YEAR("Date", "number", "NUMBER"),
+    TIME("LocalDateTime", "number", "NUMBER"),
+    DATE("LocalDateTime", "date", "DATE"),
+    DATETIME("LocalDateTime", "datetime", "DATETIME"),
+    TIMESTAMP("LocalDateTime", "number", "NUMBER"),
+    YEAR("LocalDateTime", "number", "NUMBER"),
 
     DECIMAL("BigDecimal", "number", "NUMBER"),
     NUMERIC("BigDecimal", "number", "NUMBER"),

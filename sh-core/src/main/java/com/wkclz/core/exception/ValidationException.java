@@ -1,8 +1,7 @@
 package com.wkclz.core.exception;
 
 import com.wkclz.core.enums.ResultCode;
-
-import java.text.MessageFormat;
+import com.wkclz.tool.utils.StringFormat;
 
 /**
  * 数据验证异常类
@@ -36,7 +35,7 @@ public class ValidationException extends CommonException {
     
     // 静态方法，支持字符串模板
     public static ValidationException of(String message, Object... args) {
-        return new ValidationException(MessageFormat.format(message, args));
+        return new ValidationException(StringFormat.of(message, args));
     }
     
     public static ValidationException of(ResultCode resultCode) {
@@ -44,6 +43,6 @@ public class ValidationException extends CommonException {
     }
     
     public static ValidationException of(int code, String message, Object... args) {
-        return new ValidationException(code, MessageFormat.format(message, args));
+        return new ValidationException(code, StringFormat.of(message, args));
     }
 }

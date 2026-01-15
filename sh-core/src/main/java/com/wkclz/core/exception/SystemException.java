@@ -1,8 +1,7 @@
 package com.wkclz.core.exception;
 
 import com.wkclz.core.enums.ResultCode;
-
-import java.text.MessageFormat;
+import com.wkclz.tool.utils.StringFormat;
 
 /**
  * 系统异常类
@@ -36,7 +35,7 @@ public class SystemException extends CommonException {
     
     // 静态方法，支持字符串模板
     public static SystemException of(String message, Object... args) {
-        return new SystemException(MessageFormat.format(message, args));
+        return new SystemException(StringFormat.of(message, args));
     }
     
     public static SystemException of(ResultCode resultCode) {
@@ -44,6 +43,6 @@ public class SystemException extends CommonException {
     }
     
     public static SystemException of(int code, String message, Object... args) {
-        return new SystemException(code, MessageFormat.format(message, args));
+        return new SystemException(code, StringFormat.of(message, args));
     }
 }

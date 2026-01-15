@@ -18,6 +18,7 @@ import java.util.Map;
 public class DbEntityProperty implements Serializable {
 
     private final static List<String> BASE_IGNORE_FIELDS = List.of("ids");
+    private final static List<String> BLOB_FIELDS = List.of("TEXT", "MEDIUMTEXT", "TINYTEXT", "LONGTEXT", "JSON");
     private final static List<String> INSERT_IGNORE_FIELDS = List.of("id", "createTime", "updateTime", "version");
     private final static List<String> UPDATE_IGNORE_FIELDS = List.of("id", "createBy", "createTime", "updateTime", "version");
 
@@ -30,8 +31,12 @@ public class DbEntityProperty implements Serializable {
     public static final String UPDATE_BY_FIELD = "update_by";
 
     private String tableName;
+    private String tableComment;
     private String entityName;
+    private String entityNameLowerCase;
     private Class<?> entityClass;
+
+
     private List<JavaField> fields;
     private JavaField idField;
     private JavaField idsField;
@@ -43,6 +48,7 @@ public class DbEntityProperty implements Serializable {
     private List<JavaField> selectObjFields;
     private List<JavaField> selectListFields;
 
+
     public static DbEntityProperty createInstance(Class<?> entityClass) {
         if (entityClass == null) {
             return null;
@@ -51,6 +57,7 @@ public class DbEntityProperty implements Serializable {
         DbEntityProperty property = new DbEntityProperty();
         property.setEntityClass(entityClass);
         property.setEntityName(entityClass.getSimpleName());
+        property.setEntityNameLowerCase(StringUtil.firstChatToLowerCase(property.getEntityName()));
         property.setTableName(StringUtil.camelToUnderline(property.getEntityName()));
         property.setFields(getProperty(entityClass));
 
@@ -144,7 +151,7 @@ public class DbEntityProperty implements Serializable {
             javaField.setColumnName(StringUtil.camelToUnderline(field.getName()));
             javaField.setField(field);
             javaField.setClazz(field.getType());
-            
+
             // 获取getter和setter方法
             try {
                 String fieldName = field.getName();
