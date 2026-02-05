@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -159,12 +160,13 @@ public abstract class BaseService<T extends BaseEntity, M extends BaseMapper<T>>
         // 初始化分页参数
         entity.init();
 
-        // 查询数据列表
-        List<T> records = mapper.selectByEntityWithLimit(entity);
-
         // 查询总数据量
         long total = mapper.selectCountByEntity(entity);
-        
+        // 查询数据列表
+        List<T> records = total == 0 ?
+                new ArrayList<>() :
+                mapper.selectByEntityWithLimit(entity);
+
         // 设置总数据量到实体对象，用于PageData转换
         entity.setCount(total);
         entity.setTotal(total);

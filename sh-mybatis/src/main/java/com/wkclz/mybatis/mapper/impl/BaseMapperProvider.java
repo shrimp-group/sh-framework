@@ -9,6 +9,7 @@ import org.apache.ibatis.builder.annotation.ProviderContext;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -140,14 +141,14 @@ public class BaseMapperProvider {
         }
 
         // 处理时间范围查询
-        Object timeFrom = getFieldValue(entity, "timeFrom");
+        LocalDateTime timeFrom = entity.getTimeFrom();
         if (timeFrom != null) {
             whereClause.append(" AND ");
             whereClause.append(DbEntityProperty.CREATE_TIME_FIELD);
             whereClause.append(" >= #{timeFrom}");
         }
 
-        Object timeTo = getFieldValue(entity, "timeTo");
+        LocalDateTime timeTo = entity.getTimeTo();
         if (timeTo != null) {
             whereClause.append(" AND ");
             whereClause.append(DbEntityProperty.CREATE_TIME_FIELD);

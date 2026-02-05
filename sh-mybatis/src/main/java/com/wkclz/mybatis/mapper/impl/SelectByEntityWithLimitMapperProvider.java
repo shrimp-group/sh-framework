@@ -32,8 +32,8 @@ public class SelectByEntityWithLimitMapperProvider extends BaseMapperProvider {
         sql.append("SELECT ").append(selectFieldsStr).append(" FROM ").append(tableName).append(" WHERE ").append(whereClause);
         
         // 处理排序
-        Object orderBy = getFieldValue(entity, "orderBy");
-        if (orderBy != null && !((String) orderBy).trim().isEmpty()) {
+        String orderBy = entity.getOrderBy();
+        if (orderBy != null && !(orderBy).trim().isEmpty()) {
             sql.append(" ORDER BY ").append(orderBy);
         } else {
             sql.append(" ORDER BY ").append(primaryKey).append(" DESC");
