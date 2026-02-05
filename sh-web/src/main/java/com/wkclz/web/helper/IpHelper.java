@@ -141,6 +141,36 @@ public class IpHelper {
         return ips;
     }
 
+    public static boolean isInnerAddress(String ip) {
+        if (ip == null || ip.isEmpty()) {
+            return true;
+        }
+        try {
+            InetAddress addr = InetAddress.getByName(ip);
+            // 所有地址通用：回环、未指定、多播
+            if (addr.isLoopbackAddress() || addr.isAnyLocalAddress() || addr.isMulticastAddress()) {
+                return true;
+            }
+            // IPv4：私有 + 链路本地（InetAddress 已支持）
+            if (addr instanceof Inet4Address) {
+                return addr.isSiteLocalAddress() || addr.isLinkLocalAddress();
+            }
+            // IPv6：链路本地 + 唯一本地地址 (ULA: fc00::/7)
+            if (addr instanceof Inet6Address) {
+                if (addr.isLinkLocalAddress()) {
+                    return true;
+                }
+                // 检查 ULA: fc00::/7 → 第一个字节高7位是 1111110x (0xFC or 0xFD)
+                byte[] bytes = addr.getAddress();
+                return (bytes[0] & (byte) 0xFE) == (byte) 0xFC;
+            }
+            return false;
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("Invalid IP address: " + ip, e);
+        }
+    }
+
+
     private static class NetworkInfterfaceParam {
         private String name;
         private String hostAddress;
