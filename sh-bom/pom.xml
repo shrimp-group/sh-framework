@@ -16,6 +16,7 @@
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
+        <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 
@@ -39,11 +40,17 @@
         <pagehelper-spring-boot-starter.version>2.1.1</pagehelper-spring-boot-starter.version>
         <aop.version>3.5.9</aop.version>
 
+        <s3.version>2.41.14</s3.version>
+        <aliyun-sdk-oss.version>3.18.4</aliyun-sdk-oss.version>
+        <alipay-sdk-java.version>4.40.630.ALL</alipay-sdk-java.version>
+        <rhino.version>1.9.0</rhino.version>
+
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
+
 
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -215,6 +222,28 @@
                 <groupId>io.lettuce</groupId>
                 <artifactId>lettuce-core</artifactId>
                 <version>${lettuce-core.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>s3</artifactId>
+                <version>${s3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aliyun.oss</groupId>
+                <artifactId>aliyun-sdk-oss</artifactId>
+                <version>${aliyun-sdk-oss.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay-sdk-java</artifactId>
+                <version>${alipay-sdk-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mozilla</groupId>
+                <artifactId>rhino</artifactId>
+                <version>${rhino.version}</version>
             </dependency>
 
         </dependencies>
