@@ -27,7 +27,7 @@ public class FileUtil {
     }
     public static File getTempPathFile(String customPath) {
         Object o = System.getProperties().get("user.dir");
-        String savePath =  o.toString() + "/temp/" + (customPath == null ? "": customPath+"/");
+        String savePath =  o.toString() + "/tmp/" + (customPath == null ? "": customPath+"/");
         //文件保存位置
         File saveDir = new File(savePath);
         if (!saveDir.exists()) {
