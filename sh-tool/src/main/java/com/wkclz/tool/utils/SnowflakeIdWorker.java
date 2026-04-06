@@ -42,9 +42,9 @@ public class SnowflakeIdWorker {
     // 数据中心ID(0~31)
     private static AtomicLong datacenterId = new AtomicLong();
     // 毫秒内序列(0~4095)
-    private static long sequence = 0L;
+    private long sequence = 0L;
     // 上次生成ID的时间截
-    private static long lastTimestamp = -1L;
+    private long lastTimestamp = -1L;
     //==============================Constructors=====================================
 
     /**

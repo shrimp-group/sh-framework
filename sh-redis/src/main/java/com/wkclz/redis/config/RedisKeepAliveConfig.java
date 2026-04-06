@@ -12,7 +12,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import java.time.Duration;
 
 @Configuration
-public class RedisOeeyAliveConfig {
+public class RedisKeepAliveConfig {
 
     @Autowired
     private RedisConfig redisConfig;

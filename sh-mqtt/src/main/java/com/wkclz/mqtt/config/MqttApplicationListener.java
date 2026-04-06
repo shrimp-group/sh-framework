@@ -29,7 +29,7 @@ public class MqttApplicationListener implements ApplicationListener<ContextRefre
         if (event.getApplicationContext().getParent() != null) {
             return;
         }
-        MqttSubcribe.subscribeTopics(mqttAsyncClient);
+        MqttSubscribe.subscribeTopics(mqttAsyncClient);
         logger.info("MqConsumer Listened.");
     }
 

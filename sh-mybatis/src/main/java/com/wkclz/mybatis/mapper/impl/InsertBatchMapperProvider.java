@@ -23,6 +23,11 @@ public class InsertBatchMapperProvider extends BaseMapperProvider {
         if (entities == null || entities.isEmpty()) {
             return "";
         }
+        for (BaseEntity entity : entities) {
+            if (entity.getSort() == null) {
+                entity.setSort(0);
+            }
+        }
         BaseEntity firstEntity = entities.get(0);
         DbEntityProperty property = getDbEntityProperty(firstEntity.getClass());
         String tableName = property.getTableName();

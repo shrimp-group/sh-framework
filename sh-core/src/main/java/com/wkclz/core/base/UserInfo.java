@@ -20,6 +20,9 @@ public class UserInfo implements Serializable {
     @Desc("用户姓名")
     private String nickname;
 
+    @Desc("手机号(脱敏)")
+    private String mobile;
+
     @Desc("租户编码")
     private String tenantCode;
 

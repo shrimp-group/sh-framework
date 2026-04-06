@@ -32,7 +32,7 @@ public class DynamicDataSource extends AbstractShrimpRoutingDataSource {
         if (key == null) {
             return null;
         }
-        log.info("determineCurrentLookupKey: {}", key);
+        log.debug("determineCurrentLookupKey: {}", key);
 
         // 存在，并在有效期内
         Long latest = hasCreateDataSource.get(key);
@@ -56,9 +56,9 @@ public class DynamicDataSource extends AbstractShrimpRoutingDataSource {
                 }
             }
 
-            // 使用异步线程。否则使用默认数据源管理三方数据的场景下，会进入死循环
+            // 使用异步线程。否则使用默认数据源管理第三方数据的场景下，会进入死循环
             CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
-                // 若想用多数据源，必需注入此工厂
+                // 若想用多数据源，必须注入此工厂
                 DynamicDataSourceFactory dynamicDataSourceFactory = SpringContextHolder.getBean(DynamicDataSourceFactory.class);
                 // 只返回基础数据
                 DataSourceInfo ds = dynamicDataSourceFactory.createDataSource(key);
@@ -76,7 +76,7 @@ public class DynamicDataSource extends AbstractShrimpRoutingDataSource {
                 try {
                     dataSource = DruidDataSourceFactory.createDataSource(map);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    throw SystemException.of("Failed to create dataSource for key: {}", key, e);
                 }
                 /*
                 使用默认参数的方案
@@ -97,7 +97,7 @@ public class DynamicDataSource extends AbstractShrimpRoutingDataSource {
         }
     }
 
-    public void destoryDataSource(String key) {
+    public void destroyDataSource(String key) {
         // TODO 在数据源变更时，需要销毁旧数据源的连接池
     }
 

@@ -18,9 +18,9 @@ import java.util.Set;
  * @date 2022-04-08
  */
 
-public class MqttSubcribe {
+public class MqttSubscribe {
 
-    private static final Logger logger = LoggerFactory.getLogger(MqttSubcribe.class);
+    private static final Logger logger = LoggerFactory.getLogger(MqttSubscribe.class);
 
     public static void subscribeTopics(MqttAsyncClient mqttClient) {
         Set<String> parentTopicSet = MqttHandlerFactory.getParentTopicSet();

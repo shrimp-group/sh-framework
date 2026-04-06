@@ -39,8 +39,8 @@ public class ErrorHandler {
     private static final Logger logger = LoggerFactory.getLogger(ErrorHandler.class);
 
     // 记录请求信息，方便在异常时获取并提示
-    public static final String REQUEST_LOG = "HTTP:REQUET_LOG";
-    public static final String REQUEST_ERROR = "HTTP:REQUET_ERROR";
+    public static final String REQUEST_LOG = "HTTP:REQUEST_LOG";
+    public static final String REQUEST_ERROR = "HTTP:REQUEST_ERROR";
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public R httpHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e, HttpServletRequest request, HttpServletResponse response) {
@@ -167,8 +167,10 @@ public class ErrorHandler {
             return;
         }
 
-        // 请求 Filter 拦截器可能记录了请求信息，若存在，则打印出来
-        Object requestLog = LocalThreadHelper.get(REQUEST_LOG);
+        String applicationName = bean.getApplicationName();
+        String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+        String subject = String.format("【%s】日志异常警告@%s: %s", applicationName, now, errorMsg);
+        String html = buildHtml(errorMsg, now, e, request, bean);
 
         try {
             MailUtil mu = new MailUtil();
@@ -177,11 +179,26 @@ public class ErrorHandler {
             mu.setEmailPassword(bean.getAlarmEmailPassword());
             mu.setToEmails(bean.getAlarmEmailTo());
 
-            String applicationName = bean.getApplicationName();
-            String now = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
-            String subject = "【"+applicationName+"】日志异常警告@" + now + ": " + errorMsg;
+            mu.setSubject(subject);
+            mu.setContent(html);
+            mu.sendEmail();
+        } catch (Exception exception) {
+            logger.error("发送邮件异常: {}", exception.getMessage());
+        }
 
-            String html = """
+    }
+
+
+
+    private static String buildHtml(String errorMsg, String now, Exception e, HttpServletRequest request, SystemConfig bean) {
+        String method = request.getMethod();
+        String uri = request.getRequestURI();
+        String applicationName = bean.getApplicationName();
+
+        // 请求 Filter 拦截器可能记录了请求信息，若存在，则打印出来
+        Object requestLog = LocalThreadHelper.get(REQUEST_LOG);
+
+        String html = """
             <html>
                 <body>
                     <div>系统: ${applicationName}</div>
@@ -195,20 +212,13 @@ public class ErrorHandler {
                 </body>
             </html>
             """;
-            html = html.replace("${applicationName}", applicationName);
-            html = html.replace("${now}", now);
-            html = html.replace("${url}", method + ":" + uri);
-            html = html.replace("${requestLog}", requestLog == null ? "无请求详情" : JSONUtil.toJsonPrettyStr(requestLog));
-            html = html.replace("${errorMsg}", errorMsg);
-            html = html.replace("${stackTrace}", e.getMessage() + "<br />" + ExceptionUtils.getStackTrace(e));
-
-            mu.setSubject(subject);
-            mu.setContent(html);
-            mu.sendEmail();
-        } catch (Exception exception) {
-            logger.error("发送邮件异常: {}", exception.getMessage());
-        }
-
+        html = html.replace("${applicationName}", applicationName);
+        html = html.replace("${now}", now);
+        html = html.replace("${url}", method + ":" + uri);
+        html = html.replace("${requestLog}", requestLog == null ? "无请求详情" : JSONUtil.toJsonPrettyStr(requestLog));
+        html = html.replace("${errorMsg}", errorMsg);
+        html = html.replace("${stackTrace}", e.getMessage() + "<br />" + ExceptionUtils.getStackTrace(e));
+        return html;
     }
 
 }

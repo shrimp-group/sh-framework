@@ -1,0 +1,153 @@
+package com.wkclz.tool.utils;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
+
+import java.io.IOException;
+import java.net.*;
+import java.util.*;
+
+@Slf4j
+public class NetworkUtil {
+
+    public static String getServerIp() {
+        List<NetworkInterfaceParam> ipList = new ArrayList<>();
+        //得到所有接口
+        Enumeration<NetworkInterface> interfaces = null;
+        try {
+            interfaces = NetworkInterface.getNetworkInterfaces();
+        } catch (SocketException e) {
+            log.error(e.getMessage(), e);
+        }
+        if (interfaces == null) {
+            return null;
+        }
+        while (interfaces.hasMoreElements()) {
+            //得到单个接口
+            NetworkInterface nextInterface = interfaces.nextElement();
+            Enumeration<InetAddress> inetAddresses = nextInterface.getInetAddresses();
+            while (inetAddresses.hasMoreElements()) {
+                //得到单个IP
+                InetAddress inetAddress = inetAddresses.nextElement();
+
+                //确定要是 ipv4的地址
+                if (inetAddress instanceof Inet4Address) {
+                    NetworkInterfaceParam param = new NetworkInterfaceParam();
+                    param.setName(nextInterface.getName());
+                    param.setHostAddress(inetAddress.getHostAddress());
+                    ipList.add(param);
+                }
+            }
+        }
+        List<NetworkInterfaceParam> usefulInterface = ipList.stream().filter(ip -> {
+            String name = ip.getName();
+            if ("lo".equals(name)) {
+                return false;
+            }
+            return !name.contains("docker");
+        }).toList();
+        if (!CollectionUtils.isEmpty(usefulInterface)) {
+            return usefulInterface.get(0).getHostAddress();
+        }
+        return ipList.get(0).getHostAddress();
+    }
+
+    public static List<Map<String, Object>> getServerIps() {
+        List<Map<String, Object>> ips = new ArrayList<>();
+        //得到所有接口
+        Enumeration<NetworkInterface> interfaces = null;
+        try {
+            interfaces = NetworkInterface.getNetworkInterfaces();
+        } catch (SocketException e) {
+            log.error(e.getMessage(), e);
+        }
+        if (interfaces == null) {
+            return Collections.emptyList();
+        }
+        try {
+            while (interfaces.hasMoreElements()) {
+                //得到单个接口
+                NetworkInterface nextInterface = interfaces.nextElement();
+                Enumeration<InetAddress> inetAddresses = nextInterface.getInetAddresses();
+                while (inetAddresses.hasMoreElements()) {
+                    //得到单个IP
+                    InetAddress inetAddress = inetAddresses.nextElement();
+
+                    Map<String, Object> ip = new HashMap<>();
+                    ips.add(ip);
+                    ip.put("name", nextInterface.getName());
+                    ip.put("displayName", nextInterface.getDisplayName());
+                    ip.put("hostAddress", inetAddress.getHostAddress());
+                    ip.put("address", inetAddress.getAddress());
+                    ip.put("canonicalHostName", inetAddress.getCanonicalHostName());
+                    ip.put("hostName", inetAddress.getHostName());
+                    ip.put("reachable", inetAddress.isReachable(100));
+                    ip.put("loopbackAddress", inetAddress.isLoopbackAddress());
+                    ip.put("linkLocalAddress", inetAddress.isLinkLocalAddress());
+                    ip.put("anyLocalAddress", inetAddress.isAnyLocalAddress());
+                    ip.put("str", inetAddress.toString());
+                    ip.put("mcGlobal", inetAddress.isMCGlobal());
+                    ip.put("mcLinkLocal", inetAddress.isMCLinkLocal());
+                    ip.put("mcNodeLocal", inetAddress. isMCNodeLocal());
+                    ip.put("mcSiteLocal", inetAddress.isMCSiteLocal());
+                    ip.put("mcOrgLocal", inetAddress.isMCOrgLocal());
+                }
+            }
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+        return ips;
+    }
+
+    public static boolean isInnerAddress(String ip) {
+        if (ip == null || ip.isEmpty()) {
+            return true;
+        }
+        try {
+            InetAddress addr = InetAddress.getByName(ip);
+            // 所有地址通用：回环、未指定、多播
+            if (addr.isLoopbackAddress() || addr.isAnyLocalAddress() || addr.isMulticastAddress()) {
+                return true;
+            }
+            // IPv4：私有 + 链路本地（InetAddress 已支持）
+            if (addr instanceof Inet4Address) {
+                return addr.isSiteLocalAddress() || addr.isLinkLocalAddress();
+            }
+            // IPv6：链路本地 + 唯一本地地址 (ULA: fc00::/7)
+            if (addr instanceof Inet6Address) {
+                if (addr.isLinkLocalAddress()) {
+                    return true;
+                }
+                // 检查 ULA: fc00::/7 → 第一个字节高7位是 1111110x (0xFC or 0xFD)
+                byte[] bytes = addr.getAddress();
+                return (bytes[0] & (byte) 0xFE) == (byte) 0xFC;
+            }
+            return false;
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("Invalid IP address: " + ip, e);
+        }
+    }
+
+
+    private static class NetworkInterfaceParam {
+        private String name;
+        private String hostAddress;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getHostAddress() {
+            return hostAddress;
+        }
+
+        public void setHostAddress(String hostAddress) {
+            this.hostAddress = hostAddress;
+        }
+    }
+
+}

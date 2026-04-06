@@ -10,6 +10,9 @@ import java.util.List;
 @Data
 public class BaseEntity extends DbColumnEntity {
 
+    private static final long DEFAULT_CURRENT = 1L;
+    private static final long DEFAULT_SIZE = 10L;
+
     @Desc("用户编码")
     private String userCode;
     @Desc("租户编码")
@@ -54,18 +57,18 @@ public class BaseEntity extends DbColumnEntity {
 
     public void init() {
         if (this.current == null || this.current < 1) {
-            this.current = 1L;
+            this.current = DEFAULT_CURRENT;
         }
         if (this.size == null || this.size < 1) {
-            this.size = 10L;
+            this.size = DEFAULT_SIZE;
         }
-        this.offset = (this.current -1 ) * this.size;
+        this.offset = (this.current - 1) * this.size;
     }
 
 
     public static <T extends BaseEntity> T copy(T source, T target) {
         T newTarget = checkSourceAndTarget(source, target);
-        if(newTarget == null) {
+        if (newTarget == null) {
             return null;
         }
         BeanUtil.cpAll(source, newTarget);
@@ -74,7 +77,7 @@ public class BaseEntity extends DbColumnEntity {
 
     public static <T extends BaseEntity> T copyIfNotNull(T source, T target) {
         T newTarget = checkSourceAndTarget(source, target);
-        if(newTarget == null) {
+        if (newTarget == null) {
             return null;
         }
         BeanUtil.cpNotNull(source, newTarget);

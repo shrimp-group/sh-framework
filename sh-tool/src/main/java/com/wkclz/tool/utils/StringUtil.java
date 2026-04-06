@@ -6,14 +6,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Description:
- * Created: wangkaicun @ 2018-03-18 下午1:50
+ * 字符串工具类
+ * 提供字符串转换、格式化等常用操作
+ *
+ * @author wangkaicun
+ * @date 2018-03-18 下午1:50
  */
 public class StringUtil {
 
     private static final char UNDERLINE = '_';
 
-    private static final Pattern PATTERN = Pattern.compile("[\t\r\n]");
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[\t\r\n]");
 
     /**
      * 下划线 转Camel
@@ -101,7 +104,7 @@ public class StringUtil {
     public static Map<String, String> strVar2Map(String str, String separator) {
 
         Map<String, String> varMap = new HashMap<>();
-        if (str == null || "".equalsIgnoreCase(str)) {
+        if (str == null || str.isEmpty()) {
             return varMap;
         }
         String[] variablesArr = str.split(separator);
@@ -145,7 +148,7 @@ public class StringUtil {
     public static String removeSpecialCharacters(String str) {
         String dest = "";
         if (str != null) {
-            Matcher m = PATTERN.matcher(str);
+            Matcher m = WHITESPACE_PATTERN.matcher(str);
             dest = m.replaceAll(" ");
             dest = dest.replaceAll("\\s+", " ");
         }

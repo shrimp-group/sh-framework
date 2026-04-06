@@ -1,12 +1,12 @@
 package com.wkclz.mqtt.config;
 
 import com.wkclz.mqtt.exception.MqttRemoteException;
+import com.wkclz.tool.utils.NetworkUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
@@ -18,22 +18,14 @@ import javax.net.ssl.TrustManagerFactory;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.security.KeyStore;
 import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
 
+@Slf4j
 @Component
 public class MqttConfig {
-
-    private static final Logger logger = LoggerFactory.getLogger(MqttConfig.class);
 
     @Value("${shrimp.cloud.mqtt.enabled:true}")
     private String enabled;
@@ -69,12 +61,12 @@ public class MqttConfig {
     @Bean
     public MqttAsyncClient mqttClient() {
         if (!"true".equals(enabled)) {
-            logger.warn("mqtt is disabled!");
+            log.warn("mqtt is disabled!");
             return null;
         }
 
         if (StringUtils.isBlank(endPoint)) {
-            logger.warn("mqtt: endpoint is empty!");
+            log.warn("mqtt: endpoint is empty!");
             return null;
         }
 
@@ -86,7 +78,7 @@ public class MqttConfig {
             keepAliveInterval = 60;
         }
 
-        String clientId = prefix + "@" + getServerIp();
+        String clientId = prefix + "@" + NetworkUtil.getServerIp();
         MemoryPersistence persistence = new MemoryPersistence();
         try {
             mqttClient = new MqttAsyncClient(getEndPoint(), clientId, persistence);
@@ -111,10 +103,10 @@ public class MqttConfig {
 
             mqttClient.setCallback(new MqttReconnectCallback());
 
-            logger.info("Connecting to broker: " + getEndPoint());
+            log.info("Connecting to broker: " + getEndPoint());
             mqttClient.connect(connOpts);
 
-            logger.info("Connected");
+            log.info("Connected");
         } catch (MqttException me) {
             String msg = String.format("reason: %s, msg: %s, loc: %s, cause: %s",
                 me.getReasonCode(), me.getMessage(), me.getLocalizedMessage(), me.getCause());
@@ -130,15 +122,15 @@ public class MqttConfig {
         @Override
         public void connectComplete(boolean reconnect, String serverUri) {
             if (reconnect) {
-                logger.warn("MqttReconnectCallback: reconnect connectComplete");
-                MqttSubcribe.subscribeTopics(mqttClient);
+                log.warn("MqttReconnectCallback: reconnect connectComplete");
+                MqttSubscribe.subscribeTopics(mqttClient);
             }
         }
 
         @Override
         public void connectionLost(Throwable cause) {
-            logger.error("MqttReconnectCallback: connectionLost");
-            logger.error(cause.getMessage(), cause);
+            log.error("MqttReconnectCallback: connectionLost");
+            log.error(cause.getMessage(), cause);
         }
         @Override
         public void messageArrived(String topic, MqttMessage message) {
@@ -235,38 +227,6 @@ public class MqttConfig {
     public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;
     }
-
-    private static String getServerIp() {
-        Set<String> ipList = new HashSet<>();
-        //得到所有接口
-        Enumeration<NetworkInterface> interfaces = null;
-        try {
-            interfaces = NetworkInterface.getNetworkInterfaces();
-        } catch (SocketException e) {
-            logger.error(e.getMessage(), e);
-        }
-        if (interfaces == null) {
-            return null;
-        }
-        while (interfaces.hasMoreElements()) {
-            //得到单个接口
-            NetworkInterface nextInterface = interfaces.nextElement();
-            Enumeration<InetAddress> inetAddresses = nextInterface.getInetAddresses();
-            while (inetAddresses.hasMoreElements()) {
-                //得到单个IP
-                InetAddress inetAddress = inetAddresses.nextElement();
-                //确定要是 ipv4的地址
-                if (inetAddress instanceof Inet4Address address) {
-                    String ip = address.getHostAddress();
-                    if (!"127.0.0.1".equals(ip)){
-                        ipList.add(ip);
-                    }
-                }
-            }
-        }
-        return ipList.toArray()[0].toString();
-    }
-
 
     // 单向认证
     private static SSLSocketFactory getSingleSocketFactory(InputStream is) {
