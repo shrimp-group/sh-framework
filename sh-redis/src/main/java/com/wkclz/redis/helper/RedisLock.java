@@ -24,7 +24,7 @@ public class RedisLock {
     
     // Lua脚本：释放锁
     private static final String RELEASE_LOCK_SCRIPT = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
-    private DefaultRedisScript<Long> releaseLockScript = null;
+    private volatile DefaultRedisScript<Long> releaseLockScript = null;
     
     /**
      * 初始化释放锁脚本

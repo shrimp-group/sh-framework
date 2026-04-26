@@ -110,10 +110,9 @@ public class ErrorHandler {
         }
 
         String message = e.getMessage();
+        // 安全考虑：不向客户端暴露完整堆栈信息，仅在日志中记录
         if (message == null || message.trim().isEmpty() || "null".equals(message)) {
-            StringWriter out = new StringWriter();
-            e.printStackTrace(new PrintWriter(out));
-            message = out.toString();
+            message = "Internal Server Error";
         }
         printErrorLog(request, response, status, e);
         return R.error(message);
@@ -190,6 +189,17 @@ public class ErrorHandler {
 
 
 
+    private static String escapeHtml(String text) {
+        if (text == null) {
+            return "";
+        }
+        return text.replace("&", "&amp;")
+                   .replace("<", "&lt;")
+                   .replace(">", "&gt;")
+                   .replace("\"", "&quot;")
+                   .replace("'", "&#39;");
+    }
+
     private static String buildHtml(String errorMsg, String now, Exception e, HttpServletRequest request, SystemConfig bean) {
         String method = request.getMethod();
         String uri = request.getRequestURI();
@@ -212,12 +222,12 @@ public class ErrorHandler {
                 </body>
             </html>
             """;
-        html = html.replace("${applicationName}", applicationName);
+        html = html.replace("${applicationName}", escapeHtml(applicationName));
         html = html.replace("${now}", now);
-        html = html.replace("${url}", method + ":" + uri);
-        html = html.replace("${requestLog}", requestLog == null ? "无请求详情" : JSONUtil.toJsonPrettyStr(requestLog));
-        html = html.replace("${errorMsg}", errorMsg);
-        html = html.replace("${stackTrace}", e.getMessage() + "<br />" + ExceptionUtils.getStackTrace(e));
+        html = html.replace("${url}", escapeHtml(method + ":" + uri));
+        html = html.replace("${requestLog}", requestLog == null ? "无请求详情" : escapeHtml(JSONUtil.toJsonPrettyStr(requestLog)));
+        html = html.replace("${errorMsg}", escapeHtml(errorMsg));
+        html = html.replace("${stackTrace}", escapeHtml(e.getMessage()) + "<br />" + escapeHtml(ExceptionUtils.getStackTrace(e)));
         return html;
     }
 

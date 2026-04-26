@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -134,19 +135,23 @@ public class CompressUtil {
             throw new RuntimeException(srcFile.getPath() + "所指文件不存在");
         }
         // 开始解压
+        Path destDir = Path.of(destDirPath).normalize();
         try (ZipFile zipFile = new ZipFile(srcFile)) {
             Enumeration<?> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = (ZipEntry) entries.nextElement();
-                logger.info("解压 {}", entry.getName());
+                logger.debug("解压 {}", entry.getName());
+                Path destPath = destDir.resolve(entry.getName()).normalize();
                 // 如果是文件夹，就创建个文件夹
+                if (!destPath.startsWith(destDir)) {
+                    throw new RuntimeException("Zip entry outside target dir: " + entry.getName());
+                }
                 if (entry.isDirectory()) {
-                    String dirPath = destDirPath + "/" + entry.getName();
-                    File dir = new File(dirPath);
+                    File dir = destPath.toFile();
                     dir.mkdirs();
                 } else {
                     // 如果是文件，就先创建一个文件，然后用io流把内容copy过去
-                    File targetFile = new File(destDirPath + "/" + entry.getName());
+                    File targetFile = destPath.toFile();
                     // 保证这个文件的父文件夹必须要存在
                     if (!targetFile.getParentFile().exists()) {
                         targetFile.getParentFile().mkdirs();

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.SecureRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,8 +58,8 @@ public class RedisIdGenerator {
                         byte[] ipBytes = addr.getAddress();
                         machineId = ((ipBytes[2] & 0xFF) << 8 | (ipBytes[3] & 0xFF)) & MAX_MACHINE_ID;
                     } catch (UnknownHostException e) {
-                        // 如果无法获取IP地址，使用随机数
-                        machineId = (long) (Math.random() * MAX_MACHINE_ID);
+                        // 如果无法获取IP地址，使用安全随机数
+                        machineId = new SecureRandom().nextLong(MAX_MACHINE_ID + 1);
                     }
                     log.info("RedisIdGenerator machine id: {}", machineId);
                 }
@@ -70,10 +71,10 @@ public class RedisIdGenerator {
     private static final String ID_GENERATOR_KEY_PREFIX = "id:generator:";
     
     // 上次生成ID的时间戳（用于处理时间回拨）
-    private long lastTimestamp = -1L;
-    
+    private volatile long lastTimestamp = -1L;
+
     // 上次生成的序列号
-    private long lastSequence = 0L;
+    private volatile long lastSequence = 0L;
     
     // 62进制字符集
     private static final char[] BASE62_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();

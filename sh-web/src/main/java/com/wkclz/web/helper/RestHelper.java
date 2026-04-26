@@ -1,7 +1,9 @@
 package com.wkclz.web.helper;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.wkclz.core.annotation.ApiDesc;
 import com.wkclz.core.annotation.Desc;
+import com.wkclz.core.annotation.FieldDesc;
 import com.wkclz.core.annotation.Router;
 import com.wkclz.tool.utils.ClassUtil;
 import com.wkclz.tool.utils.StringUtil;
@@ -154,8 +156,13 @@ public class RestHelper {
             }
             // 中文含义
             if (Desc.class == annotation.annotationType()) {
-                Desc descAnnto = (Desc) annotation;
-                desc = descAnnto.value();
+                Desc descAnno = (Desc) annotation;
+                desc = descAnno.value();
+            }
+            // 中文含义
+            if (ApiDesc.class == annotation.annotationType()) {
+                ApiDesc descAnno = (ApiDesc) annotation;
+                desc = descAnno.value();
             }
         }
 
@@ -228,20 +235,23 @@ public class RestHelper {
 
                 // 填充 desc
                 for (Field field : fields) {
-                    String val = "";
-                    Object o = field.get(val);
+                    Object o = field.get(null);
                     if (o == null) {
                         continue;
                     }
                     Desc desc = field.getAnnotation(Desc.class);
-                    if (desc == null) {
-                        continue;
+                    FieldDesc fieldDesc = field.getAnnotation(FieldDesc.class);
+
+                    String value = null;
+                    if (desc != null) {
+                        value = desc.value();
                     }
-                    String value = desc.value();
+                    if (fieldDesc != null) {
+                        value = fieldDesc.value();
+                    }
                     if (StringUtils.isBlank(value)) {
                         continue;
                     }
-
 
                     String uri = o.toString();
                     String fullUri = prefix + uri;

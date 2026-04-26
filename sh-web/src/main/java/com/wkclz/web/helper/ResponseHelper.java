@@ -8,21 +8,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 public class ResponseHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(ResponseHelper.class);
 
     public static boolean responseError(HttpServletResponse rep, R r) {
-        try {
+        try (PrintWriter writer = rep.getWriter()) {
             r.setRequestTime(null);
             r.setResponseTime(null);
             r.setCostTime(null);
             String string = JSON.toJSONString(r);
             rep.setHeader("Content-Type", "application/json;charset=UTF-8");
-            rep.getWriter().print(string);
-            rep.getWriter().close();
+            writer.print(string);
             return true;
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
@@ -31,30 +32,31 @@ public class ResponseHelper {
     }
 
 
-    public static void resopnseExcel(HttpServletResponse response, String file) {
-        resopnseExcel(response, new File(file));
+    public static void responseExcel(HttpServletResponse response, String file) {
+        responseExcel(response, new File(file));
     }
-    public static void resopnseExcel(HttpServletResponse response, File file) {
+    public static void responseExcel(HttpServletResponse response, File file) {
         if (response == null || file == null) {
             throw SystemException.of("response and file can not be null!");
         }
 
         String fileName = file.getName();
-        fileName = new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
 
-        String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+        // 使用 RFC 5987 编码文件名，支持中文
+        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replace("+", "%20");
+
         logger.info("the excel file is in {}", file.getPath());
 
         response.setContentType("application/x-excel");
         response.setCharacterEncoding("UTF-8");
-        response.setHeader("Content-Disposition", "attachment; filename=" + fileName + "." + suffix);
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFileName);
         response.setHeader("Content-Length", String.valueOf(file.length()));
 
         try (
-            InputStream in = new FileInputStream(file);
+            InputStream in = Files.newInputStream(file.toPath());
             OutputStream fops = response.getOutputStream();
         ) {
-            byte[] bytes = new byte[1024];
+            byte[] bytes = new byte[8192];
             int len;
             while ((len = in.read(bytes)) != -1) {
                 fops.write(bytes, 0, len);

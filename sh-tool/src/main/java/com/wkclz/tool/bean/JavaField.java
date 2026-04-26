@@ -17,6 +17,7 @@ public class JavaField implements Serializable {
     private Field field;
     private Method getter;
     private Method setter;
+    private boolean notNull;
     private Class<?> clazz;
 
 }

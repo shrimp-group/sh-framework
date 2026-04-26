@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.Iterator;
 
 public class MapUtil {
 
@@ -22,13 +23,14 @@ public class MapUtil {
      * @return
      * @throws Exception
      */
+    @SafeVarargs
     public static <T> LinkedHashMap<String, Object> obj2Map(T... objs) {
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 
         // 反射方式 obj2Map
         for (T obj : objs) {
             // 考虑父类存在的情况
-            Class superClass = obj.getClass().getSuperclass();
+            Class<?> superClass = obj.getClass().getSuperclass();
             if (superClass != null) {
                 Field[] superClassFields = superClass.getDeclaredFields();
                 for (Field field : superClassFields) {
@@ -87,6 +89,7 @@ public class MapUtil {
      * @return
      * @throws Exception
      */
+    @SuppressWarnings("rawtypes")
     public static <M extends HashMap, T> List<T> map2ObjList(List<M> maps, Class<T> clazz) {
         if (maps == null || maps.isEmpty()) {
             return Collections.emptyList();
@@ -105,6 +108,7 @@ public class MapUtil {
      * @return
      * @throws Exception
      */
+    @SuppressWarnings("rawtypes")
     public static <T> T map2Obj(Map map, Class<T> clazz) {
         if (map == null) {
             return null;
@@ -141,12 +145,13 @@ public class MapUtil {
     /**
      * LinkedHashMap 转 List (指定为 key, value)
      */
+    @SuppressWarnings("rawtypes")
     public static List<LinkedHashMap<String, Object>> linkedHashMap2List(LinkedHashMap<Object, Object> linkedHashMap) {
         List<LinkedHashMap<String, Object>> data = new ArrayList<>();
         if (linkedHashMap == null) {
             return data;
         }
-        Set set = linkedHashMap.keySet();
+        Set<Object> set = linkedHashMap.keySet();
         for (Object o : set) {
             Object value = linkedHashMap.get(o);
             LinkedHashMap<String, Object> row = new LinkedHashMap<>();
@@ -162,6 +167,7 @@ public class MapUtil {
     /**
      * 驼峰转换
      */
+    @SuppressWarnings("rawtypes")
     public static List<Map> toReplaceMapKeyLow(List<Map> maps) {
         List<Map> rts = new ArrayList<>();
         for (Map map : maps) {
@@ -169,6 +175,7 @@ public class MapUtil {
         }
         return rts;
     }
+    @SuppressWarnings("rawtypes")
     public static List<LinkedHashMap> toReplaceLinkedHashMapKeyLow(List<LinkedHashMap> maps) {
         List<LinkedHashMap> rts = new ArrayList<>();
         for (LinkedHashMap map : maps) {
@@ -183,6 +190,7 @@ public class MapUtil {
      * @param map
      * @return
      */
+    @SuppressWarnings("rawtypes")
     public static Map toReplaceMapKeyLow(Map map) {
         Map reRap = new HashMap();
         if (map != null) {
@@ -196,6 +204,7 @@ public class MapUtil {
         }
         return reRap;
     }
+    @SuppressWarnings("rawtypes")
     public static LinkedHashMap toReplaceLinkedHashMapKeyLow(LinkedHashMap map) {
         LinkedHashMap reRap = new LinkedHashMap();
         if (map != null) {
@@ -221,23 +230,31 @@ public class MapUtil {
      * @date 2017年4月1日 上午12:05:10 *
      */
     public static <T> Map<String, T> removeBlank(Map<String, T> map) {
-        Set<String> keySet = map.keySet();
-        for (String key : keySet) {
-            T t = map.get(key);
+        if (map == null) {
+            return map;
+        }
+        Iterator<Map.Entry<String, T>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, T> entry = iterator.next();
+            T t = entry.getValue();
             if (t != null && t.toString().trim().isEmpty()) {
-                map.put(key, null);
+                iterator.remove();
             }
         }
         return map;
     }
 
     public static <T> String map2UrlString(Map<String, T> map) {
+        if (map == null || map.isEmpty()) {
+            return "";
+        }
         StringBuilder str = new StringBuilder();
         Set<String> keySet = map.keySet();
         for (String key : keySet) {
+            T value = map.get(key);
             str.append(key)
                 .append("=")
-                .append(map.get(key).toString())
+                .append(value != null ? value.toString() : "")
                 .append("&");
         }
         return str.substring(0, str.length() - 1);
@@ -252,7 +269,10 @@ public class MapUtil {
      */
     public static Map<String, String> prop2Map(Properties prop) {
         Map<String, String> map = new HashMap<>();
-        prop.forEach((propKey, propValue) -> map.put(propKey.toString(), propValue.toString()));
+        if (prop == null) {
+            return map;
+        }
+        prop.forEach((propKey, propValue) -> map.put(propKey.toString(), propValue == null ? "" : propValue.toString()));
         return map;
     }
 

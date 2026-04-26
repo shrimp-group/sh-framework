@@ -5,7 +5,7 @@ import com.wkclz.tool.tools.Md5Tool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.UUID;
 
 /**
@@ -16,7 +16,7 @@ public class SecretUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(SecretUtil.class);
 
-    private static final Random RANDOM = new Random(System.currentTimeMillis());
+    private static final SecureRandom RANDOM = new SecureRandom();
     // 使用时请覆盖此 salt
     private static final String GENERAL_SALT = "shrimp@450330#cc$wkclz";
 
@@ -92,6 +92,7 @@ public class SecretUtil {
     }
 
     public static String getDecryptPassword(String encryptPwdStr) {
+        logger.warn("Using default salt is insecure, please use getDecryptPassword(encryptPwdStr, salt) instead");
         return getDecryptPassword(encryptPwdStr, GENERAL_SALT);
     }
 

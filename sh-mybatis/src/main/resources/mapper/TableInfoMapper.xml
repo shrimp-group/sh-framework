@@ -39,7 +39,7 @@
             column_comment,
             column_default default_value,
             IF(LOCATE('CURRENT_TIMESTAMP', extra) > 0, 1, 0) `on_update`,
-            IF(is_nullable = 'NO', true, false) not_Null,
+            IF(is_nullable = 'NO', true, false) not_null,
             ordinal_position
         FROM
             information_schema.`COLUMNS`

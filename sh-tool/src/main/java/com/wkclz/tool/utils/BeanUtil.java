@@ -17,6 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Description:
@@ -25,12 +26,9 @@ import java.util.*;
 public class BeanUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(BeanUtil.class);
-    private static final Map<String, List<PropertyDescriptor>> PROPERTY_DESCRIPTORS = new HashMap<>();
-
-
-    // BaseEntity 字段缓存
-    private static Map<Class, List<String>> ENTITY_FIELD = new HashMap<>();
-    private static final Map<Class<?>, Map<String, JavaField>> CLASS_METHOD_CACHE = new HashMap<>();
+    private static final Map<String, List<PropertyDescriptor>> PROPERTY_DESCRIPTORS = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, List<String>> ENTITY_FIELD = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Map<String, JavaField>> CLASS_METHOD_CACHE = new ConcurrentHashMap<>();
 
     /**
      * remove the blank string in the  Object
@@ -113,7 +111,7 @@ public class BeanUtil {
         return cp(source, false);
     }
 
-    public static <S> S cp(S source, boolean cpoyNull) {
+    public static <S> S cp(S source, boolean copyNull) {
         if (source == null) {
             return null;
         }
@@ -125,7 +123,7 @@ public class BeanUtil {
                  IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-        return cp(source, s, cpoyNull);
+        return cp(source, s, copyNull);
     }
 
     /**
@@ -145,11 +143,11 @@ public class BeanUtil {
         return cp(source, target, false);
     }
 
-    public static <S, T> T cp(S source, T target, boolean cpoyNull) {
+    public static <S, T> T cp(S source, T target, boolean copyNull) {
         if (source == null || target == null) {
             return null;
         }
-        if (cpoyNull) {
+        if (copyNull) {
             BeanUtils.copyProperties(source, target);
         } else {
             BeanUtils.copyProperties(source, target, getNullPropertyNames(source));

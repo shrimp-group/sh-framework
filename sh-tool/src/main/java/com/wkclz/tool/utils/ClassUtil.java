@@ -124,7 +124,7 @@ public class ClassUtil {
                                             String clazzName = packageName + '.' + className;
                                             Class<?> clazz = Class.forName(clazzName);
                                             classes.add(clazz);
-                                        } catch (ClassNotFoundException e) {
+                                        } catch (Throwable e) {
                                             logger.error(e.getMessage(), e);
                                         }
                                     }
@@ -195,27 +195,28 @@ public class ClassUtil {
         Set<Class<?>> classes = new LinkedHashSet<>();
         // 获取指定接口的实现类
         if (!clazz.isInterface()) {
-            try {
+            return classes;
+        }
+        try {
+            /**
+             * 循环判断路径下的所有类是否继承了指定类 并且排除父类自己
+             */
+            Iterator<Class<?>> iterator = classesAll.iterator();
+            while (iterator.hasNext()) {
+                Class<?> cls = iterator.next();
                 /**
-                 * 循环判断路径下的所有类是否继承了指定类 并且排除父类自己
+                 * isAssignableFrom该方法的解析，请参考博客：
+                 * http://blog.csdn.net/u010156024/article/details/44875195
                  */
-                Iterator<Class<?>> iterator = classesAll.iterator();
-                while (iterator.hasNext()) {
-                    Class<?> cls = iterator.next();
-                    /**
-                     * isAssignableFrom该方法的解析，请参考博客：
-                     * http://blog.csdn.net/u010156024/article/details/44875195
-                     */
-                    if (clazz.isAssignableFrom(cls)) {
-                        // 自身并不加进去
-                        if (!clazz.equals(cls)) {
-                            classes.add(cls);
-                        }
+                if (clazz.isAssignableFrom(cls)) {
+                    // 自身并不加进去
+                    if (!clazz.equals(cls)) {
+                        classes.add(cls);
                     }
                 }
-            } catch (Exception e) {
-                System.out.println("出现异常");
             }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
         return classes;
     }

@@ -2,7 +2,7 @@ package com.wkclz.tool.utils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Random;
+import java.security.SecureRandom;
 
 /**
  * 验证码生成器类，可生成数字、大写、小写字母及三者混合类型的验证码。 支持自定义验证码字符数量； 支持自定义验证码图片的大小； 支持自定义需排除的特殊字符；
@@ -10,7 +10,7 @@ import java.util.Random;
  */
 public class ValidateCode {
 
-    private static Random random = new Random();
+    private static SecureRandom random = new SecureRandom();
 
     /**
      * 验证码类型为仅数字 0~9
@@ -253,7 +253,7 @@ public class ValidateCode {
      */
     private static Color getRandomColor() {
         if (random == null) {
-            random = new Random();
+            random = new SecureRandom();
         }
         Color c = new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255));
         return c;

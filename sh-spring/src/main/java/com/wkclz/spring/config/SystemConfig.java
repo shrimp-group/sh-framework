@@ -27,13 +27,14 @@ public class SystemConfig {
 
     @Value("${alarm.email.enabled:false}")
     private boolean alarmEmailEnabled;
-    @Value("${alarm.email.host:smtp.exmail.qq.com}")
+    @Value("${alarm.email.host:}")
     private String alarmEmailHost;
-    @Value("${alarm.email.from:alarm@wkclz.com}")
+    @Value("${alarm.email.from:}")
     private String alarmEmailFrom;
-    @Value("${alarm.email.password:your_password}")
+    // 请勿在此处硬编码密码，务必通过环境变量或配置中心注入
+    @Value("${alarm.email.password:}")
     private String alarmEmailPassword;
-    @Value("${alarm.email.to:admin@wkclz.com}")
+    @Value("${alarm.email.to:}")
     private String alarmEmailTo;
 
 }

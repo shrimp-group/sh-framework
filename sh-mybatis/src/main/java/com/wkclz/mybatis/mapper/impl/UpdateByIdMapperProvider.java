@@ -38,6 +38,13 @@ public class UpdateByIdMapperProvider extends BaseMapperProvider {
             if (!updateSet.isEmpty()) {
                 updateSet.append(", ");
             }
+
+            Object value = field.getField().get(entity);
+            // 跳过空值字段
+            if (value == null && field.isNotNull()) {
+                throw ValidationException.of("字段 {}({})不能为空", field.getColumnName(), field.getFieldName());
+            }
+
             updateSet.append(field.getColumnName());
             updateSet.append(" = #{");
             updateSet.append(field.getFieldName());
@@ -54,7 +61,7 @@ public class UpdateByIdMapperProvider extends BaseMapperProvider {
         }
 
         // 获取id和version字段值
-        Object versionValue = property.getVersionByField().getField().get(entity);
+        Object versionValue = property.getVersionField().getField().get(entity);
 
         StringBuilder sql = new StringBuilder();
         sql.append("UPDATE ").append(tableName).append(" SET ").append(updateSet).append(" WHERE ").append(primaryKey).append(" = #{").append(primaryKey).append("} AND ").append(deleted).append(" = 0");

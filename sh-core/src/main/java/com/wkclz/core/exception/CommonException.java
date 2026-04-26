@@ -9,32 +9,33 @@ import com.wkclz.tool.utils.StringFormat;
  */
 public class CommonException extends RuntimeException {
     
-    private Integer code;
-    
+    private int code;
+
     public CommonException(String message) {
         super(message);
         this.code = ResultCode.ERROR.getCode();
     }
-    
+
     public CommonException(ResultCode resultCode) {
         super(resultCode.getMessage());
         this.code = resultCode.getCode();
     }
-    
+
     public CommonException(int code, String message) {
         super(message);
         this.code = code;
     }
-    
+
     public CommonException(String message, Throwable cause) {
         super(message, cause);
+        this.code = ResultCode.ERROR.getCode();
     }
-    
+
     public CommonException(ResultCode resultCode, Throwable cause) {
         super(resultCode.getMessage(), cause);
         this.code = resultCode.getCode();
     }
-    
+
     public CommonException(int code, String message, Throwable cause) {
         super(message, cause);
         this.code = code;

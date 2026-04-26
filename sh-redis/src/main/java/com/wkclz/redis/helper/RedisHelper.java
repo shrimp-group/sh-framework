@@ -1,6 +1,5 @@
 package com.wkclz.redis.helper;
 
-import com.alibaba.fastjson2.JSON;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -52,8 +51,7 @@ public class RedisHelper {
      */
     public boolean set(String key, Object value, long timeout, TimeUnit timeUnit) {
         try {
-            String valueStr = JSON.toJSONString(value);
-            redisTemplate.opsForValue().set(key, valueStr, timeout, timeUnit);
+            redisTemplate.opsForValue().set(key, value, timeout, timeUnit);
             return true;
         } catch (Exception e) {
             log.error("Redis set error: ", e);
@@ -73,8 +71,7 @@ public class RedisHelper {
      */
     public boolean setIfAbsent(String key, Object value, long timeout, TimeUnit timeUnit) {
         try {
-            String valueStr = JSON.toJSONString(value);
-            Boolean result = redisTemplate.opsForValue().setIfAbsent(key, valueStr, timeout, timeUnit);
+            Boolean result = redisTemplate.opsForValue().setIfAbsent(key, value, timeout, timeUnit);
             return result != null && result;
         } catch (Exception e) {
             log.error("Redis setIfAbsent error: ", e);

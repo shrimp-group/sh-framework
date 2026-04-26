@@ -19,19 +19,22 @@ public class ShMyBatisConfig {
             return null;
         }
         String schema = datasourceUrl;
-        int i = schema.indexOf("//");
-        if (i > -1) {
-            schema = schema.substring(i+2);
+        // 解析 JDBC URL 格式: jdbc:mysql://host:port/schema?params
+        int hostStart = schema.indexOf("//");
+        if (hostStart > -1) {
+            schema = schema.substring(hostStart + 2);
         }
-        i = schema.indexOf("/");
-        if (i > -1) {
-            schema = schema.substring(i+1);
+        int pathStart = schema.indexOf("/");
+        if (pathStart > -1) {
+            schema = schema.substring(pathStart + 1);
+        } else {
+            return null;
         }
-        i = schema.indexOf("?");
-        if (i > -1) {
-            schema = schema.substring(0, i);
+        int queryStart = schema.indexOf("?");
+        if (queryStart > -1) {
+            schema = schema.substring(0, queryStart);
         }
-        return schema;
+        return schema.isEmpty() ? null : schema;
     }
 
 

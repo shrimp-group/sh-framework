@@ -113,7 +113,7 @@ public class MailUtil {
         return "MailUtil{" +
             "emailHost='" + emailHost + '\'' +
             ", emailFrom='" + emailFrom + '\'' +
-            ", emailPassword='" + emailPassword + '\'' +
+            ", emailPassword='******'" +
             ", toEmails='" + toEmails + '\'' +
             ", subject='" + subject + '\'' +
             ", content='" + content + '\'' +
@@ -130,13 +130,17 @@ public class MailUtil {
             }
 
             // 收件人邮箱
+            if (toEmails == null || toEmails.trim().isEmpty()) {
+                throw new RuntimeException("收件人不能为空！");
+            }
             String[] toEmailArray = toEmails.split("[,，;；|]");
             if (toEmailArray.length < 1) {
                 throw new RuntimeException("收件人不能为空！");
             }
             MailSSLSocketFactory sf = new MailSSLSocketFactory();
             sf.setTrustAllHosts(true);
-            Properties properties = System.getProperties();
+            // 使用独立的 Properties 而非 System.getProperties()，避免污染全局系统属性
+            Properties properties = new Properties();
             properties.setProperty("mail.smtp.host", emailHost);
             properties.put("mail.smtp.auth", "true");
             properties.put("mail.smtp.ssl.enable", "true");

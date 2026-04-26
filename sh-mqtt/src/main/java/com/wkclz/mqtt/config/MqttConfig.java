@@ -56,7 +56,7 @@ public class MqttConfig {
     @Value("${shrimp.cloud.mqtt.secret-key:}")
     private String secretKey;
 
-    private MqttAsyncClient mqttClient;
+    private volatile MqttAsyncClient mqttClient;
 
     @Bean
     public MqttAsyncClient mqttClient() {
@@ -88,22 +88,23 @@ public class MqttConfig {
             connOpts.setPassword(getPassword().toCharArray());
             // 保留会话: 不需要保留
             connOpts.setCleanSession(true);
-            // 建立连接
-            connOpts.setConnectionTimeout(0);
+            // 建立连接，超时时间30秒（原值0为无限超时，可能导致应用挂起）
+            connOpts.setConnectionTimeout(30);
             connOpts.setAutomaticReconnect(true);
             connOpts.setKeepAliveInterval(keepAliveInterval);
 
             // CA 证书
             if (endPoint.startsWith("ssl") && StringUtils.isNotBlank(caPath)) {
                 ClassPathResource resource = new ClassPathResource(caPath);
-                InputStream is = resource.getInputStream();
-                SSLSocketFactory factory = getSingleSocketFactory(is);
-                connOpts.setSocketFactory(factory);
+                try (InputStream is = resource.getInputStream()) {
+                    SSLSocketFactory factory = getSingleSocketFactory(is);
+                    connOpts.setSocketFactory(factory);
+                }
             }
 
             mqttClient.setCallback(new MqttReconnectCallback());
 
-            log.info("Connecting to broker: " + getEndPoint());
+            log.info("Connecting to broker: {}", getEndPoint());
             mqttClient.connect(connOpts);
 
             log.info("Connected");
@@ -230,10 +231,9 @@ public class MqttConfig {
 
     // 单向认证
     private static SSLSocketFactory getSingleSocketFactory(InputStream is) {
-        try {
+        try (BufferedInputStream bis = new BufferedInputStream(is)) {
             Security.addProvider(new BouncyCastleProvider());
             X509Certificate caCert = null;
-            BufferedInputStream bis = new BufferedInputStream(is);
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
             while (bis.available() > 0) {
@@ -244,7 +244,8 @@ public class MqttConfig {
             caKs.setCertificateEntry("cert-certificate", caCert);
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(caKs);
-            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+            // 使用 TLS 协议（由 JDK 自动协商版本，而非硬编码 TLSv1.2）
+            SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, tmf.getTrustManagers(), null);
             return sslContext.getSocketFactory();
         } catch (Exception e) {

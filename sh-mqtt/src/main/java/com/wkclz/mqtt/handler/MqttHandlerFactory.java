@@ -1,10 +1,9 @@
 package com.wkclz.mqtt.handler;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author wangkaicun
@@ -15,17 +14,17 @@ public class MqttHandlerFactory {
     /**
      * 用于存储mqtt处理类的bean,key为parentTopic/subTopic
      */
-    private static Map<String, Object> mqttControllers = new HashMap<>();
+    private static final Map<String, Object> mqttControllers = new ConcurrentHashMap<>();
 
     /**
      * 用于存储mqtt处理方法,key为parentTopic/subTopic
      */
-    private static Map<String, Method> mqttHandlers = new HashMap<>();
+    private static final Map<String, Method> mqttHandlers = new ConcurrentHashMap<>();
 
     /**
      * 存储parentTopic列表
      */
-    private static Set<String> parentTopicSet = new HashSet<>();
+    private static final Set<String> parentTopicSet = ConcurrentHashMap.newKeySet();
 
     /**
      * 注册一个mqtt处理类bean

@@ -11,6 +11,9 @@ import java.util.List;
 
 public class FileUtil {
 
+    private static final long SIZE_KB = 1024L;
+    private static final long SIZE_MB = SIZE_KB * 1024;
+    private static final long SIZE_GB = SIZE_MB * 1024;
 
     private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
@@ -85,17 +88,7 @@ public class FileUtil {
             if (!file.isFile()) {
                 throw new RuntimeException("error file!");
             }
-            try (
-                FileReader reader = new FileReader(file);
-                BufferedReader bReader = new BufferedReader(reader);
-            ) {
-                StringBuilder sb = new StringBuilder();
-                String s = "";
-                while ((s = bReader.readLine()) != null) {
-                    sb.append(s).append("\n");
-                }
-                return sb.toString();
-            }
+            return Files.readString(file.toPath());
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
@@ -157,15 +150,15 @@ public class FileUtil {
      */
     public static String formatFileSize(long fileS) {
         DecimalFormat df = new DecimalFormat("#.00");
-        String fileSizeString = "";
-        if (fileS < 1024) {
+        String fileSizeString;
+        if (fileS < SIZE_KB) {
             fileSizeString = df.format((double) fileS) + "B";
-        } else if (fileS < 1048576) {
-            fileSizeString = df.format((double) fileS / 1024) + "K";
-        } else if (fileS < 1073741824) {
-            fileSizeString = df.format((double) fileS / 1048576) + "M";
+        } else if (fileS < SIZE_MB) {
+            fileSizeString = df.format((double) fileS / SIZE_KB) + "K";
+        } else if (fileS < SIZE_GB) {
+            fileSizeString = df.format((double) fileS / SIZE_MB) + "M";
         } else {
-            fileSizeString = df.format((double) fileS / 1073741824) + "G";
+            fileSizeString = df.format((double) fileS / SIZE_GB) + "G";
         }
         return fileSizeString;
     }

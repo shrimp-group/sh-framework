@@ -62,10 +62,10 @@ public class UpdateByIdSelectiveMapperProvider extends BaseMapperProvider {
         }
 
         // 获取id和version字段值
-        Object versionValue = property.getVersionByField().getField().get(entity);
+        Object versionValue = property.getVersionField().getField().get(entity);
         String sql = "UPDATE " + tableName + " SET " + updateSet + " WHERE " + primaryKey + " = #{" + primaryKey + "}" + " AND " + deleted + " = 0";
         if (versionValue != null) {
-            sql += " AND " + version + " = #{" + property.getVersionByField().getFieldName() + "}";
+            sql += " AND " + version + " = #{" + property.getVersionField().getFieldName() + "}";
         }
         
         log.debug("UpdateByIdSelective SQL: {}", sql);

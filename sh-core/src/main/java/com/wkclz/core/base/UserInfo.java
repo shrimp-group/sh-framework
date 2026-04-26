@@ -1,6 +1,6 @@
 package com.wkclz.core.base;
 
-import com.wkclz.core.annotation.Desc;
+import com.wkclz.core.annotation.FieldDesc;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,25 +11,25 @@ import java.io.Serializable;
 @Data
 public class UserInfo implements Serializable {
 
-    @Desc("用户编码")
+    @FieldDesc("用户编码")
     private String userCode;
 
-    @Desc("用户名")
+    @FieldDesc("用户名")
     private String username;
 
-    @Desc("用户姓名")
+    @FieldDesc("用户姓名")
     private String nickname;
 
-    @Desc("手机号(脱敏)")
+    @FieldDesc("手机号(脱敏)")
     private String mobile;
 
-    @Desc("租户编码")
+    @FieldDesc("租户编码")
     private String tenantCode;
 
-    @Desc("头像")
+    @FieldDesc("头像")
     private String avatar;
 
-    @Desc("Open ID")
+    @FieldDesc("Open ID")
     private String openId;
 
 }

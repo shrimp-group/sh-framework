@@ -59,6 +59,7 @@ public class MyBatisUpdateInterceptor implements Interceptor {
         }
         // 检查对象是否继承自DbColumnEntity
         if (obj instanceof DbColumnEntity db) {
+            // 清空时间字段，让数据库自动填充
             db.setCreateTime(null);
             db.setUpdateTime(null);
             db.setUpdateBy(userCode);

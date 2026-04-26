@@ -1,6 +1,6 @@
 package com.wkclz.core.base;
 
-import com.wkclz.core.annotation.Desc;
+import com.wkclz.core.annotation.FieldDesc;
 import lombok.Data;
 
 import java.util.List;
@@ -14,22 +14,22 @@ import java.util.List;
 @Data
 public class PageData<T> {
 
-    @Desc("当前页码")
+    @FieldDesc("当前页码")
     private Long current;
 
-    @Desc("每页大小")
+    @FieldDesc("每页大小")
     private Long size;
 
-    @Desc("偏移量")
+    @FieldDesc("偏移量")
     private Long offset;
 
-    @Desc("总数据量")
+    @FieldDesc("总数据量")
     private Long total;
 
-    @Desc("统计数")
+    @FieldDesc("统计数")
     private Long count;
 
-    @Desc("分页结果列表")
+    @FieldDesc("分页结果列表")
     private List<T> records;
 
     /**

@@ -2,6 +2,7 @@ package com.wkclz.redis.config;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +34,10 @@ public class RedisKeepAliveConfig {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
         config.setHostName(redisConfig.getHost());
         config.setPort(redisConfig.getPort());
-        config.setPassword(redisConfig.getPassword());
+        // 密码不为空时才设置，避免空字符串认证失败
+        if (StringUtils.isNotBlank(redisConfig.getPassword())) {
+            config.setPassword(redisConfig.getPassword());
+        }
         config.setDatabase(redisConfig.getDatabase());
 
         LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()

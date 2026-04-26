@@ -107,8 +107,8 @@ public class QrCodeUtil {
             return null;
         }
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-            ImageIO.write(image, "png", Base64.getEncoder().wrap(os));
-            return "data:image/png;base64," + os;
+            ImageIO.write(image, "png", os);
+            return "data:image/png;base64," + Base64.getEncoder().encodeToString(os.toByteArray());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

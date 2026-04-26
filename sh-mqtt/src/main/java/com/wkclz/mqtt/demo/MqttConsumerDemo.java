@@ -6,6 +6,8 @@ import com.wkclz.mqtt.bean.MqttHexMsg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
+
 @MqttController("keepalive")
 public class MqttConsumerDemo {
 
@@ -13,7 +15,7 @@ public class MqttConsumerDemo {
 
     @MqttTopicMapping("breath")
     public void breath(MqttHexMsg msg) {
-        String data = new String(msg.getPayload());
+        String data = new String(msg.getPayload(), StandardCharsets.UTF_8);
         logger.info("breath message: {}", data);
     }
 

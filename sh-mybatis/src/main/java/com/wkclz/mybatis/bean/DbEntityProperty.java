@@ -1,5 +1,6 @@
 package com.wkclz.mybatis.bean;
 
+import com.wkclz.core.annotation.FieldDesc;
 import com.wkclz.core.base.BaseEntity;
 import com.wkclz.mybatis.annotation.Blob;
 import com.wkclz.tool.bean.JavaField;
@@ -42,7 +43,7 @@ public class DbEntityProperty implements Serializable {
     private JavaField idsField;
     private JavaField createByField;
     private JavaField updateByField;
-    private JavaField versionByField;
+    private JavaField versionField;
     private List<JavaField> insertFields;
     private List<JavaField> updateFields;
     private List<JavaField> selectObjFields;
@@ -80,7 +81,7 @@ public class DbEntityProperty implements Serializable {
                 property.setUpdateByField( field);
             }
             if ("version".equals(fieldName)) {
-                property.setVersionByField( field);
+                property.setVersionField( field);
             }
 
             if (BASE_IGNORE_FIELDS.contains(fieldName)) {
@@ -151,6 +152,11 @@ public class DbEntityProperty implements Serializable {
             javaField.setColumnName(StringUtil.camelToUnderline(field.getName()));
             javaField.setField(field);
             javaField.setClazz(field.getType());
+            javaField.setNotNull(false);
+            FieldDesc fieldDesc = field.getAnnotation(FieldDesc.class);
+            if (fieldDesc != null) {
+                javaField.setNotNull(fieldDesc.notNull());
+            }
 
             // 获取getter和setter方法
             try {

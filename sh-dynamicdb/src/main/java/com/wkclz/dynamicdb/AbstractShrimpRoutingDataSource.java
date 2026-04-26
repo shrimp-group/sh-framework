@@ -5,13 +5,13 @@ import org.springframework.jdbc.datasource.lookup.DataSourceLookup;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -76,7 +76,7 @@ public abstract class AbstractShrimpRoutingDataSource extends AbstractRoutingDat
         if (this.targetDataSources == null) {
             throw new IllegalArgumentException("Property 'targetDataSources' is required");
         }
-        this.resolvedDataSources = CollectionUtils.newHashMap(this.targetDataSources.size());
+        this.resolvedDataSources = new ConcurrentHashMap<>(this.targetDataSources.size());
         this.targetDataSources.forEach((key, value) -> {
             Object lookupKey = resolveSpecifiedLookupKey(key);
             DataSource dataSource = resolveSpecifiedDataSource(value);
@@ -127,6 +127,7 @@ public abstract class AbstractShrimpRoutingDataSource extends AbstractRoutingDat
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T unwrap(Class<T> iface) throws SQLException {
         if (iface.isInstance(this)) {
             return (T) this;

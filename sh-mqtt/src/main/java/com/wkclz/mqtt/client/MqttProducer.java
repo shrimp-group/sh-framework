@@ -16,6 +16,8 @@ import org.springframework.util.CollectionUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -28,6 +30,13 @@ public class MqttProducer {
 
     @Autowired(required = false)
     private MqttAsyncClient mqttAsyncClient;
+
+    // 共享的调度线程池，避免每次调用 sendDelay 都创建新线程池导致资源泄漏
+    private static final ScheduledExecutorService SCHEDULED_EXECUTOR = new ScheduledThreadPoolExecutor(
+        2,
+        ThreadUtil.newNamedThreadFactory("mqtt-delay-", null, false),
+        new ThreadPoolExecutor.CallerRunsPolicy()
+    );
 
 
     public void sendDelay(String topic, String msg, Integer delay) {
@@ -57,24 +66,25 @@ public class MqttProducer {
             qos = Qos.QOS_1;
         }
         Qos finalQos = qos;
-        int finalDelay = delay;
+        long finalDelay = delay;
         try {
-            ThreadPoolExecutor executor = ThreadUtil.newExecutor();
-            executor.execute(() -> {
-                for (String msg : msgs) {
+            long totalDelay = 0;
+            for (String msg : msgs) {
+                totalDelay += finalDelay;
+                String finalMsg = msg;
+                long scheduleDelay = totalDelay;
+                SCHEDULED_EXECUTOR.schedule(() -> {
                     try {
-                        Thread.sleep(finalDelay);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        throw MqttSendException.error(e.getMessage());
+                        log.info("mqtt sent msg, topic:{}", topic);
+                        byte[] bytes = finalMsg.getBytes(StandardCharsets.UTF_8);
+                        sendMsg(topic, bytes, finalQos);
+                    } catch (Exception e) {
+                        log.error("mqtt send delay error, topic:{}, error: {}", topic, e.getMessage(), e);
                     }
-                    log.info("mqtt sent msg, topic:{}, message: {}", topic, msg);
-                    byte[] bytes = msg.getBytes(StandardCharsets.UTF_8);
-                    sendMsg(topic, bytes, finalQos);
-                }
-            });
+                }, scheduleDelay, java.util.concurrent.TimeUnit.MILLISECONDS);
+            }
         } catch (Exception e) {
-            //
+            log.error("mqtt sendDelay schedule error: {}", e.getMessage(), e);
         }
     }
 
@@ -90,7 +100,8 @@ public class MqttProducer {
             return;
         }
         String json = JSONObject.toJSONString(msg);
-        log.info("mqtt sent msg, topic:{}, message: {}", topic, json);
+        log.info("mqtt sent msg, topic:{}", topic);
+        log.debug("mqtt sent msg detail, topic:{}, message: {}", topic, json);
         byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
         sendMsg(topic, bytes, qos);
     }

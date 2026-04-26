@@ -38,20 +38,20 @@ public class DynamicDataSource extends AbstractShrimpRoutingDataSource {
         Long latest = hasCreateDataSource.get(key);
         long now = System.currentTimeMillis();
         DynamicDataSourceConfig dsConfig = SpringContextHolder.getBean(DynamicDataSourceConfig.class);
-        Integer cacheTime = dsConfig.getDynamicdbCacheSecond();
-        if (latest != null && ((now - latest) < cacheTime * 1_000)) {
+        long cacheTimeMs = dsConfig.getDynamicdbCacheSecond() * 1_000L;
+        if (latest != null && ((now - latest) < cacheTimeMs)) {
             return key;
         }
 
         synchronized (this) {
             latest = hasCreateDataSource.get(key);
-            if (latest != null && ((now - latest) < cacheTime * 1_000)) {
+            if (latest != null && ((now - latest) < cacheTimeMs)) {
                 return key;
             }
 
             if (latest != null) {
-                DataSource dataSource = getDataSource(key);
-                if (dataSource instanceof DruidDataSource dds) {
+                DataSource oldDataSource = getDataSource(key);
+                if (oldDataSource instanceof DruidDataSource dds) {
                     dds.close();
                 }
             }
@@ -92,13 +92,29 @@ public class DynamicDataSource extends AbstractShrimpRoutingDataSource {
                 Thread.currentThread().interrupt();
                 throw SystemException.of(e.getMessage());
             } catch (ExecutionException e) {
-                throw SystemException.of(e.getMessage());
+                Throwable cause = e.getCause();
+                if (cause instanceof RuntimeException re) {
+                    throw re;
+                }
+                throw SystemException.of(cause != null ? cause.getMessage() : e.getMessage());
             }
         }
     }
 
+    /**
+     * 在数据源变更时，需要销毁旧数据源的连接池
+     */
     public void destroyDataSource(String key) {
-        // TODO 在数据源变更时，需要销毁旧数据源的连接池
+        DataSource dataSource = getDataSource(key);
+        if (dataSource instanceof DruidDataSource dds) {
+            try {
+                dds.close();
+            } catch (Exception e) {
+                log.error("Failed to destroy dataSource for key: {}", key, e);
+            }
+        }
+        hasCreateDataSource.remove(key);
+        log.info("destroyed dataSource for key: {}", key);
     }
 
 }

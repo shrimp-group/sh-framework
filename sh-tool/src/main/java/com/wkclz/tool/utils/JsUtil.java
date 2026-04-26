@@ -5,15 +5,15 @@ import com.wkclz.tool.tools.Md5Tool;
 import org.apache.commons.lang3.StringUtils;
 import org.mozilla.javascript.*;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class JsUtil {
 
     // 初始化标准对象（如 global, Function 等）
     private static Scriptable scope = null;
     // JavaScript 函数
-    private static final Map<String, Function> JS_FUNCTION = new HashMap<>();
+    private static final Map<String, Function> JS_FUNCTION = new ConcurrentHashMap<>();
 
     public static String exec(String script, String param) {
         Object[] params = { param };

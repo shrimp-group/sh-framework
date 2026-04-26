@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Redis 消息队列管理器
@@ -21,14 +23,18 @@ public class RedisMessageQueueManager {
     @Autowired
     private RedisHelper redisHelper;
     
-    // 线程池，用于消息消费
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
+    // 线程池，用于消息消费（有界线程池，核心线程数4，最大线程数16，空闲60秒回收）
+    private final ExecutorService executorService = new ThreadPoolExecutor(
+        4, 16, 60L, TimeUnit.SECONDS,
+        new LinkedBlockingQueue<>(1024),
+        new ThreadPoolExecutor.CallerRunsPolicy()
+    );
     
     // 消息队列映射（队列名称 -> 消息队列实例）
-    private final Map<String, RedisMessageQueue<?>> messageQueueMap = new HashMap<>();
+    private final Map<String, RedisMessageQueue<?>> messageQueueMap = new ConcurrentHashMap<>();
     
     // 消息监听器映射（队列名称 -> 消息监听器实例）
-    private final Map<String, MessageListener<?>> messageListenerMap = new HashMap<>();
+    private final Map<String, MessageListener<?>> messageListenerMap = new ConcurrentHashMap<>();
     
     /**
      * 获取或创建消息队列
@@ -44,16 +50,15 @@ public class RedisMessageQueueManager {
             throw new IllegalArgumentException("Queue name and message type cannot be null or empty");
         }
         
-        synchronized (messageQueueMap) {
-            // 检查是否已经存在该队列
-            RedisMessageQueue<?> queue = messageQueueMap.get(queueName);
-            if (queue == null) {
-                // 创建新的消息队列实例
-                queue = new RedisMessageQueueImpl<>(queueName, messageType);
-                messageQueueMap.put(queueName, queue);
-            }
-            return (RedisMessageQueue<T>) queue;
+        // 检查是否已经存在该队列
+        RedisMessageQueue<?> queue = messageQueueMap.get(queueName);
+        if (queue == null) {
+            // 创建新的消息队列实例
+            RedisMessageQueueImpl<T> newQueue = new RedisMessageQueueImpl<>(queueName, messageType);
+            RedisMessageQueue<?> existing = messageQueueMap.putIfAbsent(queueName, newQueue);
+            queue = (existing != null) ? existing : newQueue;
         }
+        return (RedisMessageQueue<T>) queue;
     }
     
     /**
@@ -69,24 +74,19 @@ public class RedisMessageQueueManager {
             return false;
         }
         
-        synchronized (messageListenerMap) {
-            // 检查是否已经订阅该队列
-            if (messageListenerMap.containsKey(queueName)) {
-                log.warn("Queue {} is already subscribed", queueName);
-                return false;
-            }
-            
-            // 获取或创建消息队列
-            RedisMessageQueue<T> queue = getQueue(queueName, listener.getMessageType());
-            
-            // 保存消息监听器
-            messageListenerMap.put(queueName, listener);
-            
-            // 启动消费线程
-            startConsumeThread(queueName, queue, listener);
-            
-            return true;
+        // 检查是否已经订阅该队列（putIfAbsent 原子操作）
+        if (messageListenerMap.putIfAbsent(queueName, listener) != null) {
+            log.warn("Queue {} is already subscribed", queueName);
+            return false;
         }
+        
+        // 获取或创建消息队列
+        RedisMessageQueue<T> queue = getQueue(queueName, listener.getMessageType());
+        
+        // 启动消费线程
+        startConsumeThread(queueName, queue, listener);
+        
+        return true;
     }
     
     /**
@@ -99,11 +99,8 @@ public class RedisMessageQueueManager {
         if (queueName == null || queueName.isEmpty()) {
             return false;
         }
-        
-        synchronized (messageListenerMap) {
-            // 移除消息监听器
-            return messageListenerMap.remove(queueName) != null;
-        }
+        // ConcurrentHashMap 的 remove 是线程安全的
+        return messageListenerMap.remove(queueName) != null;
     }
     
     /**
@@ -114,6 +111,7 @@ public class RedisMessageQueueManager {
      * @param <T> 消息类型
      * @return 是否发送成功
      */
+    @SuppressWarnings("unchecked")
     public <T> boolean sendMessage(String queueName, T message) {
         if (queueName == null || queueName.isEmpty() || message == null) {
             return false;

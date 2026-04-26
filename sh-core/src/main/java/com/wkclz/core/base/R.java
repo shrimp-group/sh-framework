@@ -2,6 +2,7 @@ package com.wkclz.core.base;
 
 import com.wkclz.core.enums.ResultCode;
 import com.wkclz.core.exception.CommonException;
+import com.wkclz.tool.utils.StringFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -50,7 +51,7 @@ public class R<T> implements Serializable {
     }
 
     public static <T> R<T> warn(String template, Object... args) {
-        return new R<>(ResultCode.VALIDATION_ERROR.getCode(), format(template, args), null);
+        return new R<>(ResultCode.VALIDATION_ERROR.getCode(), StringFormat.of(template, args), null);
     }
 
     public static <T> R<T> error() {
@@ -70,18 +71,6 @@ public class R<T> implements Serializable {
     }
 
     public static <T> R<T> error(String template, Object... args) {
-        return new R<>(ResultCode.ERROR.getCode(), format(template, args), null);
-    }
-
-    private static String format(String template, Object... args) {
-        if (template == null) {
-            return null;
-        }
-        
-        String result = template;
-        for (Object arg : args) {
-            result = result.replaceFirst("\\{\\}", String.valueOf(arg));
-        }
-        return result;
+        return new R<>(ResultCode.ERROR.getCode(), StringFormat.of(template, args), null);
     }
 }

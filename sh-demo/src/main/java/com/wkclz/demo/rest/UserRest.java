@@ -44,9 +44,7 @@ public class UserRest {
     @DeleteMapping("/{id}")
     public Integer deleteUser(@PathVariable Long id) {
         setLoginUser();
-        User user = new User();
-        user.setId(id);
-        return userService.deleteById(user);
+        return userService.deleteById(id);
     }
 
     /**
@@ -56,7 +54,7 @@ public class UserRest {
     public Integer deleteUser(@RequestBody User user) {
         Assert.notNull(user.getIds(), "ids 不能为空");
         setLoginUser();
-        return userService.deleteByIds(user);
+        return userService.deleteByIds(user.getIds());
     }
 
     /**

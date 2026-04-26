@@ -4,6 +4,7 @@ import com.wkclz.core.base.BaseEntity;
 import com.wkclz.core.exception.SystemException;
 import com.wkclz.mybatis.bean.DbEntityProperty;
 import com.wkclz.tool.bean.JavaField;
+import com.wkclz.tool.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.builder.annotation.ProviderContext;
 
@@ -156,6 +157,70 @@ public class BaseMapperProvider {
         }
 
         return whereClause.toString();
+    }
+
+
+    /**
+     * 构建安全的 ORDER BY 子句，防止 SQL 注入
+     * 仅允许实体字段名（驼峰或下划线）和 ASC/DESC 关键字
+     * @param orderBy 排序字符串，如 "name ASC, id DESC"
+     * @param property 实体属性信息
+     * @param defaultOrderBy 默认排序（当 orderBy 为空时使用）
+     * @return 安全的 ORDER BY 子句
+     */
+    protected String buildOrderByClause(String orderBy, DbEntityProperty property, String defaultOrderBy) {
+        if (orderBy == null || orderBy.trim().isEmpty()) {
+            return " ORDER BY " + defaultOrderBy;
+        }
+
+        // 收集所有合法的列名（驼峰+下划线形式）
+        java.util.Set<String> validColumns = new java.util.HashSet<>();
+        for (JavaField field : property.getFields()) {
+            validColumns.add(field.getColumnName().toLowerCase());
+            validColumns.add(field.getFieldName().toLowerCase());
+        }
+        validColumns.add(DbEntityProperty.PRIMARY_KEY);
+        validColumns.add(DbEntityProperty.CREATE_TIME_FIELD);
+        validColumns.add(DbEntityProperty.UPDATE_TIME_FIELD);
+
+        // 校验每个排序项
+        String[] orderItems = orderBy.split(",");
+        StringBuilder safeOrderBy = new StringBuilder();
+        for (String item : orderItems) {
+            String trimmed = item.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            // 拆分字段名和排序方向
+            String[] parts = trimmed.split("\\s+");
+            String columnName = parts[0];
+
+            // 将驼峰转为下划线进行校验
+            String checkName = StringUtil.camelToUnderline(columnName).toLowerCase();
+
+            if (!validColumns.contains(checkName) && !validColumns.contains(columnName.toLowerCase())) {
+                log.warn("OrderBy 包含非法字段，已忽略: {}", columnName);
+                continue;
+            }
+
+            if (!safeOrderBy.isEmpty()) {
+                safeOrderBy.append(", ");
+            }
+            safeOrderBy.append(checkName);
+
+            // 校验排序方向
+            if (parts.length > 1) {
+                String direction = parts[parts.length - 1].toUpperCase();
+                if ("ASC".equalsIgnoreCase(direction) || "DESC".equalsIgnoreCase(direction)) {
+                    safeOrderBy.append(" ").append(direction);
+                }
+            }
+        }
+
+        if (safeOrderBy.isEmpty()) {
+            return " ORDER BY " + defaultOrderBy;
+        }
+        return " ORDER BY " + safeOrderBy;
     }
 
 }

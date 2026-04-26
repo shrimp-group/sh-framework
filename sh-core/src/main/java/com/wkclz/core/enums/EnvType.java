@@ -1,12 +1,12 @@
 package com.wkclz.core.enums;
 
 
-import com.wkclz.core.annotation.Desc;
+import com.wkclz.core.annotation.FieldDesc;
 
 /**
  * 系统环境类型
  */
-@Desc("系统环境")
+@FieldDesc("系统环境")
 public enum EnvType {
 
     /** 环境 */

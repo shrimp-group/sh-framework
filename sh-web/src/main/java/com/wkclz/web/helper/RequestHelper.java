@@ -49,7 +49,7 @@ public class RequestHelper {
 
     public static Map<String, String> getParamsFromRequest(HttpServletRequest req) {
 
-        //获取支付宝POST过来反馈信息
+        // 获取请求参数
         Map<String, String> params = new HashMap<>();
         Map<String, String[]> requestParams = req.getParameterMap();
 
@@ -115,7 +115,7 @@ public class RequestHelper {
 
     public static Integer getFrontPort(HttpServletRequest req) {
         String frontUrl = getFrontUrl(req);
-        return getPortFronUrl(frontUrl);
+        return getPortFromUrl(frontUrl);
     }
 
     public static String getDomainFromUrl(String url) {
@@ -134,7 +134,7 @@ public class RequestHelper {
         return null;
     }
 
-    public static Integer getPortFronUrl(String url) {
+    public static Integer getPortFromUrl(String url) {
         if (StringUtils.isBlank(url)) {
             return null;
         }
@@ -155,6 +155,12 @@ public class RequestHelper {
         String domain = getFrontDomain(req);
         Integer port = getFrontPort(req);
         String protocol = req.getProtocol();
+        // 修正协议格式，从 HTTP/1.1 转换为 http
+        if (protocol.startsWith("HTTP")) {
+            protocol = "http";
+        } else if (protocol.startsWith("HTTPS")) {
+            protocol = "https";
+        }
         String portalDomainPort = protocol + "://" + domain;
         if (port != null && !("http".equalsIgnoreCase(protocol) && port == 80) && !("https".equalsIgnoreCase(protocol) && port == 443)) {
             portalDomainPort += ":" + port;

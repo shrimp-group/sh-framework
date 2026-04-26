@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -70,6 +72,9 @@ public class DateUtil {
     public static String getTimeDifference(Long history) {
         return getTimeDifference(history, null);
     }
+    public static String getTimeDifference(LocalDateTime history) {
+        return getTimeDifference(history, null);
+    }
 
     /**
      * 计算历史到两套上的时间，转换为直观的文字描述
@@ -77,18 +82,18 @@ public class DateUtil {
     public static String getTimeDifference(Date history, Date future) {
         return getTimeDifference(history == null ? null : history.getTime(), future == null ? null : future.getTime());
     }
+    public static String getTimeDifference(LocalDateTime history, LocalDateTime future) {
+        return getTimeDifference(
+                history == null ? null : history.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                future == null ? null : future.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        );
+    }
     public static String getTimeDifference(Long history, Long future) {
         long now = System.currentTimeMillis();
 
-        long his = now;
-        long fut = now;
+        long his = history == null ? now : history;
+        long fut = future == null ? now : future;
 
-        if (history != null) {
-            his = history;
-        }
-        if (future != null) {
-            fut = future;
-        }
 
         long timeLess = fut - his;
 

@@ -26,13 +26,8 @@ public class MqttBeanPostProcessor implements BeanPostProcessor {
     private MqttConfig mqttConfig;
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        return bean;
-    }
-
-    @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        Class beanClazz = bean.getClass();
+        Class<?> beanClazz = bean.getClass();
         if (beanClazz.isAnnotationPresent(MqttController.class)) {
             if (!"true".equals(mqttConfig.getEnabled())) {
                 return bean;

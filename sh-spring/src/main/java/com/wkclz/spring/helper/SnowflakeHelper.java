@@ -27,10 +27,9 @@ public class SnowflakeHelper {
     }
 
     /**
-     * 获取机器编码
+     * 获取机器编码 (0~31)
      */
     private static long getWorkId() {
-        long machinePiece;
         StringBuilder sb = new StringBuilder();
         Enumeration<NetworkInterface> e = null;
         try {
@@ -42,12 +41,18 @@ public class SnowflakeHelper {
             NetworkInterface ni = e.nextElement();
             sb.append(ni.toString());
         }
-        machinePiece = sb.toString().hashCode();
-        return machinePiece;
+        // hashCode 可能为负数，需取绝对值后对 maxWorkerId(31) 取模
+        long hashCode = sb.toString().hashCode();
+        return Math.abs(hashCode % 31L);
     }
 
+    /**
+     * 获取数据中心编码 (0~31)
+     */
     private static long getDatacenterId() {
-        return Sys.getCurrentEnv().hashCode();
+        // hashCode 可能为负数，需取绝对值后对 maxDatacenterId(31) 取模
+        long hashCode = Sys.getCurrentEnv().hashCode();
+        return Math.abs(hashCode % 31L);
     }
 
     /*

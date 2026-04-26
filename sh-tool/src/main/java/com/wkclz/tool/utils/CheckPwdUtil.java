@@ -25,10 +25,10 @@ public class CheckPwdUtil {
     //特殊字符长度
     private int charlen = 0;
 
-    public static final String PWD_IS_WEEK_WARM = "密码太弱，请保证密码长度，并添加多种字符元素！";
+    public static final String PWD_IS_WEAK_WARN = "密码太弱，请保证密码长度，并添加多种字符元素！";
 
     private static final Pattern PATTERN_A2Z_UPPER = Pattern.compile("[A-Z]");
-    private static final Pattern PATTERN_A2Z_LOWWER = Pattern.compile("[a-z]");
+    private static final Pattern PATTERN_A2Z_LOWER = Pattern.compile("[a-z]");
     private static final Pattern PATTERN_0_TO_9 = Pattern.compile("[0-9]");
 
 
@@ -57,8 +57,8 @@ public class CheckPwdUtil {
     }
 
     //测试小写字母字元
-    private int checkPwsLower() {
-        Matcher matcher = PATTERN_A2Z_LOWWER.matcher(this.psw);
+    private int checkPwdLower() {
+        Matcher matcher = PATTERN_A2Z_LOWER.matcher(this.psw);
         int j = 0;
         while (matcher.find()) {
             j++;
@@ -176,7 +176,7 @@ public class CheckPwdUtil {
     }
 
     //连续英文大写字元
-    private int seriseUpperAlp() {
+    private int seriesUpperAlp() {
         int j = 0;
         char[] c = this.psw.toCharArray();
         for (int i = 0; i < c.length - 1; i++) {
@@ -190,11 +190,11 @@ public class CheckPwdUtil {
     }
 
     //连续英文小写字元
-    private int seriseLowerAlp() {
+    private int seriesLowerAlp() {
         int j = 0;
         char[] c = this.psw.toCharArray();
         for (int i = 0; i < c.length - 1; i++) {
-            if (PATTERN_A2Z_LOWWER.matcher(c[i] + "").find()
+            if (PATTERN_A2Z_LOWER.matcher(c[i] + "").find()
                 && c[i] + 1 == c[i + 1]) {
                 j++;
             }
@@ -203,7 +203,7 @@ public class CheckPwdUtil {
     }
 
     //连续数字字元
-    private int seriseNum() {
+    private int seriesNum() {
         char[] c = this.psw.toCharArray();
         int j = 0;
         for (int i = 0; i < c.length - 1; i++) {
@@ -220,7 +220,7 @@ public class CheckPwdUtil {
         int j = 0;
         char[] c = this.psw.toLowerCase(Locale.CHINA).toCharArray();
         for (int i = 0; i < c.length - 2; i++) {
-            if (PATTERN_A2Z_LOWWER.matcher(c[i] + "").find()) {
+            if (PATTERN_A2Z_LOWER.matcher(c[i] + "").find()) {
                 if ((c[i + 1] == c[i] + 1) && (c[i + 2] == c[i] + 2)) {
                     j++;
                 }
@@ -246,11 +246,11 @@ public class CheckPwdUtil {
     private int jiafen() {
         System.out.println("密碼字數=" + checkPwdLength());
         System.out.println("大寫英文字元=" + checkPwdUpper());
-        System.out.println("小寫英文字元=" + checkPwsLower());
-        System.out.println("數字字元=" + checkNum());
-        System.out.println("符號字元=" + checkChar());
-        System.out.println("密碼中間穿插數字或符號字元=" + checkNumOrCharInStr());
-        System.out.println("已達密碼最低要求項目=" + lowerQuest());
+        System.out.println("小写英文字元=" + checkPwdLower());
+        System.out.println("数字字元=" + checkNum());
+        System.out.println("符号字元=" + checkChar());
+        System.out.println("密码中间穿插数字或符号字元=" + checkNumOrCharInStr());
+        System.out.println("已达密码最低要求项目=" + lowerQuest());
         return 0;
     }
 
@@ -258,9 +258,9 @@ public class CheckPwdUtil {
         System.out.println("只有英文字元=" + onlyHasAlp());
         System.out.println("只有數字字元=" + onlyHasNum());
         System.out.println("重複字元 (Case Insensitive)=" + repeatDex());
-        System.out.println("連續英文大寫字元=" + seriseUpperAlp());
-        System.out.println("連續英文小寫字元=" + seriseLowerAlp());
-        System.out.println("連續數字字元=" + seriseNum());
+        System.out.println("连续英文大写字元=" + seriesUpperAlp());
+        System.out.println("连续英文小写字元=" + seriesLowerAlp());
+        System.out.println("连续数字字元=" + seriesNum());
         System.out.println("連續字母超過三個(如abc,def)=" + seriesAlp2Three());
         System.out.println("連續數字超過三個(如123,234)=" + seriesNum2Three());
         return 0;
@@ -280,7 +280,7 @@ public class CheckPwdUtil {
         // 加分
         score += pwd.checkPwdLength();
         score += pwd.checkPwdUpper();
-        score += pwd.checkPwsLower();
+        score += pwd.checkPwdLower();
         score += pwd.checkNum();
         score += pwd.checkChar();
         score += pwd.checkNumOrCharInStr();
@@ -294,9 +294,9 @@ public class CheckPwdUtil {
         score += pwd.onlyHasAlp();
         score += pwd.onlyHasNum();
         score += pwd.repeatDex();
-        score += pwd.seriseUpperAlp();
-        score += pwd.seriseLowerAlp();
-        score += pwd.seriseNum();
+        score += pwd.seriesUpperAlp();
+        score += pwd.seriesLowerAlp();
+        score += pwd.seriesNum();
         score += pwd.seriesAlp2Three();
         score += pwd.seriesNum2Three();
 
@@ -326,7 +326,7 @@ public class CheckPwdUtil {
         }
         // 密码出现的种类 计数
         int type = 0;
-        if (pwd.checkPwdUpper() > 0 || pwd.checkPwsLower() > 0) {
+        if (pwd.checkPwdUpper() > 0 || pwd.checkPwdLower() > 0) {
             type++;
         }
         if (pwd.checkNum() > 0) {

@@ -152,7 +152,65 @@ public final class StringFormat {
             }
         }
 
+        // 清理多余的方括号：移除未被正确处理的孤立 [ 和 ]
+        return cleanBrackets(result.toString());
+    }
+
+    /**
+     * 清理字符串中多余的方括号
+     * 移除孤立的 [ 和 ]，但保留成对的 []
+     */
+    private static String cleanBrackets(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+
+        StringBuilder result = new StringBuilder();
+        int i = 0;
+        while (i < str.length()) {
+            char c = str.charAt(i);
+            if (c == '[') {
+                // 查找匹配的 ]
+                int matchIndex = findMatchingBracket(str, i);
+                if (matchIndex != -1) {
+                    // 找到匹配的括号，保留这对括号及其内容
+                    result.append(str, i, matchIndex + 1);
+                    i = matchIndex + 1;
+                } else {
+                    // 没有匹配的 ]，跳过这个 [
+                    i++;
+                }
+            } else if (c == ']') {
+                // 孤立的 ]，跳过
+                i++;
+            } else {
+                result.append(c);
+                i++;
+            }
+        }
         return result.toString();
+    }
+
+    /**
+     * 查找与指定 [ 匹配的 ]
+     * @return 匹配的 ] 的索引，如果没有找到则返回 -1
+     */
+    private static int findMatchingBracket(String str, int openIndex) {
+        int depth = 1;
+        int i = openIndex + 1;
+        while (i < str.length()) {
+            char c = str.charAt(i);
+            if (c == '[') {
+                depth++;
+            } else if (c == ']') {
+                depth--;
+                if (depth == 0) {
+                    return i;
+                }
+            }
+            i++;
+        }
+        return -1;
     }
 
     static void main(String[] args) {
@@ -232,6 +290,39 @@ public final class StringFormat {
         params8.put("value", "");
         System.out.println(StringFormat.of("Value: ${value}[${value}]", params8));
         // 输出: Value:
+
+        System.out.println("\n========== 清理多余方括号测试 ==========");
+
+        // 测试：孤立的 [ 和 ] 应该被移除
+        java.util.Map<String, Object> params9 = new java.util.HashMap<>();
+        params9.put("a", "A");
+        System.out.println(StringFormat.of("[${a}][${b}]", params9));
+        // 输出: [A] (b为空，所以[${b}]整个被移除)
+
+        // 测试：成对的括号应该保留
+        java.util.Map<String, Object> params10 = new java.util.HashMap<>();
+        params10.put("content", "Hello");
+        System.out.println(StringFormat.of("[${content}]", params10));
+        // 输出: [Hello]
+
+        // 测试：嵌套括号
+        java.util.Map<String, Object> params11 = new java.util.HashMap<>();
+        params11.put("outer", "OUT");
+        params11.put("inner", "IN");
+        System.out.println(StringFormat.of("[${outer}[${inner}]]", params11));
+        // 输出: [OUT[IN]]
+
+        // 测试：变量为空导致括号不匹配
+        java.util.Map<String, Object> params12 = new java.util.HashMap<>();
+        params12.put("x", "X");
+        System.out.println(StringFormat.of("${x}[${x}]${y}[[content]]", params12));
+        // 输出: X[X][[content]]
+
+        // 测试：普通文本中的括号
+        java.util.Map<String, Object> params13 = new java.util.HashMap<>();
+        params13.put("name", "Test");
+        System.out.println(StringFormat.of("Name: ${name} [${desc}] (normal [brackets])", params13));
+        // 输出: Name: Test (normal [brackets])
     }
 
 }

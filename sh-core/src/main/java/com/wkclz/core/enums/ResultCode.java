@@ -17,11 +17,11 @@ public enum ResultCode {
 
 
 
-    TOKEN_UNLL(10001, "token 为空！"),
+    TOKEN_NULL(10001, "token 为空！"),
     TOKEN_ERROR(10002, "token 不正确或已失效！"),
     TOKEN_ILLEGAL_TRANSFER(10003, "非法传输 token！"),
     TOKEN_ILLEGAL_LENGTH(10004, "非法长度的 token！"),
-    TOKEN_SIGN_FAILD(10005, "token 签名效验失败！"),
+    TOKEN_SIGN_FAILED(10005, "token 签名校验失败！"),
     TOKEN_NOT_RIGHT(10006, "token 签发者不正确，请确认 token 来源！"),
     LOGIN_TIMEOUT(10007, "登录已失效，请重新登录！"),
     LOGIN_FORCE_TIMEOUT(10009, "登录时间过长，强制失效，请重新登录！"),
@@ -37,7 +37,7 @@ public enum ResultCode {
     CAPTCHA_ERROR(30002, "图片验证码错误"),
     CAPTCHA_NEED(30003, "需要图片验证码"),
     MOBILE_CAPTCHA_ERROR(30004, "验证码错误"),
-    EMAIL_CAPTCHA_ERROR(30004, "验证码错误"),
+    EMAIL_CAPTCHA_ERROR(30005, "验证码错误"),
 
     UPDATE_NO_VERSION(40001, "操作需要带数据版本号！"),
     RECORD_NOT_EXIST_OR_OUT_OF_DATE(40002, "数据不存在或已不是最新的！"),
@@ -54,13 +54,9 @@ public enum ResultCode {
 //    public static final String REDIS_IS_DISABLED = "Redis config or Redis server is error! no Redis will be support!";
 
     ORDER_TIMEOUT(60001, "订单支付超时已自动取消，请重新下单！"),
-    ORDER_PAYD(60002, "订单已完成支付，请不要重复支付！"),
-    ORDER_ERROR(60003, "订单状态异常，不能支付！"),
-    ;
+    ORDER_PAYED(60002, "订单已完成支付，请不要重复支付！"),
+    ORDER_ERROR(60003, "订单状态异常，不能支付");
 
-
-
-    ;
 
     private final int code;
     private final String message;

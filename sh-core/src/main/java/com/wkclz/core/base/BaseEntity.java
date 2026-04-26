@@ -1,6 +1,7 @@
 package com.wkclz.core.base;
 
-import com.wkclz.core.annotation.Desc;
+import com.wkclz.core.annotation.FieldDesc;
+import com.wkclz.core.exception.SystemException;
 import com.wkclz.tool.utils.BeanUtil;
 import lombok.Data;
 
@@ -13,37 +14,37 @@ public class BaseEntity extends DbColumnEntity {
     private static final long DEFAULT_CURRENT = 1L;
     private static final long DEFAULT_SIZE = 10L;
 
-    @Desc("用户编码")
+    @FieldDesc("用户编码")
     private String userCode;
-    @Desc("租户编码")
+    @FieldDesc("租户编码")
     private String tenantCode;
 
     /**
      * 查询辅助
      */
-    @Desc("查询排序规则")
+    @FieldDesc("查询排序规则")
     private String orderBy;
-    @Desc("主键ID数组")
+    @FieldDesc("主键ID数组")
     private List<Long> ids;
-    @Desc("模糊查询关键字")
+    @FieldDesc("模糊查询关键字")
     private String keyword;
-    @Desc("创建时间从")
+    @FieldDesc("创建时间从")
     private LocalDateTime timeFrom;
-    @Desc("创建时间到")
+    @FieldDesc("创建时间到")
     private LocalDateTime timeTo;
 
     /**
      * 分页辅助
      */
-    @Desc("分页页码")
+    @FieldDesc("分页页码")
     private Long current;
-    @Desc("分页大小")
+    @FieldDesc("分页大小")
     private Long size;
-    @Desc("偏移量")
+    @FieldDesc("偏移量")
     private Long offset;
-    @Desc("总数据量")
+    @FieldDesc("总数据量")
     private Long total;
-    @Desc("统计数")
+    @FieldDesc("统计数")
     private Long count;
 
 
@@ -72,7 +73,7 @@ public class BaseEntity extends DbColumnEntity {
             return null;
         }
         BeanUtil.cpAll(source, newTarget);
-        return target;
+        return newTarget;
     }
 
     public static <T extends BaseEntity> T copyIfNotNull(T source, T target) {
@@ -94,7 +95,7 @@ public class BaseEntity extends DbColumnEntity {
                 // noinspection unchecked
                 target = (T)source.getClass().getDeclaredConstructor().newInstance();
             } catch (Exception e) {
-                // who care ?
+                throw new SystemException("Failed to create new instance of " + source.getClass().getName(), e);
             }
         }
         return target;

@@ -22,8 +22,8 @@ public enum Qos {
      */
     QOS_2(2, "cleanSession=true 无离线消息，在线消息保证只推一次 cleanSession=false 暂不支持");
 
-    private Integer value;
-    private String label;
+    private final int value;
+    private final String label;
 
     Qos(int value, String label) {
         this.value = value;

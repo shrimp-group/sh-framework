@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class DynamicDataSourceConfig {
 
     @Value("${sh.dynamicdb.cache-second:60}")
-    private Integer dynamicdbCacheSecond;
+    private int dynamicdbCacheSecond;
 
 
 }

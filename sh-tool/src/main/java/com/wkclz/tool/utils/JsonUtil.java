@@ -15,7 +15,7 @@ public class JsonUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonUtil.class);
 
-    private static final Pattern PATTERN = Pattern.compile("\\s*");
+    private static final Pattern BLANK_PATTERN = Pattern.compile("\\t|\\r|\\n");
 
 
     /**
@@ -53,7 +53,7 @@ public class JsonUtil {
                 writer.flush();
             }
         } catch (IOException e) {
-            // who care ?
+            logger.error("writeJson fail: {}", e.getMessage(), e);
         }
 
     }
@@ -135,7 +135,7 @@ public class JsonUtil {
     private static String replaceBlank(String str) {
         String dest = "";
         if (str != null) {
-            Matcher m = PATTERN.matcher(str);
+            Matcher m = BLANK_PATTERN.matcher(str);
             dest = m.replaceAll("");
         }
         return dest;

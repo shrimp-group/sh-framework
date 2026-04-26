@@ -16,6 +16,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Description:
@@ -30,6 +31,9 @@ public class FreeMarkerTemplateUtil {
 
     private static final Configuration CONFIGURATION = new Configuration(Configuration.VERSION_2_3_22);
 
+    // 用于保护 CONFIGURATION 的 setTemplateLoader / setDirectoryForTemplateLoading 操作线程安全
+    private static final ReentrantLock CONFIG_LOCK = new ReentrantLock();
+
     static {
         //这里比较重要，用来指定加载模板所在的路径
         CONFIGURATION.setTemplateLoader(new ClassTemplateLoader(FreeMarkerTemplateUtil.class, "/templates"));
@@ -40,10 +44,13 @@ public class FreeMarkerTemplateUtil {
 
     public static Template getTemplate(String templateName) {
         try {
+            CONFIG_LOCK.lock();
             CONFIGURATION.setTemplateLoader(new ClassTemplateLoader(FreeMarkerTemplateUtil.class, "/templates"));
             return CONFIGURATION.getTemplate(templateName);
         } catch (IOException e) {
             throw SystemException.of(e.getMessage());
+        } finally {
+            CONFIG_LOCK.unlock();
         }
     }
 
@@ -57,12 +64,15 @@ public class FreeMarkerTemplateUtil {
      */
     public static Template getTemplate(String templateName, String templatesDir) {
         try {
+            CONFIG_LOCK.lock();
             if (StringUtils.isNotBlank(templatesDir)) {
                 CONFIGURATION.setDirectoryForTemplateLoading(new File(templatesDir));
             }
             return CONFIGURATION.getTemplate(templateName);
         } catch (IOException e) {
             throw SystemException.of(e.getMessage());
+        } finally {
+            CONFIG_LOCK.unlock();
         }
     }
 
@@ -72,10 +82,11 @@ public class FreeMarkerTemplateUtil {
 
 
     public static String parseString(String content, Map<String, Object> params) throws IOException, TemplateException {
-        Configuration stringConfig = new Configuration(Configuration.VERSION_2_3_23);
+        Configuration stringConfig = new Configuration(Configuration.VERSION_2_3_22);
         StringTemplateLoader stringLoader = new StringTemplateLoader();
         stringLoader.putTemplate("_template_", content);
         stringConfig.setTemplateLoader(stringLoader);
+        stringConfig.setDefaultEncoding("UTF-8");
         Template tpl = stringConfig.getTemplate("_template_", "utf-8");
         return FreeMarkerTemplateUtils.processTemplateIntoString(tpl, params);
     }

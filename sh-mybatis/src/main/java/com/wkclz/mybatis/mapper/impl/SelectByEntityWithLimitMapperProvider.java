@@ -31,13 +31,8 @@ public class SelectByEntityWithLimitMapperProvider extends BaseMapperProvider {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT ").append(selectFieldsStr).append(" FROM ").append(tableName).append(" WHERE ").append(whereClause);
         
-        // 处理排序
-        String orderBy = entity.getOrderBy();
-        if (orderBy != null && !(orderBy).trim().isEmpty()) {
-            sql.append(" ORDER BY ").append(orderBy);
-        } else {
-            sql.append(" ORDER BY ").append(primaryKey).append(" DESC");
-        }
+        // 处理排序（防 SQL 注入）
+        sql.append(buildOrderByClause(entity.getOrderBy(), property, primaryKey + " DESC"));
         
         // 处理分页
         sql.append(" LIMIT #{offset}, #{size}");

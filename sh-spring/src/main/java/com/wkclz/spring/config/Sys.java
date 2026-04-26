@@ -58,7 +58,7 @@ public class Sys implements ApplicationRunner {
                 envType = EnvType.UAT;
             }
             if (profile.contains(EnvType.SIT.toString())) {
-                envType = EnvType.PROD;
+                envType = EnvType.SIT;
             }
             if (profile.contains(EnvType.DEV.toString())) {
                 envType = EnvType.DEV;

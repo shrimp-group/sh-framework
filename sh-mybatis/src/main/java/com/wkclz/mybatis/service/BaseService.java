@@ -55,11 +55,37 @@ public abstract class BaseService<T extends BaseEntity, M extends BaseMapper<T>>
 
     /**
      * 根据ID删除单条数据
+     * @param id id
+     * @return 删除结果
+     */
+    public int deleteById(Long id) {
+        return mapper.deleteById(id);
+    }
+
+    /**
+     * 根据ID删除单条数据
      * @param entity 实体对象
      * @return 删除结果
      */
     public int deleteById(T entity) {
-        return mapper.deleteById(entity);
+        return mapper.deleteByIdEntity(entity);
+    }
+    /**
+     * 根据ID删除单条数据
+     * @param entity 实体对象
+     * @return 删除结果
+     */
+    public int deleteByIdEntity(T entity) {
+        return mapper.deleteByIdEntity(entity);
+    }
+
+    /**
+     * 根据ID列表批量删除数据
+     * @param ids id 列表
+     * @return 删除结果
+     */
+    public int deleteByIds(List<Long> ids) {
+        return mapper.deleteByIds(ids);
     }
 
     /**
@@ -68,7 +94,16 @@ public abstract class BaseService<T extends BaseEntity, M extends BaseMapper<T>>
      * @return 删除结果
      */
     public int deleteByIds(T entity) {
-        return mapper.deleteByIds(entity);
+        return mapper.deleteByIdsEntity(entity);
+    }
+
+    /**
+     * 根据ID列表批量删除数据
+     * @param entity 实体对象
+     * @return 删除结果
+     */
+    public int deleteByIdsEntity(T entity) {
+        return mapper.deleteByIdsEntity(entity);
     }
 
     /**
