@@ -1,6 +1,7 @@
 package com.wkclz.mybatis.mapper.impl;
 
 import com.wkclz.core.exception.ValidationException;
+import com.wkclz.core.user.UserContext;
 import com.wkclz.mybatis.bean.DbEntityProperty;
 import com.wkclz.tool.bean.JavaField;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +42,10 @@ public class DeleteByIdsMapperProvider extends BaseMapperProvider {
         // 处理updateBy字段
         JavaField updateByField = property.getUpdateByField();
         if (updateByField != null) {
-            sql.append(", ").append(updateByField.getColumnName()).append(" = #{");
-            sql.append(updateByField.getFieldName()).append("}");
+            String userCode = UserContext.getUserCode();
+            if (userCode != null) {
+                sql.append(", ").append(updateByField.getColumnName()).append(" = '").append(escapeSql(userCode)).append("'");
+            }
         }
 
         // 构建ids IN条件

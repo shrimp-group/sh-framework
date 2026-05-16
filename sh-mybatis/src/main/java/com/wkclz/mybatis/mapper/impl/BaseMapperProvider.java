@@ -223,4 +223,17 @@ public class BaseMapperProvider {
         return " ORDER BY " + safeOrderBy;
     }
 
+    /**
+     * SQL 转义，防止 SQL 注入
+     * 将字符串中的单引号转义为两个单引号
+     * @param str 需要转义的字符串
+     * @return 转义后的字符串
+     */
+    protected String escapeSql(String str) {
+        if (str == null) {
+            return null;
+        }
+        return str.replace("'", "''");
+    }
+
 }

@@ -2,6 +2,7 @@ package com.wkclz.mybatis.bean;
 
 import com.wkclz.core.annotation.FieldDesc;
 import com.wkclz.core.base.BaseEntity;
+import com.wkclz.core.exception.SystemException;
 import com.wkclz.mybatis.annotation.Blob;
 import com.wkclz.tool.bean.JavaField;
 import com.wkclz.tool.utils.StringUtil;
@@ -54,6 +55,7 @@ public class DbEntityProperty implements Serializable {
         if (entityClass == null) {
             return null;
         }
+        entityClass = getDbMappingClass(entityClass);
 
         DbEntityProperty property = new DbEntityProperty();
         property.setEntityClass(entityClass);
@@ -107,7 +109,22 @@ public class DbEntityProperty implements Serializable {
         return property;
     }
 
-
+    private static Class<?> getDbMappingClass(Class<?> clazz) {
+        if (clazz == null) {
+            throw SystemException.of("无法进行数据库操作，实体类未找到!");
+        }
+        Class<?> pclazz = null;
+        while (!clazz.equals(Object.class)) {
+            Class<?> superClass = clazz.getSuperclass();
+            if (superClass != null && superClass.equals(BaseEntity.class)) {
+                // 找到了直接继承 BaseEntity 的类
+                pclazz = clazz;
+                break;
+            }
+            clazz = superClass;
+        }
+        return pclazz == null ? clazz : pclazz;
+    }
 
     private static List<JavaField> getProperty(Class<?> entityClass) {
 
