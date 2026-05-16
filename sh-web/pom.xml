@@ -43,7 +43,14 @@
             <artifactId>spring-jdbc</artifactId>
             <optional>true</optional>
         </dependency>
-
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
 
     </dependencies>
 

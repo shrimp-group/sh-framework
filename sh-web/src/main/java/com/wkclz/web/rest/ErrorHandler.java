@@ -6,6 +6,7 @@ import com.mysql.cj.jdbc.exceptions.MysqlDataTruncation;
 import com.wkclz.core.base.R;
 import com.wkclz.core.exception.CommonException;
 import com.wkclz.core.exception.UserException;
+import com.wkclz.core.exception.ValidationException;
 import com.wkclz.spring.config.SpringContextHolder;
 import com.wkclz.spring.config.SystemConfig;
 import com.wkclz.spring.utils.MailUtil;
@@ -18,8 +19,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.UncategorizedSQLException;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -90,6 +94,31 @@ public class ErrorHandler {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         printErrorLog(request, response, status, e);
         return R.error(status.value(), status.getReasonPhrase());
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public R validationExceptionHandler(ValidationException e, HttpServletRequest request, HttpServletResponse response) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        printErrorLog(request, response, status, e);
+        return R.error(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public R methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e, HttpServletRequest request, HttpServletResponse response) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        FieldError fieldError = e.getBindingResult().getFieldError();
+        String message = fieldError != null ? fieldError.getDefaultMessage() : "参数校验失败";
+        printErrorLog(request, response, status, e);
+        return R.error(status.value(), message);
+    }
+
+    @ExceptionHandler(BindException.class)
+    public R bindExceptionHandler(BindException e, HttpServletRequest request, HttpServletResponse response) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        FieldError fieldError = e.getBindingResult().getFieldError();
+        String message = fieldError != null ? fieldError.getDefaultMessage() : "参数绑定失败";
+        printErrorLog(request, response, status, e);
+        return R.error(status.value(), message);
     }
 
     @ExceptionHandler(CommonException.class)

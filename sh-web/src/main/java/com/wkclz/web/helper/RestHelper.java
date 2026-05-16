@@ -240,14 +240,14 @@ public class RestHelper {
                         continue;
                     }
                     Desc desc = field.getAnnotation(Desc.class);
-                    FieldDesc fieldDesc = field.getAnnotation(FieldDesc.class);
+                    ApiDesc apiDesc = field.getAnnotation(ApiDesc.class);
 
                     String value = null;
                     if (desc != null) {
                         value = desc.value();
                     }
-                    if (fieldDesc != null) {
-                        value = fieldDesc.value();
+                    if (apiDesc != null) {
+                        value = apiDesc.value();
                     }
                     if (StringUtils.isBlank(value)) {
                         continue;
@@ -262,7 +262,7 @@ public class RestHelper {
                     }
                     for (RestInfo restInfo : restInfos) {
                         restInfo.setDesc(value);
-                        restInfo.setWriteFlag(uri.startsWith("/public")?1:0);
+                        restInfo.setWriteFlag(uri.contains("/public/")?1:0);
                     }
                 }
             } catch (IllegalAccessException e) {
