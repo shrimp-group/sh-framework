@@ -14,6 +14,11 @@ public class BaseEntity extends DbColumnEntity {
     private static final long DEFAULT_CURRENT = 1L;
     private static final long DEFAULT_SIZE = 10L;
 
+    @FieldDesc("创建人姓名")
+    private String createByName;
+    @FieldDesc("更新人姓名")
+    private String updateByName;
+
     @FieldDesc("用户编码")
     private String userCode;
     @FieldDesc("租户编码")
