@@ -1,0 +1,28 @@
+package com.wkclz.demo.bean.entity;
+
+import com.wkclz.core.base.BaseEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * 用户实体类
+ */
+@Schema(description = "用户实体")
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class User extends BaseEntity {
+
+    @Schema(description = "用户编码", example = "U001")
+    private String userCode;
+
+    @Schema(description = "用户名", example = "admin")
+    private String username;
+
+    @Schema(description = "昵称", example = "管理员")
+    private String nickname;
+
+    @Schema(description = "用户状态：1-启用，0-禁用", example = "1")
+    private Integer userStatus;
+
+}

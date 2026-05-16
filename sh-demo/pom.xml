@@ -19,18 +19,15 @@
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Starter Web -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
         <!-- 项目内部依赖 -->
         <dependency>
             <groupId>com.wkclz.framework</groupId>
             <artifactId>sh-mybatis</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.wkclz.framework</groupId>
+            <artifactId>sh-web</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

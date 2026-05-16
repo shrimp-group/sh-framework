@@ -1,6 +1,6 @@
 package com.wkclz.demo.mapper;
 
-import com.wkclz.demo.entity.User;
+import com.wkclz.demo.bean.entity.User;
 import com.wkclz.mybatis.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 

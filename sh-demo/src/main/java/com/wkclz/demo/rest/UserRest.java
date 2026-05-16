@@ -1,126 +1,92 @@
 package com.wkclz.demo.rest;
 
 import com.wkclz.core.base.PageData;
+import com.wkclz.core.base.R;
 import com.wkclz.core.base.UserInfo;
+import com.wkclz.core.exception.NotFoundException;
 import com.wkclz.core.user.UserContext;
-import com.wkclz.demo.entity.User;
+import com.wkclz.demo.bean.entity.User;
+import com.wkclz.demo.bean.vo.user.*;
 import com.wkclz.demo.service.UserService;
+import com.wkclz.web.bean.IdReq;
+import com.wkclz.web.bean.RemoveReq;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "1.用户管理", description = "用户增删改查接口")
 @RestController
-@RequestMapping("/user")
+@RequestMapping(Route.PREFIX)
 public class UserRest {
 
     @Autowired
     private UserService userService;
 
-    /**
-     * 新增用户
-     */
-    @PostMapping
-    public User addUser(@RequestBody User user) {
+    @Operation(summary = "1.用户-分页查询", description = "根据条件分页查询用户列表")
+    @GetMapping(Route.USER_PAGE)
+    public R<PageData<UserPageResp>> userPage(@Valid UserPageReq req) {
         setLoginUser();
-        int insert = userService.insert(user);
-        return user;
+        User user = new User();
+        BeanUtils.copyProperties(req, user);
+        PageData<User> page = userService.selectPage(user);
+        List<UserPageResp> list = page.getRecords().stream().map(t -> {
+            UserPageResp resp = new UserPageResp();
+            BeanUtils.copyProperties(t, resp);
+            return resp;
+        }).toList();
+        PageData<UserPageResp> convert = PageData.convert(page, list);
+        return R.ok(convert);
     }
 
-    /**
-     * 批量新增用户
-     */
-    @PostMapping("/batch")
-    public List<User> addUsers(@RequestBody List<User> users) {
+    @Operation(summary = "2.用户-详情", description = "根据ID查询用户详情")
+    @GetMapping(Route.USER_INFO)
+    public R<UserResp> userInfo(@Valid IdReq req) {
         setLoginUser();
-        userService.insertBatch(users);
-        return users;
+        User user = userService.selectById(req.getId());
+        if (user == null) {
+            throw NotFoundException.of("用户不存在，ID: {}", req.getId());
+        }
+        UserResp resp = new UserResp();
+        BeanUtils.copyProperties(user, resp);
+        return R.ok(resp);
     }
 
-    /**
-     * 根据ID删除用户
-     */
-    @DeleteMapping("/{id}")
-    public Integer deleteUser(@PathVariable Long id) {
+    @Operation(summary = "3.用户-创建", description = "创建新用户")
+    @PostMapping(Route.USER_CREATE)
+    public R<UserResp> userCreate(@Valid @RequestBody UserCreateReq req) {
         setLoginUser();
-        return userService.deleteById(id);
+        User user = new User();
+        BeanUtils.copyProperties(req, user);
+        userService.insert(user);
+        UserResp resp = new UserResp();
+        BeanUtils.copyProperties(user, resp);
+        return R.ok(resp);
     }
 
-    /**
-     * 根据ID删除用户
-     */
-    @DeleteMapping
-    public Integer deleteUser(@RequestBody User user) {
-        Assert.notNull(user.getIds(), "ids 不能为空");
+    @Operation(summary = "4.用户-更新", description = "更新用户信息（需要版本号）")
+    @PostMapping(Route.USER_UPDATE)
+    public R<Integer> userUpdate(@Valid @RequestBody UserUpdateReq req) {
         setLoginUser();
-        return userService.deleteByIds(user.getIds());
+        User user = new User();
+        BeanUtils.copyProperties(req, user);
+        int i = userService.updateByIdSelective(user);
+        return R.ok(i);
     }
 
-    /**
-     * 更新用户信息（全字段）
-     */
-    @PutMapping
-    public Integer updateUser(@RequestBody User user) {
+    @Operation(summary = "5.用户-删除", description = "根据ID删除用户，支持单个和批量")
+    @PostMapping(Route.USER_REMOVE)
+    public R<Integer> userRemove(@Valid @RequestBody RemoveReq req) {
         setLoginUser();
-        return userService.updateById(user);
+        if (req.getIds() != null && !req.getIds().isEmpty()) {
+            return R.ok(userService.deleteByIds(req.getIds()));
+        }
+        return R.ok(userService.deleteById(req.getId()));
     }
-
-    /**
-     * 更新用户信息（部分字段）
-     */
-    @PatchMapping
-    public Integer updateUserSelective(@RequestBody User user) {
-        setLoginUser();
-        return userService.updateByIdSelective(user);
-    }
-
-    /**
-     * 根据ID查询用户
-     */
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        setLoginUser();
-        return userService.selectById(id);
-    }
-
-    /**
-     * 根据ID列表查询用户
-     */
-    @GetMapping("/ids")
-    public List<User> getUsersByIds(@RequestParam List<Long> ids) {
-        setLoginUser();
-        return userService.selectByIds(ids);
-    }
-
-    /**
-     * 查询所有用户
-     */
-    @GetMapping
-    public List<User> getAllUsers() {
-        setLoginUser();
-        return userService.selectAll();
-    }
-
-    /**
-     * 根据条件查询用户
-     */
-    @PostMapping("/list")
-    public List<User> getUsersByCondition(@RequestBody User user) {
-        setLoginUser();
-        return userService.selectByEntity(user);
-    }
-
-    /**
-     * 分页查询用户
-     */
-    @PostMapping("/page")
-    public PageData<User> getUsersByPage(@RequestBody User user) {
-        setLoginUser();
-        return userService.selectPage(user);
-    }
-
-
 
     private void setLoginUser() {
         UserInfo userinfo = new UserInfo();
