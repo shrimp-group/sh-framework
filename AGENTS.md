@@ -133,11 +133,12 @@ sh-dynamicdb / sh-redis / sh-web / sh-xxljob / sh-mqtt
 
 ## 配置前缀
 
-所有框架配置统一使用 `shrimp.cloud` 前缀：
+所有框架配置统一使用 `sh` 前缀：
 
-- `shrimp.cloud.mqtt.*`：MQTT 配置
-- `shrimp.cloud.redis.*`：Redis 配置
-- `shrimp.cloud.xxl-job.*`：XXL-Job 配置
+- `sh.swagger.*`：Swagger API 文档配置
+- `sh.mqtt.*`：MQTT 配置
+- `sh.redis.*`：Redis 配置
+- `sh.xxl-job.*`：XXL-Job 配置
 
 ## 技术栈
 
@@ -149,6 +150,7 @@ sh-dynamicdb / sh-redis / sh-web / sh-xxljob / sh-mqtt
 - **缓存**: Redis (Lettuce)
 - **消息队列**: MQTT (Eclipse Paho)
 - **定时任务**: XXL-Job
+- **API 文档**: Knife4j (基于 OpenAPI 3.x)
 - **JSON**: fastjson2
 - **工具库**: Hutool, Guava, Apache Commons
 - **加密**: BouncyCastle
