@@ -144,7 +144,10 @@ public abstract class AbstractShrimpRoutingDataSource extends AbstractRoutingDat
     protected DataSource determineTargetDataSource() {
         Assert.notNull(this.resolvedDataSources, "DataSource router not initialized");
         Object lookupKey = determineCurrentLookupKey();
-        DataSource dataSource = this.resolvedDataSources.get(lookupKey);
+        DataSource dataSource = null;
+        if (lookupKey != null) {
+            dataSource = this.resolvedDataSources.get(lookupKey);
+        }
         if (dataSource == null && (this.lenientFallback || lookupKey == null)) {
             dataSource = this.resolvedDefaultDataSource;
         }
