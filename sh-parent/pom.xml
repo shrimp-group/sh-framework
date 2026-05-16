@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.0</version>
+        <version>4.0.6</version>
         <!-- 跳过本地文件系统查找，直接使用仓库中的 parent -->
         <relativePath/>
     </parent>
