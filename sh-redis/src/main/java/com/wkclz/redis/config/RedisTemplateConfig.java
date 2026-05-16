@@ -1,5 +1,6 @@
 package com.wkclz.redis.config;
 
+import com.wkclz.redis.serializer.Fastjson2JsonRedisSerializer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -27,12 +28,13 @@ public class RedisTemplateConfig {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
 
-        // 设置key序列化器
-        RedisSerializer stringSerializer = new StringRedisSerializer();
+        RedisSerializer<String> stringSerializer = new StringRedisSerializer();
         redisTemplate.setKeySerializer(stringSerializer);
         redisTemplate.setHashKeySerializer(stringSerializer);
-        redisTemplate.setValueSerializer(stringSerializer);
-        redisTemplate.setHashValueSerializer(stringSerializer);
+
+        Fastjson2JsonRedisSerializer<Object> jsonSerializer = new Fastjson2JsonRedisSerializer<>(Object.class);
+        redisTemplate.setValueSerializer(jsonSerializer);
+        redisTemplate.setHashValueSerializer(jsonSerializer);
 
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
