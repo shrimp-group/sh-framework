@@ -11,8 +11,8 @@ import java.util.List;
 @Data
 public class BaseEntity extends DbColumnEntity {
 
-    private static final long DEFAULT_CURRENT = 1L;
-    private static final long DEFAULT_SIZE = 10L;
+    protected static final long DEFAULT_CURRENT = 1L;
+    protected static final long DEFAULT_SIZE = 10L;
 
     @FieldDesc("创建人姓名")
     private String createByName;

@@ -83,6 +83,12 @@ public class PageData<T> {
      * @return PageData对象
      */
     public static <T> PageData<T> of(List<T> records, Long total, Long current, Long size) {
+        if (current == null) {
+            current = BaseEntity.DEFAULT_CURRENT;
+        }
+        if (size == null) {
+            size = BaseEntity.DEFAULT_SIZE;
+        }
         PageData<T> pageData = new PageData<>();
         pageData.setCurrent(current);
         pageData.setSize(size);
