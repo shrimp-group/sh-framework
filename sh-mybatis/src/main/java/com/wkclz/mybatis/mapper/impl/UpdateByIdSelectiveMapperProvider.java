@@ -29,7 +29,7 @@ public class UpdateByIdSelectiveMapperProvider extends BaseMapperProvider {
         String version = DbEntityProperty.VERSION_FIELD;
 
         // 获取id
-        Object id = property.getIdField().getField().get(entity);
+        Object id = getFieldValue(property.getIdField(), entity);
         if (id == null) {
             throw ValidationException.of("ID不能为空");
         }
@@ -38,7 +38,7 @@ public class UpdateByIdSelectiveMapperProvider extends BaseMapperProvider {
         for (JavaField field : property.getUpdateFields()) {
             String fieldName = field.getFieldName();
 
-            Object value = field.getField().get(entity);
+            Object value = getFieldValue(field, entity);
             // 跳过空值字段
             if (value == null) {
                 continue;
@@ -57,12 +57,12 @@ public class UpdateByIdSelectiveMapperProvider extends BaseMapperProvider {
 
         // 处理updateBy字段
         JavaField updateByField = property.getUpdateByField();
-        if (updateByField.getField().get(entity) != null) {
+        if (getFieldValue(updateByField, entity) != null) {
             updateSet.append(", ").append(updateByField.getColumnName()).append(" = #{").append(updateByField.getFieldName()).append("}");
         }
 
         // 获取id和version字段值
-        Object versionValue = property.getVersionField().getField().get(entity);
+        Object versionValue = getFieldValue(property.getVersionField(), entity);
         String sql = "UPDATE " + tableName + " SET " + updateSet + " WHERE " + primaryKey + " = #{" + primaryKey + "}" + " AND " + deleted + " = 0";
         if (versionValue != null) {
             sql += " AND " + version + " = #{" + property.getVersionField().getFieldName() + "}";

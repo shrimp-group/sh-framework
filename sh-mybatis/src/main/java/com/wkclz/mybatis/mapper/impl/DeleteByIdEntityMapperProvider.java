@@ -29,7 +29,7 @@ public class DeleteByIdEntityMapperProvider extends BaseMapperProvider {
         String version = DbEntityProperty.VERSION_FIELD;
 
         // 获取id
-        Object id = property.getIdField().getField().get(entity);
+        Object id = getFieldValue(property.getIdField(), entity);
         if (id == null) {
             throw ValidationException.of("ID不能为空");
         }
@@ -40,7 +40,7 @@ public class DeleteByIdEntityMapperProvider extends BaseMapperProvider {
 
         // 处理updateBy字段
         JavaField updateByField = property.getUpdateByField();
-        if (updateByField.getField().get(entity) != null) {
+        if (getFieldValue(updateByField, entity) != null) {
             sql.append(", ").append(updateByField.getColumnName()).append(" = #{");
             sql.append(updateByField.getFieldName()).append("}");
         }

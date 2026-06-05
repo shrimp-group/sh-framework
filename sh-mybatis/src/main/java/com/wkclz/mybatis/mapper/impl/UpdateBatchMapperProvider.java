@@ -34,7 +34,7 @@ public class UpdateBatchMapperProvider extends BaseMapperProvider {
             String fieldName = field.getFieldName();
             String columnName = field.getColumnName();
 
-            Object value = field.getField().get(entity);
+            Object value = getFieldValue(field, entity);
             if (value == null) {
                 continue;
             }
@@ -54,14 +54,14 @@ public class UpdateBatchMapperProvider extends BaseMapperProvider {
 
         // 处理updateBy字段
         JavaField updateByField = property.getUpdateByField();
-        if (updateByField.getField().get(entity) != null) {
+        if (getFieldValue(updateByField, entity) != null) {
             updateSet.append(", ").append(updateByField.getColumnName()).append(" = #{").append(updateByField.getFieldName()).append("}");
         }
         // 添加version自增
         updateSet.append(", ").append(version).append(" = ").append(version).append(" + 1");
         
         // 构建ids IN条件
-        Object idsObj = property.getIdsField().getField().get(entity);
+        Object idsObj = getFieldValue(property.getIdsField(), entity);
         if (!(idsObj instanceof List<?> ids)) {
             return "";
         }

@@ -23,7 +23,7 @@ public class UpdateByIdMapperProvider extends BaseMapperProvider {
         }
         DbEntityProperty property = getDbEntityProperty(entity.getClass());
         // 获取id
-        Object id = property.getIdField().getField().get(entity);
+        Object id = getFieldValue(property.getIdField(), entity);
         if (id == null) {
             throw ValidationException.of("ID不能为空");
         }
@@ -39,7 +39,7 @@ public class UpdateByIdMapperProvider extends BaseMapperProvider {
                 updateSet.append(", ");
             }
 
-            Object value = field.getField().get(entity);
+            Object value = getFieldValue(field, entity);
             // 跳过空值字段
             if (value == null && field.isNotNull()) {
                 throw ValidationException.of("字段 {}({})不能为空", field.getColumnName(), field.getFieldName());
@@ -56,12 +56,12 @@ public class UpdateByIdMapperProvider extends BaseMapperProvider {
 
         // 处理updateBy字段
         JavaField updateByField = property.getUpdateByField();
-        if (updateByField.getField().get(entity) != null) {
+        if (getFieldValue(updateByField, entity) != null) {
             updateSet.append(", ").append(updateByField.getColumnName()).append(" = #{").append(updateByField.getFieldName()).append("}");
         }
 
         // 获取id和version字段值
-        Object versionValue = property.getVersionField().getField().get(entity);
+        Object versionValue = getFieldValue(property.getVersionField(), entity);
 
         StringBuilder sql = new StringBuilder();
         sql.append("UPDATE ").append(tableName).append(" SET ").append(updateSet).append(" WHERE ").append(primaryKey).append(" = #{").append(primaryKey).append("} AND ").append(deleted).append(" = 0");

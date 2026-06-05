@@ -25,7 +25,7 @@ public class InsertMapperProvider extends BaseMapperProvider {
         StringBuilder values = new StringBuilder();
 
         for (JavaField f : property.getInsertFields()) {
-            Object value = f.getField().get(entity);
+            Object value = getFieldValue(f, entity);
             // 跳过空值字段
             if (value == null) {
                 if (f.isNotNull()) {

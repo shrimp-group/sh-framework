@@ -8,6 +8,7 @@ import com.wkclz.tool.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.builder.annotation.ProviderContext;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
@@ -50,24 +51,41 @@ public class BaseMapperProvider {
 
 
     /**
+     * 获取字段值，优先使用 getter Method，getter 为 null 时回退到 Field.get()
+     * @param field JavaField 对象
+     * @param entity 实体对象
+     * @return 字段值
+     */
+    protected static Object getFieldValue(JavaField field, Object entity) {
+        try {
+            if (field.getGetter() != null) {
+                return field.getGetter().invoke(entity);
+            }
+            return field.getField().get(entity);
+        } catch (IllegalAccessException e) {
+            throw SystemException.of(500, "获取字段值失败: field={}, entity={}", field.getFieldName(), entity, e);
+        } catch (InvocationTargetException e) {
+            Throwable target = e.getTargetException();
+            if (target instanceof RuntimeException re) {
+                throw re;
+            }
+            throw SystemException.of(500, "获取字段值失败: field={}, entity={}", field.getFieldName(), entity, target);
+        }
+    }
+
+    /**
      * 获取字段值
      * @param entity 实体对象
      * @param fieldName 字段名
      * @return 字段值
      */
     protected Object getFieldValue(BaseEntity entity, String fieldName) {
-        try {
-            DbEntityProperty property = getDbEntityProperty(entity.getClass());
-            // 查找字段
-            for (JavaField field : property.getFields()) {
-                if (field.getFieldName().equals(fieldName)) {
-                    return field.getField().get(entity);
-                }
-            }
+        DbEntityProperty property = getDbEntityProperty(entity.getClass());
+        JavaField field = property.getFieldMap().get(fieldName);
+        if (field == null) {
             return null;
-        } catch (IllegalAccessException e) {
-            throw SystemException.of(500, "获取字段值失败: entity={}, fieldName={}", entity, fieldName, e);
         }
+        return getFieldValue(field, entity);
     }
 
 
@@ -114,7 +132,7 @@ public class BaseMapperProvider {
             String fieldName = field.getFieldName();
             String columnName = field.getColumnName();
 
-            Object value = field.getField().get(entity);
+            Object value = getFieldValue(field, entity);
             // 跳过空值字段
             if (value == null) {
                 continue;
@@ -221,19 +239,6 @@ public class BaseMapperProvider {
             return " ORDER BY " + defaultOrderBy;
         }
         return " ORDER BY " + safeOrderBy;
-    }
-
-    /**
-     * SQL 转义，防止 SQL 注入
-     * 将字符串中的单引号转义为两个单引号
-     * @param str 需要转义的字符串
-     * @return 转义后的字符串
-     */
-    protected String escapeSql(String str) {
-        if (str == null) {
-            return null;
-        }
-        return str.replace("'", "''");
     }
 
 }

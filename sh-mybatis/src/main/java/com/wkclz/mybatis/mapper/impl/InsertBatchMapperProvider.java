@@ -33,7 +33,7 @@ public class InsertBatchMapperProvider extends BaseMapperProvider {
             }
             // 表定义不为空，不无论值，字段值为空的情况
             for (JavaField f : notNullfields) {
-                Object value = f.getField().get(entity);
+                Object value = getFieldValue(f, entity);
                 if (value == null) {
                     throw ValidationException.of("字段 {}({})不能为空", f.getColumnName(), f.getFieldName());
                 }

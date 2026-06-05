@@ -30,7 +30,7 @@ public class DeleteByIdsEntityMapperProvider extends BaseMapperProvider {
         String version = DbEntityProperty.VERSION_FIELD;
 
         // 获取ids字段值
-        Object ids = property.getIdsField().getField().get(entity);
+        Object ids = getFieldValue(property.getIdsField(), entity);
         if (ids == null) {
             throw ValidationException.of("ids不能为空");
         }
@@ -47,7 +47,7 @@ public class DeleteByIdsEntityMapperProvider extends BaseMapperProvider {
         
         // 处理updateBy字段
         JavaField updateByField = property.getUpdateByField();
-        if (updateByField.getField().get(entity) != null) {
+        if (getFieldValue(updateByField, entity) != null) {
             sql.append(", ").append(updateByField.getColumnName()).append(" = #{").append(updateByField.getFieldName()).append("}");
         }
 

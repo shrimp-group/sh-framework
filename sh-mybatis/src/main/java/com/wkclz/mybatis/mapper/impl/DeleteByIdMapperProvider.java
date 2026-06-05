@@ -42,7 +42,7 @@ public class DeleteByIdMapperProvider extends BaseMapperProvider {
         if (updateByField != null) {
             String userCode = UserContext.getUserCode();
             if (userCode != null) {
-                sql.append(", ").append(updateByField.getColumnName()).append(" = '").append(escapeSql(userCode)).append("'");
+                sql.append(", ").append(updateByField.getColumnName()).append(" = #{updateBy}");
             }
         }
 

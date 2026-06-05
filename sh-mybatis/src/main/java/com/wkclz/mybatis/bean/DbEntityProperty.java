@@ -40,6 +40,7 @@ public class DbEntityProperty implements Serializable {
 
 
     private List<JavaField> fields;
+    private Map<String, JavaField> fieldMap;
     private JavaField idField;
     private JavaField idsField;
     private JavaField createByField;
@@ -63,6 +64,13 @@ public class DbEntityProperty implements Serializable {
         property.setEntityNameLowerCase(StringUtil.firstChatToLowerCase(property.getEntityName()));
         property.setTableName(StringUtil.camelToUnderline(property.getEntityName()));
         property.setFields(getProperty(entityClass));
+
+        // 构建 fieldMap，支持 O(1) 按字段名查找
+        Map<String, JavaField> map = new LinkedHashMap<>();
+        for (JavaField jf : property.getFields()) {
+            map.put(jf.getFieldName(), jf);
+        }
+        property.setFieldMap(map);
 
         List<JavaField> insertFields = new ArrayList<>();
         List<JavaField> updateFields = new ArrayList<>();
