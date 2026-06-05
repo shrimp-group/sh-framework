@@ -115,8 +115,8 @@ public class RedisIdGenerator {
         String key = ID_GENERATOR_KEY_PREFIX + businessType;
         
         try {
-            // 获取当前时间戳对应的序列号
-            Long sequence = redisHelper.increment(key);
+            // 获取当前时间戳对应的序列号，同时设置过期时间
+            Long sequence = redisHelper.increment(key, 5, TimeUnit.SECONDS);
             if (sequence == null) {
                 sequence = 1L;
             }
@@ -126,7 +126,11 @@ public class RedisIdGenerator {
                 // 如果序列号超过最大值，等待下一毫秒
                 if (sequence > MAX_SEQUENCE) {
                     timestamp = waitNextMillis(lastTimestamp);
-                    sequence = 1L;
+                    // 重置序列号，重新获取
+                    sequence = redisHelper.increment(key, 5, TimeUnit.SECONDS);
+                    if (sequence == null) {
+                        sequence = 1L;
+                    }
                 }
             } else {
                 // 新的毫秒，重置序列号
@@ -137,8 +141,8 @@ public class RedisIdGenerator {
             lastTimestamp = timestamp;
             lastSequence = sequence;
             
-            // 设置键的过期时间（当前时间 + 5秒）
-            redisHelper.set(key, sequence, 5, TimeUnit.SECONDS);
+            // 使用 setNumber 来确保是纯数字格式
+            redisHelper.setNumber(key, sequence, 5, TimeUnit.SECONDS);
             
             // 计算相对时间戳（当前时间戳 - 基础时间）
             long relativeTimestamp = timestamp - BASE_TIME;

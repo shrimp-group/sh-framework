@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 
+import java.util.List;
+
 @Data
 @Configuration
 public class RedisConfig {
@@ -19,6 +21,14 @@ public class RedisConfig {
     private String password;
     @Value("${spring.data.redis.database:0}")
     private int database;
+
+    /**
+     * AutoType 白名单扩展，允许用户自定义额外的包路径前缀。
+     * 默认白名单（com.wkclz. / java.util. / java.lang. / java.time.）已在序列化器中硬编码，
+     * 此配置项用于扩展白名单以支持业务自定义类。
+     */
+    @Value("${sh.redis.auto-type-whitelist:}")
+    private List<String> autoTypeWhitelist;
 
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory connectionFactory) {

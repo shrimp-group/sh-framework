@@ -3,6 +3,7 @@ package com.wkclz.redis.helper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,10 +22,13 @@ public class RedisHelper {
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
-    // ============================ String ============================
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
+    // ============================ 对象存储 ============================
 
     /**
-     * 保存字符串
+     * 保存对象
      *
      * @param key   键
      * @param value 值
@@ -41,7 +45,7 @@ public class RedisHelper {
     }
 
     /**
-     * 保存字符串并设置过期时间
+     * 保存对象并设置过期时间
      *
      * @param key      键
      * @param value    值
@@ -60,7 +64,7 @@ public class RedisHelper {
     }
 
     /**
-     * 保存字符串并设置过期时间（如果键不存在）
+     * 保存对象并设置过期时间（如果键不存在）
      * 原子操作，相当于SETNX + EXPIRE
      *
      * @param key      键
@@ -80,6 +84,100 @@ public class RedisHelper {
     }
 
     /**
+     * 获取对象
+     *
+     * @param key 键
+     * @return 值
+     */
+    public Object get(String key) {
+        return key == null ? null : redisTemplate.opsForValue().get(key);
+    }
+
+    // ============================ 字符串/数字存储 ============================
+
+    /**
+     * 保存纯字符串
+     *
+     * @param key   键
+     * @param value 值
+     * @return 是否成功
+     */
+    public boolean setString(String key, String value) {
+        try {
+            stringRedisTemplate.opsForValue().set(key, value);
+            return true;
+        } catch (Exception e) {
+            log.error("Redis setString error: ", e);
+            return false;
+        }
+    }
+
+    /**
+     * 保存纯字符串并设置过期时间
+     *
+     * @param key      键
+     * @param value    值
+     * @param timeout  过期时间
+     * @param timeUnit 时间单位
+     * @return 是否成功
+     */
+    public boolean setString(String key, String value, long timeout, TimeUnit timeUnit) {
+        try {
+            stringRedisTemplate.opsForValue().set(key, value, timeout, timeUnit);
+            return true;
+        } catch (Exception e) {
+            log.error("Redis setString error: ", e);
+            return false;
+        }
+    }
+
+    /**
+     * 保存数字
+     *
+     * @param key   键
+     * @param value 值
+     * @return 是否成功
+     */
+    public boolean setNumber(String key, Number value) {
+        try {
+            stringRedisTemplate.opsForValue().set(key, String.valueOf(value));
+            return true;
+        } catch (Exception e) {
+            log.error("Redis setNumber error: ", e);
+            return false;
+        }
+    }
+
+    /**
+     * 保存数字并设置过期时间
+     *
+     * @param key      键
+     * @param value    值
+     * @param timeout  过期时间
+     * @param timeUnit 时间单位
+     * @return 是否成功
+     */
+    public boolean setNumber(String key, Number value, long timeout, TimeUnit timeUnit) {
+        try {
+            stringRedisTemplate.opsForValue().set(key, String.valueOf(value), timeout, timeUnit);
+            return true;
+        } catch (Exception e) {
+            log.error("Redis setNumber error: ", e);
+            return false;
+        }
+    }
+
+    /**
+     * 获取纯字符串
+     *
+     * @param key 键
+     * @return 值
+     */
+    public String getString(String key) {
+        return key == null ? null : stringRedisTemplate.opsForValue().get(key);
+    }
+
+    /**
      * 自增
      *
      * @param key 键
@@ -87,7 +185,7 @@ public class RedisHelper {
      */
     public Long increment(String key) {
         try {
-            return redisTemplate.opsForValue().increment(key);
+            return stringRedisTemplate.opsForValue().increment(key);
         } catch (Exception e) {
             log.error("Redis increment error: ", e);
             return null;
@@ -95,13 +193,24 @@ public class RedisHelper {
     }
 
     /**
-     * 获取字符串
+     * 自增并设置过期时间（如果键不存在）
      *
-     * @param key 键
-     * @return 值
+     * @param key      键
+     * @param timeout  过期时间
+     * @param timeUnit 时间单位
+     * @return 自增后的值
      */
-    public Object get(String key) {
-        return key == null ? null : redisTemplate.opsForValue().get(key);
+    public Long increment(String key, long timeout, TimeUnit timeUnit) {
+        try {
+            Long result = stringRedisTemplate.opsForValue().increment(key);
+            if (result != null && result == 1) {
+                stringRedisTemplate.expire(key, timeout, timeUnit);
+            }
+            return result;
+        } catch (Exception e) {
+            log.error("Redis increment with expire error: ", e);
+            return null;
+        }
     }
 
     /**
@@ -112,7 +221,8 @@ public class RedisHelper {
      */
     public boolean delete(String key) {
         try {
-            return redisTemplate.delete(key);
+            Boolean result = redisTemplate.delete(key);
+            return result != null && result;
         } catch (Exception e) {
             log.error("Redis delete error: ", e);
             return false;
@@ -127,7 +237,8 @@ public class RedisHelper {
      */
     public long delete(Set<String> keys) {
         try {
-            return redisTemplate.delete(keys);
+            Long result = redisTemplate.delete(keys);
+            return result != null ? result : 0;
         } catch (Exception e) {
             log.error("Redis delete error: ", e);
             return 0;
@@ -358,7 +469,8 @@ public class RedisHelper {
      */
     public boolean expire(String key, long timeout, TimeUnit unit) {
         try {
-            return redisTemplate.expire(key, timeout, unit);
+            Boolean result = redisTemplate.expire(key, timeout, unit);
+            return result != null && result;
         } catch (Exception e) {
             log.error("Redis expire error: ", e);
             return false;
@@ -374,7 +486,8 @@ public class RedisHelper {
      */
     public long getExpire(String key, TimeUnit unit) {
         try {
-            return redisTemplate.getExpire(key, unit);
+            Long result = redisTemplate.getExpire(key, unit);
+            return result != null ? result : 0;
         } catch (Exception e) {
             log.error("Redis getExpire error: ", e);
             return 0;
@@ -389,7 +502,8 @@ public class RedisHelper {
      */
     public boolean hasKey(String key) {
         try {
-            return redisTemplate.hasKey(key);
+            Boolean result = redisTemplate.hasKey(key);
+            return result != null && result;
         } catch (Exception e) {
             log.error("Redis hasKey error: ", e);
             return false;
