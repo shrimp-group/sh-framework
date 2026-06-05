@@ -156,6 +156,90 @@ sh-dynamicdb / sh-redis / sh-web / sh-xxljob / sh-mqtt
 - **加密**: BouncyCastle
 - **构建**: Maven + flatten-maven-plugin
 
+## 用户故事索引
+
+所有用户故事文档位于 `/docs/stories/` 目录下，按模块分组。每个故事包含用户故事描述、验收标准（含异常场景）和涉及代码上下文。
+
+### sh-core（6 个故事）
+
+| 故事ID | 文档 | 标题 | 优先级 |
+|--------|------|------|--------|
+| US-001 | [core-entity-hierarchy.md](docs/stories/core-entity-hierarchy.md) | 实体体系与数据规范 | 高 |
+| US-002 | [core-unified-response.md](docs/stories/core-unified-response.md) | 统一响应结果封装 | 高 |
+| US-003 | [core-exception-system.md](docs/stories/core-exception-system.md) | 异常体系与分类处理 | 高 |
+| US-004 | [core-user-context.md](docs/stories/core-user-context.md) | 用户上下文与多租户隔离 | 高 |
+| US-005 | [core-result-codes.md](docs/stories/core-result-codes.md) | 结果码与业务错误码体系 | 中 |
+| US-006 | [core-log-masking.md](docs/stories/core-log-masking.md) | 日志脱敏与安全输出 | 中 |
+
+### sh-mybatis（5 个故事）
+
+| 故事ID | 文档 | 标题 | 优先级 |
+|--------|------|------|--------|
+| US-007 | [mybatis-generic-crud.md](docs/stories/mybatis-generic-crud.md) | 通用 Mapper 与动态 SQL 生成 | 高 |
+| US-008 | [mybatis-logical-delete.md](docs/stories/mybatis-logical-delete.md) | 逻辑删除与数据安全 | 高 |
+| US-009 | [mybatis-optimistic-lock.md](docs/stories/mybatis-optimistic-lock.md) | 乐观锁与并发控制 | 高 |
+| US-010 | [mybatis-interceptor-autofill.md](docs/stories/mybatis-interceptor-autofill.md) | MyBatis 拦截器与自动填充 | 高 |
+| US-011 | [mybatis-pagination.md](docs/stories/mybatis-pagination.md) | 分页查询与 PageData 封装 | 高 |
+
+### sh-web（4 个故事）
+
+| 故事ID | 文档 | 标题 | 优先级 |
+|--------|------|------|--------|
+| US-012 | [web-global-error-handler.md](docs/stories/web-global-error-handler.md) | 全局异常处理与邮件告警 | 高 |
+| US-013 | [web-username-autofill.md](docs/stories/web-username-autofill.md) | 响应体用户名自动填充 | 中 |
+| US-014 | [web-rest-scan.md](docs/stories/web-rest-scan.md) | REST 接口元数据扫描 | 中 |
+| US-015 | [web-request-validation.md](docs/stories/web-request-validation.md) | 自定义参数校验与标准请求 Bean | 中 |
+
+### sh-redis（4 个故事）
+
+| 故事ID | 文档 | 标题 | 优先级 |
+|--------|------|------|--------|
+| US-016 | [redis-cache-operations.md](docs/stories/redis-cache-operations.md) | Redis 全数据类型缓存操作 | 高 |
+| US-017 | [redis-distributed-lock.md](docs/stories/redis-distributed-lock.md) | Redis 分布式锁 | 高 |
+| US-018 | [redis-id-generator.md](docs/stories/redis-id-generator.md) | Redis ID 生成器 | 中 |
+| US-019 | [redis-message-queue.md](docs/stories/redis-message-queue.md) | Redis 消息队列 | 中 |
+
+### sh-dynamicdb（2 个故事）
+
+| 故事ID | 文档 | 标题 | 优先级 |
+|--------|------|------|--------|
+| US-020 | [dynamicdb-runtime-switch.md](docs/stories/dynamicdb-runtime-switch.md) | 动态数据源运行时切换 | 高 |
+| US-021 | [dynamicdb-dcl-async-create.md](docs/stories/dynamicdb-dcl-async-create.md) | 动态数据源 DCL 与异步创建 | 中 |
+
+### sh-spring（2 个故事）
+
+| 故事ID | 文档 | 标题 | 优先级 |
+|--------|------|------|--------|
+| US-022 | [spring-context-holder.md](docs/stories/spring-context-holder.md) | Spring 上下文全局持有器 | 高 |
+| US-023 | [spring-snowflake-id.md](docs/stories/spring-snowflake-id.md) | 雪花 ID 与系统初始化 | 中 |
+
+### sh-mqtt（2 个故事）
+
+| 故事ID | 文档 | 标题 | 优先级 |
+|--------|------|------|--------|
+| US-024 | [mqtt-pub-sub.md](docs/stories/mqtt-pub-sub.md) | MQTT 注解驱动消息发布/订阅 | 高 |
+| US-025 | [mqtt-ssl-reconnect.md](docs/stories/mqtt-ssl-reconnect.md) | MQTT SSL/TLS 认证与断线重连 | 中 |
+
+### sh-xxljob（1 个故事）
+
+| 故事ID | 文档 | 标题 | 优先级 |
+|--------|------|------|--------|
+| US-026 | [xxljob-task-scheduling.md](docs/stories/xxljob-task-scheduling.md) | XXL-Job 定时任务集成 | 中 |
+
+### sh-tool（3 个故事）
+
+| 故事ID | 文档 | 标题 | 优先级 |
+|--------|------|------|--------|
+| US-027 | [tool-encryption.md](docs/stories/tool-encryption.md) | 加密工具集（AES/DES/RSA/MD5/SHA/Base64） | 高 |
+| US-028 | [tool-string-bean-utils.md](docs/stories/tool-string-bean-utils.md) | 字符串格式化与 Bean 操作工具 | 高 |
+| US-029 | [tool-misc-utils.md](docs/stories/tool-misc-utils.md) | 综合工具集（日期/文件/网络/验证码/二维码/JS引擎） | 中 |
+
+### sh-demo（1 个故事）
+
+| 故事ID | 文档 | 标题 | 优先级 |
+|--------|------|------|--------|
+| US-030 | [demo-crud-paradigm.md](docs/stories/demo-crud-paradigm.md) | 示例模块 CRUD 标准范式 | 高 |
+
 ## 开发注意事项
 
 1. 新增模块需在根 `pom.xml` 的 `<modules>` 中注册

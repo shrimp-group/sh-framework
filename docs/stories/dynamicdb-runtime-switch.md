@@ -1,0 +1,23 @@
+# 动态数据源运行时切换
+- **所属模块**：sh-dynamicdb
+- **优先级**：高
+- **故事ID**：US-020
+
+## 1. 用户故事 (User Story)
+**作为** SaaS 平台开发者，
+**我希望** 在运行时动态切换数据源（按租户隔离），
+**以便于** 多租户场景下每个租户使用独立的数据库，实现数据物理隔离。
+
+## 2. 验收标准 (Acceptance Criteria)
+- [场景1] Given 业务系统实现了 DynamicDataSourceFactory, When 调用 DynamicDataSourceHolder.set("tenant_001"), Then 后续 SQL 路由到 tenant_001 对应的数据源
+- [场景2] Given 数据源缓存已过期(超过 cache-second), When 再次访问, Then 旧连接池被关闭，重新创建数据源
+- [场景3] Given Mapper 方法执行完毕, When AOP 后置处理, Then DynamicDataSourceHolder.clear() 自动清理 ThreadLocal
+- [异常场景] Given 未实现 DynamicDataSourceFactory, When Spring 容器启动, Then 动态数据源不启用（@ConditionalOnBean 条件装配），不影响项目基本结构
+
+## 3. 涉及代码与上下文 (AI开发关键)
+为了完成或修改此故事，AI 需要重点阅读以下核心代码文件：
+- `sh-dynamicdb/src/main/java/com/wkclz/dynamicdb/DynamicDataSource.java` (动态数据源核心，DCL+异步创建)
+- `sh-dynamicdb/src/main/java/com/wkclz/dynamicdb/DynamicDataSourceHolder.java` (ThreadLocal数据源标识持有器)
+- `sh-dynamicdb/src/main/java/com/wkclz/dynamicdb/DynamicDataSourceFactory.java` (数据源工厂接口，业务方实现)
+- `sh-dynamicdb/src/main/java/com/wkclz/dynamicdb/aop/DynamicDataSourceAop.java` (AOP切面，自动清理ThreadLocal)
+- `sh-dynamicdb/src/main/java/com/wkclz/dynamicdb/config/DynamicDataSourceAutoConfig.java` (条件装配配置)
