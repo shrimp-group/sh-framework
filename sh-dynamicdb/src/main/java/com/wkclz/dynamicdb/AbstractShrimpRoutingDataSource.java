@@ -51,6 +51,12 @@ public abstract class AbstractShrimpRoutingDataSource extends AbstractRoutingDat
         return resolvedDataSources.get(lookupKey);
     }
 
+    public DataSource removeDataSource(Object lookupKey) {
+        Assert.notNull(resolvedDataSources, "DataSource router not initialized");
+        Assert.notNull(lookupKey, "router lookupKey can't be null");
+        return resolvedDataSources.remove(lookupKey);
+    }
+
     @Override
     public void setTargetDataSources(Map<Object, Object> targetDataSources) {
         this.targetDataSources = targetDataSources;

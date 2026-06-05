@@ -11,5 +11,7 @@ public class DynamicDataSourceConfig {
     @Value("${sh.dynamicdb.cache-second:60}")
     private int dynamicdbCacheSecond;
 
+    @Value("${sh.dynamicdb.cleanup-interval-second:120}")
+    private int cleanupIntervalSecond;
 
 }
