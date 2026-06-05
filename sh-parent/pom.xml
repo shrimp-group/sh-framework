@@ -215,6 +215,25 @@
 
         <pluginManagement>
             <plugins>
+
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                        <!--
+                        JCE 安全验证机制的限制：Java Cryptography Extension (JCE) 框架要求加密提供者（Provider，如 Bouncy Castle）所在的 JAR 包必须具有合法的数字签名。JVM 在进行验签时，强依赖于底层真实的文件系统路径和原始的 JAR 结构。
+                        类加载器的冲突：当 BC 包被嵌套在 Fat JAR 内部时，Spring Boot 的自定义类加载器（LaunchedURLClassLoader）会拦截读取请求。由于它返回的是嵌套流而非标准的物理文件，导致 JVM 无法正确定位并验证其数字签名，从而抛出 SecurityException: JCE cannot authenticate the provider BC。
+                        运行时释放：配置 <requiresUnpack> 后，Spring Boot 会在应用启动时自动将该依赖从主 JAR 中提取出来，释放到系统的临时目录（如 /tmp），使其恢复为独立的物理文件，从而顺利通过 JCE 的安全校验。
+                        -->
+                        <requiresUnpack>
+                            <dependency>
+                                <groupId>org.bouncycastle</groupId>
+                                <artifactId>bcprov-jdk18on</artifactId>
+                            </dependency>
+                        </requiresUnpack>
+                    </configuration>
+                </plugin>
+
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
