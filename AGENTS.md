@@ -47,6 +47,7 @@ sh-dynamicdb / sh-redis / sh-web / sh-xxljob / sh-mqtt
 
 - `DbColumnEntity`：数据库规范字段基类（id, sort, createTime, createBy, updateTime, updateBy, remark, version）
 - `BaseEntity extends DbColumnEntity`：业务实体基类，增加分页、查询辅助字段（userCode, tenantCode, orderBy, ids, keyword, timeFrom, timeTo, current, size, offset, total, count, debug）
+- `Pageable`：分页接口，定义分页参数的获取与初始化，包含 getCurrent()、getSize() 方法及默认 init() 实现
 - 所有业务实体必须继承 `BaseEntity`
 
 ### 异常体系
@@ -130,6 +131,7 @@ sh-dynamicdb / sh-redis / sh-web / sh-xxljob / sh-mqtt
 | `IpHelper` | sh-web | IP 地址工具 |
 | `SpringContextHolder` | sh-spring | Spring 上下文工具 |
 | `SnowflakeHelper` | sh-spring | 雪花 ID 辅助类 |
+| `PageQuery` | sh-mybatis | 分页查询工具（支持 BaseEntity 和 Pageable 接口） |
 
 ## 配置前缀
 

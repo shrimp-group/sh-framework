@@ -84,10 +84,10 @@ public class PageData<T> {
      */
     public static <T> PageData<T> of(List<T> records, Long total, Long current, Long size) {
         if (current == null) {
-            current = BaseEntity.DEFAULT_CURRENT;
+            current = Pageable.DEFAULT_CURRENT;
         }
         if (size == null) {
-            size = BaseEntity.DEFAULT_SIZE;
+            size = Pageable.DEFAULT_SIZE;
         }
         PageData<T> pageData = new PageData<>();
         pageData.setCurrent(current);

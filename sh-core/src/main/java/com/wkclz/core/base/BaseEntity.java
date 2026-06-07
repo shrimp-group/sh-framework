@@ -9,10 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class BaseEntity extends DbColumnEntity {
-
-    protected static final long DEFAULT_CURRENT = 1L;
-    protected static final long DEFAULT_SIZE = 10L;
+public class BaseEntity extends DbColumnEntity implements Pageable {
 
     @FieldDesc("创建人姓名")
     private String createByName;
@@ -57,19 +54,6 @@ public class BaseEntity extends DbColumnEntity {
      * debug 模式参数
      */
     private Integer debug;
-
-
-
-
-    public void init() {
-        if (this.current == null || this.current < 1) {
-            this.current = DEFAULT_CURRENT;
-        }
-        if (this.size == null || this.size < 1) {
-            this.size = DEFAULT_SIZE;
-        }
-        this.offset = (this.current - 1) * this.size;
-    }
 
 
     public static <T extends BaseEntity> T copy(T source, T target) {

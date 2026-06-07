@@ -18,5 +18,6 @@
 为了完成或修改此故事，AI 需要重点阅读以下核心代码文件：
 - `sh-core/src/main/java/com/wkclz/core/base/DbColumnEntity.java` (数据库规范字段基类，定义8个标准字段)
 - `sh-core/src/main/java/com/wkclz/core/base/BaseEntity.java` (业务实体基类，扩展分页/查询/用户租户字段)
+- `sh-core/src/main/java/com/wkclz/core/base/Pageable.java` (分页接口，定义分页参数的获取与初始化)
 - `sh-core/src/main/java/com/wkclz/core/annotation/FieldDesc.java` (字段描述注解，标注字段含义和约束)
 - `sh-tool/src/main/java/com/wkclz/tool/utils/BeanUtil.java` (Bean属性拷贝工具，支撑copy/copyIfNotNull)
