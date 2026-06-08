@@ -8,6 +8,31 @@
 **我希望** 通过 SpringContextHolder 在任意位置获取 Spring Bean，
 **以便于** 非Spring管理的类（如工具类、拦截器内部）也能访问容器中的 Bean。
 
+## 流程图
+
+```mermaid
+sequenceDiagram
+    participant Spring as Spring容器
+    participant SCH as SpringContextHolder
+    participant Biz as 业务代码
+
+    Spring->>SCH: 容器启动
+    Spring->>SCH: setApplicationContext(ctx)
+    Note over SCH: volatile ApplicationContext 已注入
+
+    Biz->>SCH: getBean(RedisHelper.class)
+    SCH->>SCH: ctx.getBean(RedisHelper.class)
+    SCH-->>Biz: 返回 RedisHelper 实例
+
+    Biz->>SCH: getBean("redisHelper")
+    SCH->>SCH: ctx.getBean("redisHelper")
+    SCH-->>Biz: 返回 Bean 实例
+
+    Spring->>SCH: 容器关闭
+    Spring->>SCH: destroy()
+    Note over SCH: applicationContext = null<br/>防止内存泄漏
+```
+
 ## 2. 验收标准 (Acceptance Criteria)
 - [场景1] Given Spring 容器已启动, When 调用 SpringContextHolder.getBean(RedisHelper.class), Then 返回 RedisHelper 实例
 - [场景2] Given Spring 容器已启动, When 调用 SpringContextHolder.getBean("redisHelper"), Then 返回名为 redisHelper 的 Bean

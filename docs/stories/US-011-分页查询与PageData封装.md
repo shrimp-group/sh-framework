@@ -8,6 +8,39 @@
 **我希望** 通过 BaseService.selectPage() 或 PageQuery.page() 实现自动分页查询，
 **以便于** 无需手动计算 offset 和拼接 LIMIT，统一获得 PageData 分页数据封装。
 
+## 流程图
+
+```mermaid
+sequenceDiagram
+    participant C as Controller
+    participant S as BaseService
+    participant E as BaseEntity
+    participant M as BaseMapper
+    participant PD as PageData
+
+    C->>S: selectPage(entity)
+    S->>E: entity.init()
+    Note over E: current默认1, size默认10<br/>offset = (current-1) * size
+    E-->>S: 初始化完成
+
+    S->>M: selectCountByEntity(entity)
+    Note over M: WHERE条件 + deleted=0
+    M-->>S: total = 总记录数
+
+    alt total > 0
+        S->>M: selectByEntityWithLimit(entity)
+        Note over M: WHERE条件 + deleted=0<br/>LIMIT size OFFSET offset
+        M-->>S: records = 数据列表
+        S->>PD: PageData.fromEntity(entity, records)
+        Note over PD: current, size, offset, total, records
+    else total = 0
+        S->>PD: PageData.empty()
+        Note over PD: records=[], total=0
+    end
+
+    PD-->>C: 返回 PageData&lt;T&gt;
+```
+
 ## 2. 验收标准 (Acceptance Criteria)
 - [场景1] Given entity.current=2, entity.size=10, When 调用 BaseService.selectPage(), Then 先查 count 获取总数，再查 LIMIT 10,10 获取数据，封装为 PageData
 - [场景2] Given entity.current=null, entity.size=null, When 调用 entity.init(), Then current 默认为 1，size 默认为 10

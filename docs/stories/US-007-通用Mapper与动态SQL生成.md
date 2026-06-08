@@ -8,6 +8,41 @@
 **我希望** 定义实体类后，继承 BaseMapper 即可自动获得 14 个通用 CRUD 方法，
 **以便于** 无需手写任何 SQL 即可完成单表的增删改查操作，大幅提升开发效率。
 
+## 流程图
+
+```mermaid
+flowchart TD
+    A[BaseMapper&lt;T&gt;] --> B[插入操作]
+    A --> C[删除操作]
+    A --> D[更新操作]
+    A --> E[查询操作]
+
+    B --> B1[insert → InsertMapperProvider]
+    B --> B2[insertBatch → InsertBatchMapperProvider]
+
+    C --> C1[deleteById → DeleteByIdMapperProvider]
+    C --> C2[deleteByIdEntity → DeleteByIdEntityMapperProvider]
+    C --> C3[deleteByIds → DeleteByIdsMapperProvider]
+    C --> C4[deleteByIdsEntity → DeleteByIdsEntityMapperProvider]
+
+    D --> D1[updateById → UpdateByIdMapperProvider<br/>全字段+乐观锁]
+    D --> D2[updateByIdSelective → UpdateByIdSelectiveMapperProvider<br/>非空字段+乐观锁]
+    D --> D3[updateBatch → UpdateBatchMapperProvider<br/>批量无乐观锁]
+
+    E --> E1[selectById → SelectByIdMapperProvider]
+    E --> E2[selectByIds → SelectByIdsMapperProvider]
+    E --> E3[selectAll → SelectAllMapperProvider]
+    E --> E4[selectByEntity → SelectByEntityMapperProvider]
+    E --> E5[selectByEntityWithLimit → SelectByEntityWithLimitMapperProvider]
+    E --> E6[selectCountByEntity → SelectCountByEntityMapperProvider]
+    E --> E7[selectOneByEntity → SelectOneByEntityMapperProvider]
+
+    B1 & B2 & C1 & C2 & C3 & C4 --> F[BaseMapperProvider<br/>getDbEntityProperty + buildWhereClause]
+    D1 & D2 & D3 --> F
+    E4 & E5 & E6 & E7 --> F
+    F --> G[DbEntityProperty<br/>字段分组/缓存/元数据]
+```
+
 ## 2. 验收标准 (Acceptance Criteria)
 - [场景1] Given 定义 UserMapper extends BaseMapper<User>, When 注入 UserMapper, Then 自动拥有 insert/insertBatch/deleteById/deleteByIds/updateById/updateByIdSelective/updateBatch/selectById/selectByIds/selectAll/selectByEntity/selectByEntityWithLimit/selectCountByEntity/selectOneByEntity 共 14 个方法
 - [场景2] Given 调用 insert(entity), When 实体 id 为 null, Then 插入后 id 自动回填（useGeneratedKeys=true）

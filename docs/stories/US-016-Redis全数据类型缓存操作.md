@@ -8,6 +8,68 @@
 **我希望** 通过 RedisHelper 统一操作 Redis 的所有数据类型（String/Hash/List/Set/ZSet），
 **以便于** 无需直接操作 RedisTemplate，以简洁的 API 完成缓存读写。
 
+## 流程图
+
+```mermaid
+classDiagram
+    class RedisHelper {
+        -RedisTemplate~String,Object~ redisTemplate
+        -StringRedisTemplate stringRedisTemplate
+    }
+
+    class 对象操作 {
+        +set(key, value, timeout, unit) boolean
+        +get(key) Object
+        +setIfAbsent(key, value, timeout) boolean
+        +delete(key) boolean
+    }
+
+    class 字符串数字 {
+        +setString(key, value) boolean
+        +getString(key) String
+        +setNumber(key, value) boolean
+        +increment(key, delta) long
+    }
+
+    class Hash操作 {
+        +hSet(key, field, value) boolean
+        +hGet(key, field) Object
+        +hGetAll(key) Map
+    }
+
+    class List操作 {
+        +lPush(key, value) boolean
+        +rPop(key) Object
+        +bLPop(key, timeout) Object
+        +lRange(key, start, end) List
+    }
+
+    class Set操作 {
+        +sAdd(key, values) boolean
+        +sMembers(key) Set
+    }
+
+    class ZSet操作 {
+        +zAdd(key, value, score) boolean
+        +zRange(key, start, end, desc) Set
+    }
+
+    class 通用操作 {
+        +expire(key, timeout, unit) boolean
+        +getExpire(key) long
+        +hasKey(key) boolean
+        +delete(keys) boolean
+    }
+
+    RedisHelper --> 对象操作
+    RedisHelper --> 字符串数字
+    RedisHelper --> Hash操作
+    RedisHelper --> List操作
+    RedisHelper --> Set操作
+    RedisHelper --> ZSet操作
+    RedisHelper --> 通用操作
+```
+
 ## 2. 验收标准 (Acceptance Criteria)
 - [场景1] Given 调用 redisHelper.set("key", value, 30, TimeUnit.MINUTES), When 设置成功, Then 返回 true 且 key 在 30 分钟后自动过期
 - [场景2] Given 调用 redisHelper.hSet("user:001", "name", "张三"), When 调用 redisHelper.hGet("user:001", "name"), Then 返回 "张三"

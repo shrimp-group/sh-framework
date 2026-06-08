@@ -8,6 +8,31 @@
 **我希望** 参考示例模块的完整 CRUD 实现（Entity → Mapper → Service → VO → Route → Rest），
 **以便于** 快速掌握框架的使用方式，按照标准范式开发新的业务模块。
 
+## 流程图
+
+```mermaid
+flowchart TD
+    A[CRUD 标准范式] --> B[1. 定义实体<br/>User extends BaseEntity]
+    B --> C[2. 定义 Mapper<br/>UserMapper extends BaseMapper&lt;User&gt;]
+    C --> D[3. 定义 Service<br/>UserService extends BaseService&lt;User, UserMapper&gt;]
+    D --> E[4. 定义 VO 类]
+
+    E --> E1[UserCreateReq<br/>创建请求 + @NotBlank]
+    E --> E2[UserUpdateReq extends UpdateReq<br/>更新请求 + id + version]
+    E --> E3[UserPageReq extends PageReq<br/>分页请求 + current + size]
+    E --> E4[UserResp extends EntityResp<br/>详情响应 + 审计字段]
+    E --> E5[UserPageResp<br/>分页列表响应]
+
+    E1 & E2 & E3 & E4 & E5 --> F[5. 定义 Route<br/>@Router + @ApiDesc + URI常量]
+    F --> G[6. 定义 REST 控制器<br/>@RestController + @RequestMapping]
+
+    G --> H[请求流程]
+    H --> I[Request VO → BeanUtil.copy → Entity]
+    I --> J[BaseService/BaseMapper → DB]
+    J --> K[Entity → BeanUtil.copy → Response VO]
+    K --> L[R&lt;VO&gt; 统一响应]
+```
+
 ## 2. 验收标准 (Acceptance Criteria)
 - [场景1] Given 定义 User extends BaseEntity + UserMapper extends BaseMapper<User>, When 无需手写 SQL, Then 自动拥有 14 个 CRUD 方法
 - [场景2] Given 定义 UserService extends BaseService<User, UserMapper>, When 调用 userService.selectPage(entity), Then 返回 PageData<User> 分页数据

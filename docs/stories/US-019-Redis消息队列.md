@@ -8,6 +8,40 @@
 **我希望** 使用 Redis 实现轻量级消息队列（基于 List 的 FIFO 模型），
 **以便于** 在不需要引入专业 MQ 的场景下实现异步消息处理。
 
+## 流程图
+
+```mermaid
+sequenceDiagram
+    participant P as 生产者
+    participant MQ as RedisMessageQueueManager
+    participant R as Redis List
+    participant CT as 消费线程
+    participant L as MessageListener
+
+    P->>MQ: sendMessage("order_queue", message)
+    MQ->>R: LPUSH order_queue message
+    R-->>MQ: 入队成功
+    MQ-->>P: 发送完成
+
+    Note over CT: 消费线程持续运行
+    CT->>R: BLPOP order_queue (阻塞)
+    R-->>CT: 返回消息
+
+    CT->>L: onMessage(message)
+    alt 处理成功
+        L-->>CT: 正常返回
+    else 处理异常
+        L-->>CT: 抛出异常
+        Note over CT: 仅记录日志<br/>不中断消费循环
+    end
+
+    CT->>R: BLPOP order_queue (继续消费)
+
+    Note over MQ: 取消订阅
+    MQ->>CT: 停止消费线程
+    CT-->>MQ: 线程退出
+```
+
 ## 2. 验收标准 (Acceptance Criteria)
 - [场景1] Given 调用 messageQueueManager.sendMessage("order_queue", orderMessage), When 消息发送, Then 消息被 lPush 到 Redis List
 - [场景2] Given 已订阅 order_queue, When 消息到达, Then 消费线程通过 BLPOP 阻塞接收并调用 listener.onMessage()

@@ -8,6 +8,28 @@
 **我希望** 框架自动扫描所有 REST 接口并生成元数据（URI、方法、描述、模块），
 **以便于** 实现接口权限自动注册、API 文档生成和接口审计。
 
+## 流程图
+
+```mermaid
+flowchart TD
+    A[RestHelper.getMapping] --> B[扫描 @RestController / @Controller]
+    B --> C[提取 RequestMapping 信息]
+    C --> D[获取 URI + HTTP方法 + 方法名]
+    D --> E{同包下有 @Router?}
+    E -->|是| F[补充 module 和 prefix]
+    E -->|否| G[module 为空]
+    F --> H{方法有 @ApiDesc / @Desc?}
+    G --> H
+    H -->|是| I[补充 desc 描述]
+    H -->|否| J[desc 为空]
+    I --> K{URI 包含 /public/?}
+    J --> K
+    K -->|是| L[writeFlag = 1 公开接口]
+    K -->|否| M[writeFlag = 0]
+    L --> N[生成 RestInfo 列表]
+    M --> N
+```
+
 ## 2. 验收标准 (Acceptance Criteria)
 - [场景1] Given 定义了 @RestController 类和 @GetMapping 方法, When 调用 RestHelper.getMapping(), Then 返回包含 URI、HTTP 方法、接口名称的 RestInfo 列表
 - [场景2] Given 定义了 @Router(module="用户管理", prefix="/user") 的类, When 扫描接口, Then 同包下的接口自动补充 module 和 desc 信息

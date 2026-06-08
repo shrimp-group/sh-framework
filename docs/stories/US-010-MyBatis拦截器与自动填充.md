@@ -8,6 +8,37 @@
 **我希望** MyBatis 拦截器自动填充 createBy/updateBy 字段并清理空字符串，
 **以便于** 无需在业务代码中手动设置操作人和处理空字符串查询条件。
 
+## 流程图
+
+```mermaid
+flowchart TD
+    A[MyBatis 执行SQL] --> B{操作类型?}
+
+    B -->|query 查询| C[MyBatisQueryInterceptor]
+    C --> C1[遍历参数对象]
+    C1 --> C2[空字符串 → null]
+    C2 --> C3[BeanUtil.removeBlank 递归清理]
+    C3 --> D[继续执行]
+
+    B -->|update 增删改| E[MyBatisUpdateInterceptor]
+    E --> E1[UserContext.getUserCode]
+    E1 --> E2{INSERT 还是 UPDATE?}
+    E2 -->|INSERT| E3[设置 createBy + updateBy]
+    E2 -->|UPDATE| E4[设置 updateBy, 清空 createBy]
+    E3 --> E5[清空 createTime/updateTime<br/>让数据库自动填充]
+    E4 --> E5
+    E5 --> F[继续执行]
+
+    B -->|prepare 预编译| G[MyBatisBoundSqlInterceptor]
+    G --> G1[向 BoundSql 注入 updateBy 参数]
+    G1 --> G2[用于 deleteById 等非实体参数方法]
+    G2 --> H[继续执行]
+
+    D --> I[SQL Provider 动态生成SQL]
+    F --> I
+    H --> I
+```
+
 ## 2. 验收标准 (Acceptance Criteria)
 - [场景1] Given UserContext 已设置 userCode="U001", When 执行 INSERT 操作, Then 实体的 createBy 和 updateBy 均被设置为 "U001"
 - [场景2] Given UserContext 已设置 userCode="U001", When 执行 UPDATE 操作, Then 实体的 updateBy 被设置为 "U001"，createBy 被清空（避免覆盖原值）

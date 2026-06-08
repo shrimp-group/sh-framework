@@ -8,6 +8,32 @@
 **我希望** MQTT 连接支持 SSL/TLS 单向认证和断线自动重连重订阅，
 **以便于** 保证通信安全，同时网络抖动时自动恢复连接和订阅，无需人工干预。
 
+## 流程图
+
+```mermaid
+stateDiagram-v2
+    [*] --> 初始化: 创建 MqttAsyncClient
+    初始化 --> 已连接: connect成功
+    初始化 --> SSL连接: endPoint以ssl开头
+
+    SSL连接 --> 已连接: 加载CA证书<br/>BouncyCastle Provider<br/>创建SSLSocketFactory
+
+    已连接 --> 已订阅: 订阅Topic成功
+    已订阅 --> 消息处理: 消息到达
+
+    已连接 --> 断开: connectionLost
+    已订阅 --> 断开: connectionLost
+    消息处理 --> 断开: connectionLost
+
+    断开 --> 重连中: automaticReconnect=true<br/>自动重连
+    重连中 --> 已连接: 重连成功
+    已连接 --> 已订阅: connectComplete(reconnect=true)<br/>自动重订阅所有Topic
+
+    重连中 --> 重连中: 重连失败继续重试
+
+    已订阅 --> [*]: 应用关闭
+```
+
 ## 2. 验收标准 (Acceptance Criteria)
 - [场景1] Given endPoint 以 "ssl" 开头且配置了 ca-path, When 创建 MqttAsyncClient, Then 加载 CA 证书创建 SSLSocketFactory，使用 BouncyCastle Provider
 - [场景2] Given MQTT 连接断开, When MqttReconnectCallback.connectionLost() 触发, Then 记录错误日志，automaticReconnect=true 自动重连

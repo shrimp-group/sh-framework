@@ -8,6 +8,26 @@
 **我希望** 通过 RedisIdGenerator 生成全局唯一、有序且可读的 ID，
 **以便于** 在分布式环境下为业务数据生成唯一标识，且 ID 包含时间信息便于排序。
 
+## 流程图
+
+```mermaid
+flowchart TD
+    A[generateIdWithPrefix] --> B[计算时间戳<br/>相对BASE_TIME的毫秒数]
+    B --> C[计算机器标识<br/>IP后两字节 % 64 → 6bit]
+    C --> D[获取序列号<br/>Redis INCR → 14bit]
+    D --> E{Redis 可用?}
+    E -->|是| F[使用 Redis 自增序列号]
+    E -->|否| G[降级为本地内存自增]
+    F --> H{序列号超过16383?}
+    G --> H
+    H -->|是| I[自旋等待下一毫秒]
+    H -->|否| J[拼接: 时间戳 + 机器标识 + 序列号]
+    I --> B
+    J --> K[Base62 编码缩短ID]
+    K --> L[添加前缀<br/>如 ORDER + Base62编码]
+    L --> M[返回最终ID]
+```
+
 ## 2. 验收标准 (Acceptance Criteria)
 - [场景1] Given 调用 generateIdWithPrefix("ORDER"), When 生成 ID, Then 格式为 "ORDER" + 62进制编码字符串
 - [场景2] Given 同一毫秒内多次调用, When 序列号未超过 16383, Then 每次返回唯一 ID

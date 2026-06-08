@@ -8,6 +8,26 @@
 **我希望** 通过 SnowflakeHelper 生成全局唯一的雪花 ID，且系统启动时自动识别运行环境，
 **以便于** 分布式环境下生成有序唯一 ID，同时根据环境（DEV/SIT/UAT/PROD）差异化处理。
 
+## 流程图
+
+```mermaid
+flowchart TD
+    A[SnowflakeHelper.getSnowflakeId] --> B[懒加载 SnowflakeIdWorker]
+    B --> C[计算 workId<br/>网卡信息.hashCode % 31]
+    C --> D[计算 datacenterId<br/>当前环境.hashCode % 31]
+    D --> E[SnowflakeIdWorker.nextId]
+    E --> F{检测时钟回拨?}
+    F -->|是| G[抛出 RuntimeException]
+    F -->|否| H[生成 64 位 Long 型 ID]
+    H --> I[返回唯一 ID]
+
+    subgraph 系统初始化
+        J[Sys implements ApplicationRunner] --> K[读取 spring.profiles.active]
+        K --> L[推断 EnvType<br/>DEV/SIT/UAT/PROD]
+        L --> M[AtomicReference 存储当前环境]
+    end
+```
+
 ## 2. 验收标准 (Acceptance Criteria)
 - [场景1] Given 调用 SnowflakeHelper.getSnowflakeId(), When 生成 ID, Then 返回 64 位 Long 型唯一 ID
 - [场景2] Given spring.profiles.active=prod, When 系统启动, Then Sys.getCurrentEnv() 返回 EnvType.PROD
