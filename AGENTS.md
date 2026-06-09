@@ -432,7 +432,7 @@ pagehelper:
 | `IpHelper` | sh-web | IP 地址解析（x-forwarded-for 链路） |
 | `RequestHelper` | sh-web | 请求工具（路径匹配、域名解析） |
 | `ResponseHelper` | sh-web | 响应工具（错误写入、Excel 流式输出） |
-| `RestHelper` | sh-web | REST 接口元数据扫描 |
+| `RestHelper` | sh-web | REST 接口元数据扫描（提取参数信息、返回类型、泛型信息） |
 | `LocalThreadHelper` | sh-web | 线程上下文（ThreadLocal<ConcurrentHashMap>） |
 | `SpringContextHolder` | sh-spring | Spring 上下文全局持有器（静态获取 Bean） |
 | `SnowflakeHelper` | sh-spring | 雪花 ID 辅助类（workId = 网卡 hashCode % 31） |
