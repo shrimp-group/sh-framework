@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: sh_xxljob
+title: XXL-JOB 分布式任务调度自动配置模块
+scope:
+    - sh-xxljob/
+source_files: []
+depends_on: []
+related_to:
+    - path: sh_mqtt
+    - path: sh_redis
+    - path: sh_spring

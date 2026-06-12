@@ -1,0 +1,1 @@
+Consumers must provide a `DynamicDataSourceFactory` bean implementation to supply `DataSourceInfo` per key; without it, the auto-configuration skips creating the dynamic datasource. Configuration properties `sh.dynamicdb.cache-second` (default 60) and `sh.dynamicdb.cleanup-interval-second` (default 120) control cache TTL and cleanup frequency.

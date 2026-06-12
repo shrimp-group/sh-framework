@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: sh_tool
+title: 通用工具与加密组件库
+scope:
+    - sh-tool/
+source_files: []
+depends_on: []
+related_to:
+    - path: sh_redis
+    - path: sh_spring

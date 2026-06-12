@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: sh_demo
+title: 用户管理演示模块
+scope:
+    - sh-demo/
+source_files: []
+depends_on: []
+related_to:
+    - path: sh_web
+    - path: sh_mybatis
+    - path: sh_core

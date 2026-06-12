@@ -1,0 +1,4 @@
+- All BaseMapper CRUD methods are annotated with @FieldDesc from sh-core to provide human-readable operation descriptions on each method.
+- Every SQL provider class in mapper.impl extends BaseMapperProvider to inherit shared utilities like buildWhereClause(), buildOrderByClause(), getFieldValue(), and entity caching via ENTITY_CACHE ConcurrentHashMap.
+- MyBatis interceptors implement the Interceptor interface with @Intercepts/@Signature annotations targeting Executor methods, and use Plugin.wrap() in the plugin() method for proxy creation.
+- Batch operations in BaseService enforce a fixed BATCH_SIZE of 1000, splitting large lists into sublists before delegating to mapper batch methods.

@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: sh_mqtt
+title: MQTT 消息收发与注解驱动订阅框架
+scope:
+    - sh-mqtt/
+source_files: []
+depends_on: []
+related_to:
+    - path: sh_redis
+    - path: sh_xxljob
+    - path: sh_spring

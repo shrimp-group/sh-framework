@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: sh_mybatis
+title: MyBatis 增强与通用数据访问层
+scope:
+    - sh-mybatis/
+source_files: []
+depends_on: []
+related_to:
+    - path: sh_dynamicdb
+    - path: sh_demo
+    - path: sh_core
+    - path: sh_redis

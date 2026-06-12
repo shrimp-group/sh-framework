@@ -1,0 +1,1 @@
+MyBatis dynamic SQL via `@InsertProvider`/`@SelectProvider`/`@UpdateProvider`/`@DeleteProvider` pattern with 16 provider implementations extending `BaseMapperProvider`; PageHelper-based pagination with custom `PageInterceptor`; Druid connection pool via `druid-spring-boot-4-starter`.

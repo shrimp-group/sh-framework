@@ -1,0 +1,8 @@
+- Entry point is `ShMyBatisAutoConfig` registered via `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`, enabling automatic component scanning and mapper scanning for `com.wkclz.mybatis.mapper`.
+- Core abstraction is `BaseMapper<T>` interface defining 17 generic CRUD methods (insert, batch insert, delete by id/ids, update full/selective/batch, select by id/ids/entity/count/one/page), each backed by a dedicated `*Provider` class in `mapper.impl` that extends `BaseMapperProvider` for dynamic SQL generation using MyBatis `@*Provider` annotations.
+- Service layer provides `BaseService<T, M>` as an abstract transactional service wrapping `BaseMapper` with batch-size control (1000 records) and pagination via `selectPage()`.
+- Three MyBatis interceptors (`MyBatisQueryInterceptor`, `MyBatisUpdateInterceptor`, `MyBatisBoundSqlInterceptor`) implement cross-cutting concerns like empty-string-to-null conversion and optimistic locking.
+- Pagination is handled by `PageHelper` integration through `PageQuery` utility and `PageInterceptor` (custom fork of pagehelper).
+- Database schema introspection is provided via `TableInfoMapper` (with XML mapping in `resources/mapper/TableInfoMapper.xml`) and `TableInfoService`, exposing table/column/index metadata.
+- Configuration is externalized via `ShMyBatisConfig` reading `sh.mybatis.data-length-check` and parsing JDBC URL for schema name.
+- Dependency direction: auto-config → mappers/providers → interceptors → services; bean metadata classes (`ColumnInfo`, `TableInfo`, etc.) are shared DTOs for metadata queries.

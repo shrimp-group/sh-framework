@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: sh_web
+title: Web层基础支撑与全局切面
+scope:
+    - sh-web/
+source_files: []
+depends_on: []
+related_to:
+    - path: sh_core
+    - path: sh_demo
+    - path: sh_spring
+    - path: sh_dynamicdb

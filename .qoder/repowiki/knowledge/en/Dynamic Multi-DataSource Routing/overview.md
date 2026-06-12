@@ -1,0 +1,1 @@
+Provides runtime dynamic switching between multiple database connections using thread-local context and lazy-initialized Druid pools with automatic expiration cleanup.

@@ -1,0 +1,1 @@
+Druid connection pool via `com.alibaba.druid.pool.DruidDataSourceFactory`; Spring Boot auto-configuration with conditional bean creation (`@ConditionalOnBean(DynamicDataSourceFactory.class)`); Java 25 target.

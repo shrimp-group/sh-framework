@@ -1,0 +1,4 @@
+- Thread-local datasource key is always cleared in an AOP `@Around` advice finally block targeting `@within(org.apache.ibatis.annotations.Mapper)` to avoid stale context.
+- Lazy datasource creation uses `ConcurrentHashMap.computeIfAbsent` with `CompletableFuture` to ensure at-most-one creation per key and allow concurrent callers to await the same future.
+- Expired or destroyed `DruidDataSource` instances are explicitly closed via `dds.close()` inside try-catch blocks to release pool resources.
+- Dedicated daemon thread pools are used for async datasource creation (`dynamic-ds-creator-*`) and scheduled cleanup (`dynamic-ds-cleanup`) instead of shared common pools.

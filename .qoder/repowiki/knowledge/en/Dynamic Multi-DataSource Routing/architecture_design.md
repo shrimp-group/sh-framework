@@ -1,0 +1,6 @@
+- Entry point: `ShDynamicdbAutoConfig` registered via `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` for Spring Boot auto-configuration.
+- Core routing: `DynamicDataSource` extends `AbstractShrimpRoutingDataSource` (custom wrapper around Spring's `AbstractRoutingDataSource`) to resolve the current lookup key from `DynamicDataSourceHolder` (ThreadLocal).
+- Lazy initialization & concurrency: `determineCurrentLookupKey()` uses `ConcurrentHashMap` + `CompletableFuture` with a dedicated `ThreadPoolExecutor` to create `DruidDataSource` instances on-demand, keyed by a string identifier provided by a user-supplied `DynamicDataSourceFactory` bean.
+- Lifecycle management: `DynamicDataSourceAutoConfig` conditionally creates the `DynamicDataSource` bean only when `DynamicDataSourceFactory` is present; it also starts a scheduled cleanup task (`ScheduledThreadPoolExecutor`) that closes expired data sources based on `DynamicDataSourceConfig` settings.
+- Cleanup safety: `DynamicDataSourceAop` clears the ThreadLocal holder after any `@Mapper` method execution to prevent cross-request leakage.
+- Dependency direction: internal packages (`aop`, `bean`, `config`, `cleaner`) support the core routing classes; external dependencies are `sh-mybatis` (for `DataSourceInfo`), `sh-spring` (for `SpringContextHolder`), and Spring Boot AOP.

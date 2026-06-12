@@ -1,0 +1,519 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: en-US
+branch: main
+exported_at: "2026-06-12T10:17:06Z"
+modules:
+    "":
+        dir_name: SH Framework Platform
+        title: SH Framework Platform
+        scope:
+            - pom.xml
+            - README.md
+            - .gitignore
+            - AGENTS.md
+            - .agents\skills\sh-bom\SKILL.md
+            - .agents\skills\sh-core\SKILL.md
+            - .agents\skills\sh-demo\SKILL.md
+            - .agents\skills\sh-dynamicdb\SKILL.md
+            - .agents\skills\sh-mqtt\SKILL.md
+            - .agents\skills\sh-mybatis\SKILL.md
+            - .agents\skills\sh-redis\SKILL.md
+            - .agents\skills\sh-spring\SKILL.md
+            - .agents\skills\sh-tool\SKILL.md
+            - .agents\skills\sh-web\SKILL.md
+            - .agents\skills\sh-xxljob\SKILL.md
+            - .idea\.gitignore
+            - .idea\compiler.xml
+            - .idea\encodings.xml
+            - .idea\git_toolbox_prj.xml
+            - .idea\jarRepositories.xml
+            - .idea\misc.xml
+            - .idea\shelf\Uncommitted_changes_before_Update_at_2026-06-08_21_43_[Changes]\shelved.patch
+            - .idea\shelf\Uncommitted_changes_before_Update_at_2026-06-08_21_43__Changes_.xml
+            - .idea\shelf\Uncommitted_changes_before_Update_at_2026-06-10_09_48_[Changes]\shelved.patch
+            - .idea\shelf\Uncommitted_changes_before_Update_at_2026-06-10_09_48__Changes_.xml
+            - .idea\vcs.xml
+            - .idea\workspace.xml
+            - .trae\specs\fix-dynamicdb-connection-pool-leak\checklist.md
+            - .trae\specs\fix-dynamicdb-connection-pool-leak\spec.md
+            - .trae\specs\fix-dynamicdb-connection-pool-leak\tasks.md
+            - .trae\specs\fix-dynamicdb-dcl-blocking\checklist.md
+            - .trae\specs\fix-dynamicdb-dcl-blocking\spec.md
+            - .trae\specs\fix-dynamicdb-dcl-blocking\tasks.md
+            - .trae\specs\fix-fastjson2-autotype-vuln\checklist.md
+            - .trae\specs\fix-fastjson2-autotype-vuln\spec.md
+            - .trae\specs\fix-fastjson2-autotype-vuln\tasks.md
+            - .trae\specs\fix-redis-lock-watchdog\checklist.md
+            - .trae\specs\fix-redis-lock-watchdog\spec.md
+            - .trae\specs\fix-redis-lock-watchdog\tasks.md
+            - .trae\specs\fix-sensitive-config-plaintext\checklist.md
+            - .trae\specs\fix-sensitive-config-plaintext\spec.md
+            - .trae\specs\fix-sensitive-config-plaintext\tasks.md
+            - .trae\specs\fix-sql-injection-updateby\checklist.md
+            - .trae\specs\fix-sql-injection-updateby\spec.md
+            - .trae\specs\fix-sql-injection-updateby\tasks.md
+            - .trae\specs\fix-threadlocal-leak\checklist.md
+            - .trae\specs\fix-threadlocal-leak\spec.md
+            - .trae\specs\fix-threadlocal-leak\tasks.md
+            - .trae\specs\optimize-sql-provider-reflection\checklist.md
+            - .trae\specs\optimize-sql-provider-reflection\spec.md
+            - .trae\specs\optimize-sql-provider-reflection\tasks.md
+            - LICENSE
+            - docs\risk-analysis.md
+            - docs\stories\US-001-实体体系与数据规范.md
+            - docs\stories\US-002-统一响应结果封装.md
+            - docs\stories\US-003-异常体系与分类处理.md
+            - docs\stories\US-004-用户上下文与多租户隔离.md
+            - docs\stories\US-005-结果码与业务错误码体系.md
+            - docs\stories\US-006-日志脱敏与安全输出.md
+            - docs\stories\US-007-通用Mapper与动态SQL生成.md
+            - docs\stories\US-008-逻辑删除与数据安全.md
+            - docs\stories\US-009-乐观锁与并发控制.md
+            - docs\stories\US-010-MyBatis拦截器与自动填充.md
+            - docs\stories\US-011-分页查询与PageData封装.md
+            - docs\stories\US-012-全局异常处理与邮件告警.md
+            - docs\stories\US-013-响应体用户名自动填充.md
+            - docs\stories\US-014-REST接口元数据扫描.md
+            - docs\stories\US-015-自定义参数校验与标准请求Bean.md
+            - docs\stories\US-016-Redis全数据类型缓存操作.md
+            - docs\stories\US-017-Redis分布式锁.md
+            - docs\stories\US-018-Redis-ID生成器.md
+            - docs\stories\US-019-Redis消息队列.md
+            - docs\stories\US-020-动态数据源运行时切换.md
+            - docs\stories\US-021-动态数据源DCL与异步创建.md
+            - docs\stories\US-022-Spring上下文全局持有器.md
+            - docs\stories\US-023-雪花ID与系统初始化.md
+            - docs\stories\US-024-MQTT注解驱动消息发布订阅.md
+            - docs\stories\US-025-MQTT-SSL-TLS认证与断线重连.md
+            - docs\stories\US-026-XXL-Job定时任务集成.md
+            - docs\stories\US-027-加密工具集.md
+            - docs\stories\US-028-字符串格式化与Bean操作工具.md
+            - docs\stories\US-029-综合工具集.md
+            - docs\stories\US-030-示例模块CRUD标准范式.md
+            - sh-bom\pom.xml
+            - sh-core\.flattened-pom.xml
+            - sh-core\pom.xml
+            - sh-core\src\main\java\com\wkclz\core\annotation\ApiDesc.java
+            - sh-core\src\main\java\com\wkclz\core\annotation\Desc.java
+            - sh-core\src\main\java\com\wkclz\core\annotation\FieldDesc.java
+            - sh-core\src\main\java\com\wkclz\core\annotation\Router.java
+            - sh-core\src\main\java\com\wkclz\core\base\BaseEntity.java
+            - sh-core\src\main\java\com\wkclz\core\base\DbColumnEntity.java
+            - sh-core\src\main\java\com\wkclz\core\base\PageData.java
+            - sh-core\src\main\java\com\wkclz\core\base\Pageable.java
+            - sh-core\src\main\java\com\wkclz\core\base\R.java
+            - sh-core\src\main\java\com\wkclz\core\base\UserInfo.java
+            - sh-core\src\main\java\com\wkclz\core\enums\EnvType.java
+            - sh-core\src\main\java\com\wkclz\core\enums\ResultCode.java
+            - sh-core\src\main\java\com\wkclz\core\exception\ApiException.java
+            - sh-core\src\main\java\com\wkclz\core\exception\ApplicationException.java
+            - sh-core\src\main\java\com\wkclz\core\exception\CommonException.java
+            - sh-core\src\main\java\com\wkclz\core\exception\NotFoundException.java
+            - sh-core\src\main\java\com\wkclz\core\exception\SystemException.java
+            - sh-core\src\main\java\com\wkclz\core\exception\UnauthorizedException.java
+            - sh-core\src\main\java\com\wkclz\core\exception\UserException.java
+            - sh-core\src\main\java\com\wkclz\core\exception\ValidationException.java
+            - sh-core\src\main\java\com\wkclz\core\log\MaskingPatternLayout.java
+            - sh-core\src\main\java\com\wkclz\core\spi\UserNameProvider.java
+            - sh-core\src\main\java\com\wkclz\core\user\UserContext.java
+            - sh-core\src\test\java\com\wkclz\core\base\PageableTest.java
+            - sh-demo\.flattened-pom.xml
+            - sh-demo\pom.xml
+            - sh-demo\src\main\java\com\wkclz\demo\DemoApplication.java
+            - sh-demo\src\main\java\com\wkclz\demo\bean\entity\User.java
+            - sh-demo\src\main\java\com\wkclz\demo\bean\vo\package-info.java
+            - sh-demo\src\main\java\com\wkclz\demo\bean\vo\user\UserCreateReq.java
+            - sh-demo\src\main\java\com\wkclz\demo\bean\vo\user\UserPageReq.java
+            - sh-demo\src\main\java\com\wkclz\demo\bean\vo\user\UserPageResp.java
+            - sh-demo\src\main\java\com\wkclz\demo\bean\vo\user\UserResp.java
+            - sh-demo\src\main\java\com\wkclz\demo\bean\vo\user\UserUpdateReq.java
+            - sh-demo\src\main\java\com\wkclz\demo\mapper\UserMapper.java
+            - sh-demo\src\main\java\com\wkclz\demo\rest\Route.java
+            - sh-demo\src\main\java\com\wkclz\demo\rest\UserRest.java
+            - sh-demo\src\main\java\com\wkclz\demo\service\UserService.java
+            - sh-demo\src\main\resources\config\application.yml
+            - sh-dynamicdb\.flattened-pom.xml
+            - sh-dynamicdb\pom.xml
+            - sh-dynamicdb\src\main\java\com\wkclz\dynamicdb\AbstractShrimpRoutingDataSource.java
+            - sh-dynamicdb\src\main\java\com\wkclz\dynamicdb\DynamicDataSource.java
+            - sh-dynamicdb\src\main\java\com\wkclz\dynamicdb\DynamicDataSourceFactory.java
+            - sh-dynamicdb\src\main\java\com\wkclz\dynamicdb\DynamicDataSourceHolder.java
+            - sh-dynamicdb\src\main\java\com\wkclz\dynamicdb\ShDynamicdbAutoConfig.java
+            - sh-dynamicdb\src\main\java\com\wkclz\dynamicdb\aop\DynamicDataSourceAop.java
+            - sh-dynamicdb\src\main\java\com\wkclz\dynamicdb\bean\DefaultDataSourceConfig.java
+            - sh-dynamicdb\src\main\java\com\wkclz\dynamicdb\config\DynamicDataSourceAutoConfig.java
+            - sh-dynamicdb\src\main\java\com\wkclz\dynamicdb\config\DynamicDataSourceConfig.java
+            - sh-dynamicdb\src\main\resources\META-INF\spring\org.springframework.boot.autoconfigure.AutoConfiguration.imports
+            - sh-mqtt\.flattened-pom.xml
+            - sh-mqtt\README.md
+            - sh-mqtt\pom.xml
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\MqttAutoConfigure.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\annotation\MqttController.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\annotation\MqttTopicMapping.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\bean\MqttHexMsg.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\client\MqttProducer.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\config\MqttApplicationListener.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\config\MqttBeanPostProcessor.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\config\MqttConfig.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\config\MqttSubscribe.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\demo\MqttConsumerDemo.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\demo\MqttProducerDemo.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\enums\Qos.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\exception\MqttBeansException.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\exception\MqttRemoteException.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\exception\MqttSendException.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\exception\MqttTimeoutException.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\handler\MqttHandlerFactory.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\remote\MqttMessage.java
+            - sh-mqtt\src\main\java\com\wkclz\mqtt\remote\MqttResponse.java
+            - sh-mqtt\src\main\resources\META-INF\spring-configuration-metadata.json
+            - sh-mqtt\src\main\resources\META-INF\spring\org.springframework.boot.autoconfigure.AutoConfiguration.imports
+            - sh-mybatis\.flattened-pom.xml
+            - sh-mybatis\pom.xml
+            - sh-mybatis\src\main\java\com\github\pagehelper\PageInterceptor.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\ShMyBatisAutoConfig.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\annotation\Blob.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\bean\ColumnInfo.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\bean\ColumnQuery.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\bean\DataSourceInfo.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\bean\DataTypeEnum.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\bean\DbEntityProperty.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\bean\IndexInfo.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\bean\TableInfo.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\bean\UpdateInfo.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\config\ShMyBatisConfig.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\exception\MyBatisException.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\helper\PageQuery.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\interceptor\MyBatisBoundSqlInterceptor.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\interceptor\MyBatisQueryInterceptor.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\interceptor\MyBatisUpdateInterceptor.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\BaseMapper.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\TableInfoMapper.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\BaseMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\DeleteByIdEntityMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\DeleteByIdMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\DeleteByIdsEntityMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\DeleteByIdsMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\InsertBatchMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\InsertMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\SelectAllMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\SelectByEntityMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\SelectByEntityWithLimitMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\SelectByIdMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\SelectByIdsMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\SelectCountByEntityMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\SelectOneByEntityMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\UpdateBatchMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\UpdateByIdMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\mapper\impl\UpdateByIdSelectiveMapperProvider.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\service\BaseService.java
+            - sh-mybatis\src\main\java\com\wkclz\mybatis\service\TableInfoService.java
+            - sh-mybatis\src\main\resources\META-INF\spring-configuration-metadata.json
+            - sh-mybatis\src\main\resources\META-INF\spring.factories
+            - sh-mybatis\src\main\resources\META-INF\spring\org.springframework.boot.autoconfigure.AutoConfiguration.imports
+            - sh-mybatis\src\main\resources\mapper\TableInfoMapper.xml
+            - sh-mybatis\src\test\java\com\wkclz\mybatis\helper\PageQueryTest.java
+            - sh-parent\.flattened-pom.xml
+            - sh-parent\pom.xml
+            - sh-redis\.flattened-pom.xml
+            - sh-redis\pom.xml
+            - sh-redis\src\main\java\com\wkclz\redis\ShRedisAutoConfig.java
+            - sh-redis\src\main\java\com\wkclz\redis\config\RedisConfig.java
+            - sh-redis\src\main\java\com\wkclz\redis\config\RedisKeepAliveConfig.java
+            - sh-redis\src\main\java\com\wkclz\redis\config\RedisTemplateConfig.java
+            - sh-redis\src\main\java\com\wkclz\redis\helper\LockHolder.java
+            - sh-redis\src\main\java\com\wkclz\redis\helper\RedisHelper.java
+            - sh-redis\src\main\java\com\wkclz\redis\helper\RedisIdGenerator.java
+            - sh-redis\src\main\java\com\wkclz\redis\helper\RedisLock.java
+            - sh-redis\src\main\java\com\wkclz\redis\queue\MessageListener.java
+            - sh-redis\src\main\java\com\wkclz\redis\queue\RedisMessageQueue.java
+            - sh-redis\src\main\java\com\wkclz\redis\queue\RedisMessageQueueExample.java
+            - sh-redis\src\main\java\com\wkclz\redis\queue\RedisMessageQueueImpl.java
+            - sh-redis\src\main\java\com\wkclz\redis\queue\RedisMessageQueueManager.java
+            - sh-redis\src\main\java\com\wkclz\redis\serializer\Fastjson2JsonRedisSerializer.java
+            - sh-redis\src\main\resources\META-INF\spring\org.springframework.boot.autoconfigure.AutoConfiguration.imports
+            - sh-spring\.flattened-pom.xml
+            - sh-spring\pom.xml
+            - sh-spring\src\main\java\com\wkclz\spring\ShSpringAutoConfig.java
+            - sh-spring\src\main\java\com\wkclz\spring\config\SensitiveConfigDecryptor.java
+            - sh-spring\src\main\java\com\wkclz\spring\config\SensitiveConfigEncryptor.java
+            - sh-spring\src\main\java\com\wkclz\spring\config\SpringContextHolder.java
+            - sh-spring\src\main\java\com\wkclz\spring\config\Sys.java
+            - sh-spring\src\main\java\com\wkclz\spring\config\SystemConfig.java
+            - sh-spring\src\main\java\com\wkclz\spring\helper\SnowflakeHelper.java
+            - sh-spring\src\main\java\com\wkclz\spring\utils\FreeMarkerTemplateUtil.java
+            - sh-spring\src\main\java\com\wkclz\spring\utils\MailUtil.java
+            - sh-spring\src\main\resources\META-INF\spring\org.springframework.boot.autoconfigure.AutoConfiguration.imports
+            - sh-tool\.flattened-pom.xml
+            - sh-tool\pom.xml
+            - sh-tool\src\main\java\com\wkclz\tool\bean\JavaField.java
+            - sh-tool\src\main\java\com\wkclz\tool\bean\SystemBaseInfo.java
+            - sh-tool\src\main\java\com\wkclz\tool\tools\AesTool.java
+            - sh-tool\src\main\java\com\wkclz\tool\tools\Base64Tool.java
+            - sh-tool\src\main\java\com\wkclz\tool\tools\DesTool.java
+            - sh-tool\src\main\java\com\wkclz\tool\tools\Md5Tool.java
+            - sh-tool\src\main\java\com\wkclz\tool\tools\RegularTool.java
+            - sh-tool\src\main\java\com\wkclz\tool\tools\RsaTool.java
+            - sh-tool\src\main\java\com\wkclz\tool\tools\ShaTool.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\AreaUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\BeanUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\CheckPwdUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\ClassUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\CompressUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\DateUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\EnumUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\FileUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\IntegerUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\JsUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\JsonUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\MapUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\NetworkUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\PropertiesUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\QrCodeUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\SecretUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\ServerStateUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\SnowflakeIdWorker.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\StringFormat.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\StringUtil.java
+            - sh-tool\src\main\java\com\wkclz\tool\utils\ValidateCode.java
+            - sh-web\.flattened-pom.xml
+            - sh-web\pom.xml
+            - sh-web\src\main\java\com\wkclz\web\ShWebAutoConfig.java
+            - sh-web\src\main\java\com\wkclz\web\annotation\AtLeastOneNotNull.java
+            - sh-web\src\main\java\com\wkclz\web\annotation\validator\AtLeastOneNotNullValidator.java
+            - sh-web\src\main\java\com\wkclz\web\bean\EntityResp.java
+            - sh-web\src\main\java\com\wkclz\web\bean\IdReq.java
+            - sh-web\src\main\java\com\wkclz\web\bean\PageReq.java
+            - sh-web\src\main\java\com\wkclz\web\bean\RemoveReq.java
+            - sh-web\src\main\java\com\wkclz\web\bean\RestInfo.java
+            - sh-web\src\main\java\com\wkclz\web\bean\RestParam.java
+            - sh-web\src\main\java\com\wkclz\web\bean\UpdateReq.java
+            - sh-web\src\main\java\com\wkclz\web\helper\IpHelper.java
+            - sh-web\src\main\java\com\wkclz\web\helper\LocalThreadHelper.java
+            - sh-web\src\main\java\com\wkclz\web\helper\RequestHelper.java
+            - sh-web\src\main\java\com\wkclz\web\helper\ResponseHelper.java
+            - sh-web\src\main\java\com\wkclz\web\helper\RestHelper.java
+            - sh-web\src\main\java\com\wkclz\web\rest\ErrorHandler.java
+            - sh-web\src\main\java\com\wkclz\web\rest\UserNameBodyAdvice.java
+            - sh-web\src\main\resources\META-INF\spring\org.springframework.boot.autoconfigure.AutoConfiguration.imports
+            - sh-web\src\test\java\com\wkclz\web\bean\PageReqTest.java
+            - sh-web\src\test\java\com\wkclz\web\helper\RestHelperTest.java
+            - sh-xxljob\.flattened-pom.xml
+            - sh-xxljob\pom.xml
+            - sh-xxljob\src\main\java\com\wkclz\xxljob\XxlJobAutoConfigure.java
+            - sh-xxljob\src\main\java\com\wkclz\xxljob\config\XxlJobConfig.java
+            - sh-xxljob\src\main\java\com\wkclz\xxljob\demo\XxlJobDemo.java
+            - sh-xxljob\src\main\resources\META-INF\spring-configuration-metadata.json
+            - sh-xxljob\src\main\resources\META-INF\spring\org.springframework.boot.autoconfigure.AutoConfiguration.imports
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    docs:
+        dir_name: Framework Design & Risk Documentation
+        title: Framework Design & Risk Documentation
+        scope:
+            - docs/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: sh_demo
+            - path: sh_core
+            - path: sh_web
+            - path: sh_mybatis
+            - path: sh_spring
+            - path: sh_dynamicdb
+            - path: sh_mqtt
+            - path: sh_redis
+            - path: sh_xxljob
+            - path: sh_tool
+    sh_core:
+        dir_name: Core Framework Foundation
+        title: Core Framework Foundation
+        scope:
+            - sh-core/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: sh_web
+            - path: sh_spring
+            - path: sh_mybatis
+            - path: sh_tool
+            - path: sh_redis
+            - path: docs
+            - path: sh_demo
+            - path: sh_dynamicdb
+            - path: sh_mqtt
+            - path: sh_xxljob
+    sh_demo:
+        dir_name: User Management Demo Application
+        title: User Management Demo Application
+        scope:
+            - sh-demo/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: docs
+            - path: sh_web
+            - path: sh_mybatis
+            - path: sh_tool
+            - path: sh_core
+            - path: sh_xxljob
+            - path: sh_redis
+            - path: sh_spring
+            - path: sh_mqtt
+            - path: sh_dynamicdb
+    sh_dynamicdb:
+        dir_name: Dynamic Multi-DataSource Routing
+        title: Dynamic Multi-DataSource Routing
+        scope:
+            - sh-dynamicdb/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: sh_mybatis
+            - path: sh_redis
+            - path: sh_xxljob
+            - path: sh_web
+            - path: sh_mqtt
+            - path: sh_core
+            - path: docs
+            - path: sh_tool
+            - path: sh_demo
+    sh_mqtt:
+        dir_name: MQTT Client Framework with Annotation-Driven Message Routing
+        title: MQTT Client Framework with Annotation-Driven Message Routing
+        scope:
+            - sh-mqtt/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: sh_redis
+            - path: sh_xxljob
+            - path: sh_web
+            - path: sh_dynamicdb
+            - path: sh_tool
+            - path: sh_core
+            - path: sh_spring
+            - path: docs
+            - path: sh_demo
+            - path: sh_mybatis
+    sh_mybatis:
+        dir_name: MyBatis CRUD Framework & Auto-Configuration
+        title: MyBatis CRUD Framework & Auto-Configuration
+        scope:
+            - sh-mybatis/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: sh_dynamicdb
+            - path: sh_demo
+            - path: sh_core
+            - path: sh_web
+            - path: sh_spring
+            - path: docs
+            - path: sh_xxljob
+            - path: sh_redis
+            - path: sh_tool
+            - path: sh_mqtt
+    sh_redis:
+        dir_name: Redis Infrastructure & Distributed Utilities
+        title: Redis Infrastructure & Distributed Utilities
+        scope:
+            - sh-redis/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: sh_mqtt
+            - path: sh_dynamicdb
+            - path: sh_spring
+            - path: sh_xxljob
+            - path: sh_core
+            - path: sh_tool
+            - path: sh_demo
+            - path: sh_mybatis
+            - path: docs
+            - path: sh_web
+    sh_spring:
+        dir_name: Spring Boot Auto-Configuration & Infrastructure Utilities
+        title: Spring Boot Auto-Configuration & Infrastructure Utilities
+        scope:
+            - sh-spring/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: sh_tool
+            - path: sh_core
+            - path: sh_redis
+            - path: sh_mybatis
+            - path: sh_web
+            - path: docs
+            - path: sh_demo
+            - path: sh_mqtt
+            - path: sh_xxljob
+    sh_tool:
+        dir_name: General Purpose Utility Library
+        title: General Purpose Utility Library
+        scope:
+            - sh-tool/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: sh_spring
+            - path: sh_core
+            - path: sh_demo
+            - path: sh_redis
+            - path: sh_mqtt
+            - path: sh_web
+            - path: sh_xxljob
+            - path: sh_dynamicdb
+            - path: sh_mybatis
+            - path: docs
+    sh_web:
+        dir_name: Web Infrastructure & REST Support
+        title: Web Infrastructure & REST Support
+        scope:
+            - sh-web/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: sh_core
+            - path: sh_demo
+            - path: sh_mqtt
+            - path: sh_dynamicdb
+            - path: sh_mybatis
+            - path: docs
+            - path: sh_spring
+            - path: sh_tool
+            - path: sh_xxljob
+            - path: sh_redis
+    sh_xxljob:
+        dir_name: XXL-JOB Auto-Configuration Module
+        title: XXL-JOB Auto-Configuration Module
+        scope:
+            - sh-xxljob/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: sh_mqtt
+            - path: sh_redis
+            - path: sh_dynamicdb
+            - path: sh_demo
+            - path: sh_mybatis
+            - path: sh_tool
+            - path: sh_web
+            - path: sh_core
+            - path: docs
+            - path: sh_spring

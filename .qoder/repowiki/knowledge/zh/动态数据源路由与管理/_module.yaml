@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: sh_dynamicdb
+title: 动态数据源路由与管理
+scope:
+    - sh-dynamicdb/
+source_files: []
+depends_on: []
+related_to:
+    - path: sh_mybatis
+    - path: sh_redis
+    - path: sh_web

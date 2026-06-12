@@ -1,0 +1,1 @@
+Provides a Spring Boot auto-configured MyBatis extension with generic CRUD operations, SQL interception, pagination support, and database metadata querying.

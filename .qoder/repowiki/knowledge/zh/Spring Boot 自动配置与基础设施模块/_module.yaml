@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: sh_spring
+title: Spring Boot 自动配置与基础设施模块
+scope:
+    - sh-spring/
+source_files: []
+depends_on: []
+related_to:
+    - path: sh_tool
+    - path: sh_redis
+    - path: sh_web
+    - path: sh_xxljob
+    - path: sh_mqtt

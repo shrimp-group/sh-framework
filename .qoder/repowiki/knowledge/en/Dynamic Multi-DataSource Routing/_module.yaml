@@ -1,0 +1,17 @@
+schema_version: 1
+module_path: sh_dynamicdb
+title: Dynamic Multi-DataSource Routing
+scope:
+    - sh-dynamicdb/
+source_files: []
+depends_on: []
+related_to:
+    - path: sh_mybatis
+    - path: sh_redis
+    - path: sh_xxljob
+    - path: sh_web
+    - path: sh_mqtt
+    - path: sh_core
+    - path: docs
+    - path: sh_tool
+    - path: sh_demo

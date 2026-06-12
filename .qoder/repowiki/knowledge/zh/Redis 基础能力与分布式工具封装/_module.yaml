@@ -1,0 +1,15 @@
+schema_version: 1
+module_path: sh_redis
+title: Redis 基础能力与分布式工具封装
+scope:
+    - sh-redis/
+source_files: []
+depends_on: []
+related_to:
+    - path: sh_tool
+    - path: sh_mqtt
+    - path: sh_spring
+    - path: sh_xxljob
+    - path: sh_dynamicdb
+    - path: sh_mybatis
+    - path: sh_core
