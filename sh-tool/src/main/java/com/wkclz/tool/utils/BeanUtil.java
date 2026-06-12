@@ -111,6 +111,20 @@ public class BeanUtil {
         return cp(source, false);
     }
 
+    public static <S, T> T cp(S source, Class<T> clazz) {
+        if (source == null) {
+            return null;
+        }
+        try {
+            T t = clazz.getDeclaredConstructor().newInstance();
+            cp(source, t, true);
+            return t;
+        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            logger.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
     public static <S> S cp(S source, boolean copyNull) {
         if (source == null) {
             return null;
@@ -174,25 +188,26 @@ public class BeanUtil {
         return cp(source, clazz);
     }
 
-    public static <S> List<S> cp(List<S> source, Class<S> clazz) {
+    public static <S, T> List<T> cp(List<S> source, Class<T> clazz) {
         if (source == null) {
             return Collections.emptyList();
         }
         if (source.isEmpty()) {
             return new ArrayList<>();
         }
-        List<S> list = new ArrayList<>();
+        List<T> list = new ArrayList<>();
         try {
             for (S s : source) {
-                S t = clazz.getDeclaredConstructor().newInstance();
+                T t = clazz.getDeclaredConstructor().newInstance();
                 cp(s, t, true);
                 list.add(t);
             }
+            return list;
         } catch (InstantiationException | NoSuchMethodException | IllegalAccessException |
                  InvocationTargetException e) {
             logger.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         }
-        return list;
     }
 
     /**

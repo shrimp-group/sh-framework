@@ -1,6 +1,7 @@
 package com.wkclz.core.base;
 
 import com.wkclz.core.annotation.FieldDesc;
+import com.wkclz.tool.utils.BeanUtil;
 import lombok.Data;
 
 import java.util.List;
@@ -180,5 +181,10 @@ public class PageData<T> {
             }
         }
         return convert(source, newRecords);
+    }
+
+    public <T> PageData<T> convert(Class<T> targetClass) {
+        List<T> cp = BeanUtil.cp(this.getRecords(), targetClass);
+        return PageData.of(cp, this.total, this.current, this.size);
     }
 }
