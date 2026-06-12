@@ -14,3 +14,5 @@ target
 
 # Mac
 .DS_Store
+
+.trae/specs
