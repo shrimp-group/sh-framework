@@ -13,6 +13,8 @@ import com.wkclz.spring.utils.MailUtil;
 import com.wkclz.web.helper.LocalThreadHelper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +30,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.SQLSyntaxErrorException;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 /**
  * 全局异常捕捉处理
@@ -101,6 +102,16 @@ public class ErrorHandler {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         printErrorLog(request, response, status, e);
         return R.error(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public R<Void> handleConstraintViolationException(ConstraintViolationException e, HttpServletRequest request, HttpServletResponse response) {
+        String message = e.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining("; "));
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        printErrorLog(request, response, status, e);
+        return R.error(status.value(), message);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
