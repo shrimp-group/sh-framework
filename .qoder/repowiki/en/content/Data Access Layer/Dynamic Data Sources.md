@@ -331,8 +331,8 @@ SH Framework’s dynamic data source stack provides robust, multi-tenant routing
   - DynamicDataSource lazily creates and caches pools per key until eviction.
 
 - Multi-tenant entity pattern:
-  - Annotate DAO/Mapper interfaces with the Mapper marker.
-  - In service methods, set the tenant key before invoking DAO methods and clear afterwards.
+  - Annotate Mapper interfaces with the Mapper marker.
+  - In service methods, set the tenant key before invoking Mapper methods and clear afterwards.
 
 - Transactional context handling:
   - Set the key before entering a transactional method.
