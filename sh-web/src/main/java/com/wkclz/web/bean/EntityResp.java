@@ -13,6 +13,9 @@ public class EntityResp implements Serializable {
     @Schema(description = "主键ID")
     private Long id;
 
+    @Schema(description = "排序")
+    private Integer sort;
+
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
 
