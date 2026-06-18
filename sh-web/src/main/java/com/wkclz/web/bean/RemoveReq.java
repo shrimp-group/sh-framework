@@ -2,7 +2,6 @@ package com.wkclz.web.bean;
 
 import com.wkclz.web.annotation.AtLeastOneNotNull;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,12 +12,10 @@ import java.util.List;
 @AtLeastOneNotNull(fields = {"id", "ids"}, message = "id 或 ids 必须填写其中一个")
 public class RemoveReq implements Serializable {
 
-    @NotNull(message = "主键ID不能为空")
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "主键ID（与 ids 二选一）")
     private Long id;
 
-    @NotNull(message = "主键ID清单不能为空")
-    @Schema(description = "主键ID清单", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "主键ID清单（与 id 二选一）")
     private List<Long> ids;
 
 

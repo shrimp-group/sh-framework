@@ -39,3 +39,39 @@ flowchart TD
 - `sh-web/src/main/java/com/wkclz/web/bean/RemoveReq.java` (删除请求VO，@AtLeastOneNotNull典型使用)
 - `sh-web/src/main/java/com/wkclz/web/bean/UpdateReq.java` (更新请求VO，id+version必填)
 - `sh-web/src/main/java/com/wkclz/web/bean/PageReq.java` (分页请求VO，current+size)
+
+## 4. 常见错误用法
+
+### 错误：同时使用字段级 @NotNull 和类级 @AtLeastOneNotNull
+
+**问题示例：**
+```java
+@AtLeastOneNotNull(fields = {"id", "ids"}, message = "id 或 ids 必须填写其中一个")
+public class RemoveReq {
+    @NotNull(message = "主键ID不能为空")  // ❌ 错误：与 @AtLeastOneNotNull 冲突
+    private Long id;
+
+    @NotNull(message = "主键ID清单不能为空")  // ❌ 错误：与 @AtLeastOneNotNull 冲突
+    private List<Long> ids;
+}
+```
+
+**问题原因：**
+字段级别的 `@NotNull` 校验会先执行，导致即使有一个字段有值，另一个字段为 null 时也会触发校验失败，使得类级别的 `@AtLeastOneNotNull` 无法按预期工作。
+
+**正确做法：**
+```java
+@AtLeastOneNotNull(fields = {"id", "ids"}, message = "id 或 ids 必须填写其中一个")
+public class RemoveReq {
+    @Schema(description = "主键ID（与 ids 二选一）")  // ✅ 正确：移除 @NotNull
+    private Long id;
+
+    @Schema(description = "主键ID清单（与 id 二选一）")  // ✅ 正确：移除 @NotNull
+    private List<Long> ids;
+}
+```
+
+**最佳实践：**
+- 使用 `@AtLeastOneNotNull` 时，被校验的字段不应添加 `@NotNull` 注解
+- 使用 `@Schema` 注解描述字段的业务含义和互斥关系
+- 在 message 中清晰说明校验规则，如 "id 或 ids 必须填写其中一个"

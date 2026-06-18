@@ -379,7 +379,7 @@ pagehelper:
 | `@Blob` | sh-mybatis | FIELD | 标记 Blob 字段，List 查询不返回 |
 | `@MqttController` | sh-mqtt | TYPE | MQTT 消息处理器（含 @Component） |
 | `@MqttTopicMapping` | sh-mqtt | METHOD | 订阅子 Topic |
-| `@AtLeastOneNotNull` | sh-web | TYPE | 类级校验，指定字段至少一个非空 |
+| `@AtLeastOneNotNull` | sh-web | TYPE | 类级校验，指定字段至少一个非空。**注意：被校验字段不应同时使用 @NotNull，否则会导致冲突** |
 
 ### 日志规范
 
