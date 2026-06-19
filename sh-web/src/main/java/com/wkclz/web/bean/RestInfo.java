@@ -33,4 +33,39 @@ public class RestInfo implements Serializable {
      */
     private String returnGenericInfo;
 
+    /**
+     * 类级别 @Tag 描述
+     */
+    private String tag;
+
+    /**
+     * 方法级别 @Operation(summary)
+     */
+    private String operationSummary;
+
+    /**
+     * 方法级别 @Operation(description)
+     */
+    private String operationDescription;
+
+    /**
+     * 接口是否废弃 @Operation(deprecated)
+     */
+    private Boolean deprecated;
+
+    /**
+     * 返回值完整结构（JSON 格式，包含字段注释、示例值）
+     */
+    private String returnSchema;
+
+    /**
+     * 请求 Content-Type（@RequestMapping.consumes）
+     */
+    private String[] consumes;
+
+    /**
+     * 响应 Content-Type（@RequestMapping.produces）
+     */
+    private String[] produces;
+
 }

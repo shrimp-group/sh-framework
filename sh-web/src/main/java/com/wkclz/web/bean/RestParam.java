@@ -47,4 +47,24 @@ public class RestParam implements Serializable {
      */
     private List<String> genericTypes;
 
+    /**
+     * 参数描述（来自 @Schema.description）
+     */
+    private String description;
+
+    /**
+     * 参数示例值（来自 @Schema.example）
+     */
+    private String example;
+
+    /**
+     * 参数必填模式（来自 @Schema.requiredMode）
+     */
+    private String requiredMode;
+
+    /**
+     * 复杂参数类型的字段结构列表（递归扫描）
+     */
+    private List<RestField> fields;
+
 }
