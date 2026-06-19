@@ -30,6 +30,26 @@ public class ClassTypeHelper {
      * 判断是否为简单类型
      * 简单类型包括：基本类型、String、Date、Number、Boolean 等
      *
+     * @param className 类名字符串
+     * @return true 表示简单类型，false 表示复杂类型
+     */
+    public static boolean isSimpleType(String className) {
+        if (className == null || className.isEmpty()) {
+            return true;
+        }
+        try {
+            Class<?> clazz = Class.forName(className);
+            return isSimpleType(clazz);
+        } catch (ClassNotFoundException e) {
+            logger.warn("Class not found: {}", className);
+            return true;
+        }
+    }
+
+    /**
+     * 判断是否为简单类型
+     * 简单类型包括：基本类型、String、Date、Number、Boolean 等
+     *
      * @param clazz 类对象
      * @return true 表示简单类型，false 表示复杂类型
      */
@@ -58,6 +78,25 @@ public class ClassTypeHelper {
                className.equals("java.sql.Date") ||
                className.equals("java.sql.Timestamp") ||
                className.equals("java.util.Optional");
+    }
+
+    /**
+     * 判断是否为复杂类型（需要递归扫描字段的类型）
+     *
+     * @param className 类名字符串
+     * @return true 表示复杂类型，false 表示简单类型
+     */
+    public static boolean isComplexType(String className) {
+        if (className == null || className.isEmpty()) {
+            return false;
+        }
+        try {
+            Class<?> clazz = Class.forName(className);
+            return isComplexType(clazz);
+        } catch (ClassNotFoundException e) {
+            logger.warn("Class not found: {}", className);
+            return false;
+        }
     }
 
     /**
