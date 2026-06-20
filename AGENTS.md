@@ -498,6 +498,7 @@ pagehelper:
 - sh-mqtt 的 `org.eclipse.paho.client.mqttv3` 版本 `1.2.5` 直接写在 pom.xml 中，未使用 sh-bom 中定义的 `${mqttv3.version}` 属性。
 - sh-mybatis 包含修改版 `PageInterceptor`（在 `com.github.pagehelper` 包下），覆盖了原始 PageHelper 的拦截器。
 - sh-web 的 mysql-connector-j 和 spring-jdbc 标记为 `<optional>true</optional>`，仅用于 ErrorHandler 获取数据库异常信息。
+- sh-mybatis 的 `DeleteByIdMapperProvider` 和 `DeleteByIdsMapperProvider` 中 `#{updateBy}` 必须显式声明 `javaType=String`（即 `#{updateBy, javaType=String}`），否则 MyBatis 会从方法参数类型 `Long` 错误推断 javaType，导致 `MyBatisBoundSqlInterceptor` 注入 String 值时抛出 ClassCastException。
 
 ## 用户故事索引
 
