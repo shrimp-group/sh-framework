@@ -20,12 +20,14 @@ com.wkclz.web
 │   ├── ErrorHandler           # 全局异常处理器（@RestControllerAdvice）
 │   └── UserNameBodyAdvice     # 响应体用户名自动填充
 ├── bean/
-│   ├── RestInfo               # REST接口信息Bean
+│   ├── EntityResp             # 实体响应Bean
 │   ├── IdReq                  # ID请求Bean
 │   ├── PageReq                # 分页请求Bean
 │   ├── RemoveReq              # 删除请求Bean
-│   ├── UpdateReq              # 更新请求Bean
-│   └── EntityResp             # 实体响应Bean
+│   ├── RestField              # REST接口字段结构描述
+│   ├── RestInfo               # REST接口信息Bean
+│   ├── RestParam              # REST接口参数元数据
+│   └── UpdateReq              # 更新请求Bean
 └── helper/
     ├── IpHelper               # IP地址工具
     ├── RequestHelper          # 请求工具
@@ -120,9 +122,12 @@ public class MyUserNameProvider implements UserNameProvider {
 
 ```java
 @Data
+@Schema(description = "删除请求")
 @AtLeastOneNotNull(fields = {"id", "ids"}, message = "id 或 ids 必须填写其中一个")
-public class RemoveReq {
+public class RemoveReq implements Serializable {
+    @Schema(description = "主键ID（与 ids 二选一）")
     private Long id;
+    @Schema(description = "主键ID清单（与 id 二选一）")
     private List<Long> ids;
 }
 ```
@@ -133,32 +138,70 @@ public class RemoveReq {
 
 ```java
 @Data
-public class IdReq {
+@Schema(description = "ID请求")
+public class IdReq implements Serializable {
+
     @NotNull(message = "主键ID不能为空")
+    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long id;
 }
 ```
 
 ### PageReq - 分页请求
 
+实现 `Pageable` 接口，`init()` 方法校验并计算 offset。
+
 ```java
 @Data
-public class PageReq {
-    private Long current;  // 页码
-    private Long size;     // 每页大小
+@Slf4j
+@Schema(description = "分页请求")
+public class PageReq implements Pageable, Serializable {
+
+    @Schema(description = "分页页码")
+    private Long current;
+
+    @Schema(description = "分页大小")
+    private Long size;
+
+    @Schema(description = "偏移量", hidden = true)
+    private Long offset;
+
+    @Override
+    public void init() {
+        Long current = getCurrent();
+        if (current == null || current < 1) {
+            log.debug("分页参数 current 为空或非法值: {}, 设置为默认值: {}", current, DEFAULT_CURRENT);
+            setCurrent(DEFAULT_CURRENT);
+        }
+
+        Long size = getSize();
+        if (size == null || size < 1) {
+            log.debug("分页参数 size 为空或非法值: {}, 设置为默认值: {}", size, DEFAULT_SIZE);
+            setSize(DEFAULT_SIZE);
+        }
+
+        // 计算偏移量：(current - 1) * size
+        long offset = (getCurrent() - 1) * getSize();
+        setOffset(offset);
+        log.debug("分页参数初始化完成, current: {}, size: {}, offset: {}", getCurrent(), getSize(), offset);
+    }
 }
 ```
 
 ### RemoveReq - 删除请求
 
+类级 `@AtLeastOneNotNull` 校验，字段上**无** `@NotNull` 注解（避免冲突）。
+
 ```java
 @Data
-@AtLeastOneNotNull(fields = {"id", "ids"})
-public class RemoveReq {
-    @NotNull(message = "主键ID不能为空")
+@Schema(description = "删除请求")
+@AtLeastOneNotNull(fields = {"id", "ids"}, message = "id 或 ids 必须填写其中一个")
+public class RemoveReq implements Serializable {
+
+    @Schema(description = "主键ID（与 ids 二选一）")
     private Long id;
-    
-    @NotNull(message = "主键ID清单不能为空")
+
+    @Schema(description = "主键ID清单（与 id 二选一）")
     private List<Long> ids;
 }
 ```
@@ -167,29 +210,136 @@ public class RemoveReq {
 
 ```java
 @Data
-public class UpdateReq {
+@Schema(description = "更新请求")
+public class UpdateReq implements Serializable {
+
     @NotNull(message = "主键ID不能为空")
+    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long id;
-    
+
     @NotNull(message = "数据版本version不能为空")
+    @Schema(description = "数据版本", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer version;
 }
 ```
 
 ### EntityResp - 实体响应
 
+`createByName` / `updateByName` 由 `UserNameBodyAdvice` 通过 SPI 自动填充。
+
 ```java
 @Data
-public class EntityResp {
+@Schema(description = "实体返回")
+public class EntityResp implements Serializable {
+
+    @Schema(description = "主键ID")
     private Long id;
+
+    @Schema(description = "排序")
+    private Integer sort;
+
+    @Schema(description = "创建时间")
     private LocalDateTime createTime;
+
+    @Schema(description = "创建人code")
     private String createBy;
+
+    @Schema(description = "更新时间")
     private LocalDateTime updateTime;
+
+    @Schema(description = "更新人code")
     private String updateBy;
+
+    @Schema(description = "备注")
     private String remark;
+
+    @Schema(description = "数据版本")
     private Integer version;
-    private String createByName;  // 自动填充
-    private String updateByName;  // 自动填充
+
+    @Schema(description = "创建人姓名")
+    private String createByName;
+
+    @Schema(description = "更新人姓名")
+    private String updateByName;
+}
+```
+
+## REST 接口元数据 Bean
+
+由 `RestHelper` 扫描生成，描述 REST 接口的完整元数据，包括接口信息、参数元数据和复杂类型的字段结构。
+
+### RestInfo - REST 接口信息 Bean
+
+REST 接口信息 Bean，由 `RestHelper` 扫描生成，包含接口的完整元数据（类、URI、方法、参数、返回类型、Swagger 注解信息等）。
+
+```java
+@Data
+public class RestInfo implements Serializable {
+    private Class<?> clazz;
+    private String appCode;
+    private String code;
+    private String module;
+    private String method;
+    private String uri;
+    private String name;
+    private String desc;
+    private Integer writeFlag;
+    private List<RestParam> parameters;      // 接口参数列表
+    private String returnType;               // 返回类型（完整类名）
+    private String returnGenericInfo;        // 返回类型泛型信息（JSON 格式）
+    private String tag;                      // 类级别 @Tag 描述
+    private String operationSummary;         // 方法级别 @Operation(summary)
+    private String operationDescription;     // 方法级别 @Operation(description)
+    private Boolean deprecated;              // 接口是否废弃 @Operation(deprecated)
+    private String returnSchema;             // 返回值完整结构（JSON 格式，包含字段注释、示例值）
+    private String[] consumes;               // 请求 Content-Type（@RequestMapping.consumes）
+    private String[] produces;               // 响应 Content-Type（@RequestMapping.produces）
+}
+```
+
+### RestParam - REST 接口参数元数据
+
+REST 接口参数元数据，描述每个参数的名称、类型、注解、是否必需、默认值、泛型信息和字段结构。
+
+```java
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RestParam implements Serializable {
+    private String name;                     // 参数名称
+    private String type;                     // 参数类型（完整类名）
+    private String annotationType;           // 参数注解类型（如 RequestBody、PathVariable、RequestParam）
+    private Boolean required;                // 是否必需
+    private String defaultValue;             // 参数默认值（仅 @RequestParam 支持）
+    private List<String> genericTypes;       // 泛型参数类型列表（用于复杂类型）
+    private String description;              // 参数描述（来自 @Schema.description）
+    private String example;                  // 参数示例值（来自 @Schema.example）
+    private String requiredMode;             // 参数必填模式（来自 @Schema.requiredMode）
+    private List<RestField> fields;          // 复杂参数类型的字段结构列表（递归扫描）
+}
+```
+
+### RestField - REST 接口字段结构描述
+
+REST 接口字段结构描述，用于描述复杂类型的字段结构，支持递归嵌套（`fields`）、泛型参数（`genericTypes`）、自引用检测（`selfReferencing`）和简单类型标记（`simpleType`）。
+
+```java
+@Data
+public class RestField implements Serializable {
+    private String name;                     // 字段名称
+    private String type;                     // 字段类型（完整类名，简单类型如 java.lang.String 或复杂类型类名）
+    private String description;              // 字段描述（来自 @Schema.description）
+    private String example;                  // 示例值（来自 @Schema.example）
+    private Boolean required;                // 是否必填（来自 @Schema.requiredMode）
+    private List<String> genericTypes;       // 泛型参数类型列表（如 List<String> 中的 String）
+    private List<RestField> fields;          // 子字段（如果是非简单类型，递归扫描其字段）
+    private Boolean selfReferencing;         // 是否为自引用类型（用于防止无限递归）
+    private Boolean simpleType;              // 是否为简单类型
+
+    public RestField() {
+        this.genericTypes = new ArrayList<>();
+        this.fields = new ArrayList<>();
+    }
 }
 ```
 
@@ -247,7 +397,7 @@ List<RestInfo> rests = RestHelper.getMapping("com.wkclz.demo", "MY_APP", uri -> 
 String json = RestHelper.getMappingStr("com.wkclz.demo");
 ```
 
-**RestInfo字段**：clazz, appCode, code, module, method, uri, name, desc, writeFlag
+**RestInfo字段**：详见上方「REST 接口元数据 Bean」章节（共 19 个字段，含 parameters、returnType、returnSchema、consumes、produces 等）
 
 **扫描功能**：
 - 读取类级别和方法级别@RequestMapping/@GetMapping/@PostMapping/@PutMapping/@DeleteMapping
