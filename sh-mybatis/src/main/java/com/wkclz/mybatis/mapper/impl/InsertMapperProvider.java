@@ -28,11 +28,10 @@ public class InsertMapperProvider extends BaseMapperProvider {
             Object value = getFieldValue(f, entity);
             // 跳过空值字段
             if (value == null) {
-                if (f.isNotNull()) {
-                    throw ValidationException.of("字段 {}({})不能为空", f.getColumnName(), f.getFieldName());
-                } else {
-                    continue;
-                }
+                continue;
+//                if (f.isNotNull()) {
+//                    throw ValidationException.of("字段 {}({})不能为空", f.getColumnName(), f.getFieldName());
+//                }
             }
             if (!columns.isEmpty()) {
                 columns.append(", ");
