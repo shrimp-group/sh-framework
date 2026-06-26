@@ -29,7 +29,7 @@ public class UserInfo implements Serializable {
     @FieldDesc("头像")
     private String avatar;
 
-    @FieldDesc("Open ID")
-    private String openId;
+    @FieldDesc("三方平台标识符")
+    private String authIdentifier;
 
 }
