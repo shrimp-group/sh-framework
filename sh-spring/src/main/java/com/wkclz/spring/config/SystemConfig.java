@@ -84,14 +84,14 @@ public class SystemConfig {
 
     @Value("${alarm.email.enabled:false}")
     private boolean alarmEmailEnabled;
-    @Value("${alarm.email.host:}")
+    @Value("${alarm.email.host:smtp.exmail.qq.com}")
     private String alarmEmailHost;
-    @Value("${alarm.email.from:}")
+    @Value("${alarm.email.from:alarm@wkclz.com}")
     private String alarmEmailFrom;
     // 请勿在此处硬编码密码，务必使用 ENC(...) 格式加密存储
     @Value("${alarm.email.password:}")
     private String alarmEmailPassword;
-    @Value("${alarm.email.to:}")
+    @Value("${alarm.email.to:admin@wkclz.com}")
     private String alarmEmailTo;
 
     // ==================== 初始化 ====================
