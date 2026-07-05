@@ -5,6 +5,7 @@
 sh-framework 是一个基于 Spring Boot 4.0 的 Java 后端基础框架，使用 Java 25 编译。项目采用 Maven 多模块结构，提供通用的基础设施能力，包括 ORM、缓存、MQ、动态数据源、定时任务等。
 
 框架的核心目标是：**为业务系统提供开箱即用的基础设施层**，让业务开发者只需关注业务逻辑本身。通过 BaseEntity + BaseMapper + BaseService 的泛型体系，实现单表 CRUD 零代码；通过 MyBatis 拦截器链自动填充审计字段；通过统一响应 R + 全局异常处理 ErrorHandler 规范 API 输出；通过 SPI 机制（UserNameProvider）实现框架与业务系统的松耦合。
+新增 IAM 契约层（sh-iam-contract）模块，提供认证/鉴权/AK 签名/SSO 门面四契约接口与默认实现（读宽容验证严格），业务系统可按需引入或通过 @ConditionalOnMissingBean 替换默认实现。
 
 - **GroupId**: `com.wkclz.framework`
 - **版本管理**: 使用 `${revision}` 占位符 + flatten-maven-plugin 管理版本
@@ -120,6 +121,24 @@ sh-framework/
 │       ├── handler/           # MqttHandlerFactory
 │       ├── remote/            # MqttMessage, MqttResponse
 │       └── MqttAutoConfigure
+├── sh-iam-contract/           # IAM 契约层模块（认证/鉴权/AK 签名/SSO 门面四契约 + 默认实现）
+│   ├── iam-contract-api/      # 契约 API（零业务依赖，接口 + 中性模型 + PrincipalContext）
+│   │   └── src/main/java/com/wkclz/iam/contract/
+│   │       ├── bean/          # Principal, Session, AuthResult, Tenant, App, Menu, Api, FieldPermission, DataDimension, RequestLog
+│   │       ├── bean/req/      # SessionCreateReq
+│   │       ├── bean/resp/     # LoginResp
+│   │       ├── config/        # ContractSettings（静态配置持有器）
+│   │       ├── context/       # PrincipalContext（基于 RequestContextHolder + ThreadLocal 双存储）
+│   │       ├── enums/         # AuthScene
+│   │       ├── exception/     # AuthException（含 AuthErrorType 枚举）
+│   │       ├── facade/        # SsoFacadeContract
+│   │       └── service/       # AuthContract, AuthzContract, AkSignContract
+│   └── iam-contract-default/  # 默认实现（读宽容验证严格 + DefaultAuthFilter + AutoConfig）
+│       └── src/main/java/com/wkclz/iam/contract/defaults/
+│           ├── config/        # ContractConfig, IamContractAutoConfig
+│           ├── facade/       # DefaultSsoFacadeContract
+│           ├── filter/       # DefaultAuthFilter
+│           └── service/      # DefaultAuthContract, DefaultAuthzContract, DefaultAkSignContract
 └── sh-demo/                   # 示例模块（演示框架标准使用范式）
     └── src/main/java/com/wkclz/demo/
         ├── DemoApplication.java
@@ -163,6 +182,10 @@ sh-parent (import sh-bom)
   │       mysql-connector-j(optional), spring-jdbc(optional),
   │       swagger-annotations, jakarta.validation-api]
   │
+  ├─ sh-iam-contract ──> spring-boot-starter-web (provided)
+  │    ├─ iam-contract-api（零内部依赖，仅 spring-boot-starter-web provided + lombok + swagger-annotations）
+  │    └─ iam-contract-default ──> iam-contract-api（@ConditionalOnMissingBean 注册默认实现）
+  │
   ├─ sh-xxljob ──> sh-spring
   │    └─ [spring-boot-configuration-processor(optional), xxl-job-core, lombok]
   │
@@ -177,7 +200,7 @@ sh-parent (import sh-bom)
 - 第 0 层：sh-tool（无内部依赖）
 - 第 1 层：sh-core（依赖 sh-tool）
 - 第 2 层：sh-mybatis, sh-spring（依赖 sh-core）
-- 第 3 层：sh-dynamicdb（依赖 sh-mybatis + sh-spring）, sh-redis（依赖 sh-core）, sh-web / sh-xxljob / sh-mqtt（依赖 sh-spring）
+- 第 3 层：sh-dynamicdb（依赖 sh-mybatis + sh-spring）, sh-redis（依赖 sh-core）, sh-web / sh-xxljob / sh-mqtt（依赖 sh-spring）, sh-iam-contract（iam-contract-api 零内部依赖；iam-contract-default 依赖 iam-contract-api）
 - 第 4 层：sh-demo（依赖 sh-mybatis + sh-web）
 
 ## 核心逻辑与工作流
@@ -439,6 +462,14 @@ pagehelper:
 | `MailUtil` | sh-spring | 邮件发送（HTML / 内嵌图片 / 附件） |
 | `PageQuery` | sh-mybatis | 分页查询工具（支持 BaseEntity 和 Pageable 接口） |
 | `MqttProducer` | sh-mqtt | MQTT 消息发布（即时 / 延时 / 批量） |
+| `PrincipalContext` | sh-iam-contract-api | Principal 读取上下文（基于 RequestContextHolder + ThreadLocal 双存储） |
+| `AuthContract` | sh-iam-contract-api | 认证契约 SPI（authenticate + checkToken） |
+| `AuthzContract` | sh-iam-contract-api | 鉴权契约 SPI（租户/应用/菜单/接口/字段/数据六维度，含上下文重载） |
+| `AkSignContract` | sh-iam-contract-api | AK 签名契约 SPI（sign + verifySign） |
+| `SsoFacadeContract` | sh-iam-contract-api | SSO 门面契约 SPI（login + saveLog + logout） |
+| `ContractSettings` | sh-iam-contract-api | 静态配置持有器（供 default 方法访问） |
+| `DefaultAuthFilter` | sh-iam-contract-default | 默认鉴权过滤器（调用 AuthContract SPI） |
+| `IamContractAutoConfig` | sh-iam-contract-default | 自动配置（@ConditionalOnMissingBean 注册默认实现） |
 
 ## 配置属性前缀
 
@@ -459,6 +490,14 @@ pagehelper:
 | `alarm.email.*` | sh-spring | 告警邮件配置 |
 | `spring.application.name` | sh-spring | 应用名（XXL-Job appName 默认取此值） |
 | `spring.profiles.active` | sh-spring | 环境标识（推断 EnvType） |
+| `sh.iam.contract.enabled` | sh-iam-contract | 是否启用契约层自动配置（默认 true，@ConditionalOnProperty） |
+| `iam.contract.auth-filter-enabled` | sh-iam-contract | 是否注册 DefaultAuthFilter（默认 true） |
+| `iam.contract.public-path-pattern` | sh-iam-contract | 公开路径匹配模式（默认 `/*/public/**`） |
+| `iam.contract.app-id` | sh-iam-contract | AK 签名 appId |
+| `iam.contract.app-secret` | sh-iam-contract | AK 签名 appSecret（RSA 私钥） |
+| `iam.contract.public-key` | sh-iam-contract | AK 验签 publicKey（RSA 公钥） |
+| `iam.contract.server-url` | sh-iam-contract | SSO 服务端地址 |
+| `iam.contract.jwt-secret-key` | sh-iam-contract | JWT 密钥（供实现层使用） |
 
 ## AI 代理协作指南
 
@@ -502,7 +541,7 @@ pagehelper:
 
 ## 用户故事索引
 
-所有用户故事文档位于 `/docs/stories/` 目录下，按模块分组。每个故事包含用户故事描述、验收标准（含异常场景）和涉及代码上下文。
+所有用户故事文档位于 `/docs/stories/` 目录下，按模块分组。每个故事包含用户故事描述、验收标准（含异常场景）和涉及代码上下文。共 31 个用户故事。
 
 ### sh-core（6 个故事）
 
@@ -583,6 +622,12 @@ pagehelper:
 | 故事ID | 文档 | 标题 | 优先级 |
 |--------|------|------|--------|
 | US-030 | [US-030-示例模块CRUD标准范式.md](docs/stories/US-030-示例模块CRUD标准范式.md) | 示例模块 CRUD 标准范式 | 高 |
+
+### sh-iam-contract（1 个故事）
+
+| 故事ID | 文档 | 标题 | 优先级 |
+|--------|------|------|--------|
+| US-031 | [US-031-IAM契约层.md](docs/stories/US-031-IAM契约层.md) | IAM 契约层（认证/鉴权/AK 签名/SSO 门面） | 高 |
 
 ## 开发注意事项
 
