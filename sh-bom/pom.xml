@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.wkclz.framework</groupId>
         <artifactId>sh-framework</artifactId>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>sh-bom</artifactId>

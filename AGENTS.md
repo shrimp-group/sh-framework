@@ -8,7 +8,7 @@ sh-framework 是一个基于 Spring Boot 4.0 的 Java 后端基础框架，使�
 
 - **GroupId**: `com.wkclz.framework`
 - **版本管理**: 使用 `${revision}` 占位符 + flatten-maven-plugin 管理版本
-- **当前版本**: `5.0.0-SNAPSHOT`
+- **当前版本**: `5.0.1-SNAPSHOT`
 - **基础包名**: `com.wkclz`
 
 ## 技术栈清单

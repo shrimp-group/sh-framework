@@ -18,7 +18,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>5.0.0-SNAPSHOT</revision>
+        <revision>5.0.1-SNAPSHOT</revision>
 
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
@@ -81,6 +81,16 @@
             <dependency>
                 <groupId>com.wkclz.framework</groupId>
                 <artifactId>sh-web</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.wkclz.framework</groupId>
+                <artifactId>iam-contract-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.wkclz.framework</groupId>
+                <artifactId>iam-contract-default</artifactId>
                 <version>${revision}</version>
             </dependency>
 
