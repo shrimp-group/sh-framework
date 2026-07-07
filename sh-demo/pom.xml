@@ -28,6 +28,10 @@
             <groupId>com.wkclz.framework</groupId>
             <artifactId>sh-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.wkclz.framework</groupId>
+            <artifactId>iam-contract-api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

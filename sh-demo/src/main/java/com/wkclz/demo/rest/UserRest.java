@@ -2,12 +2,12 @@ package com.wkclz.demo.rest;
 
 import com.wkclz.core.base.PageData;
 import com.wkclz.core.base.R;
-import com.wkclz.core.base.UserInfo;
 import com.wkclz.core.exception.NotFoundException;
-import com.wkclz.core.user.UserContext;
 import com.wkclz.demo.bean.entity.User;
 import com.wkclz.demo.bean.vo.user.*;
 import com.wkclz.demo.service.UserService;
+import com.wkclz.iam.contract.bean.Principal;
+import com.wkclz.iam.contract.context.PrincipalContext;
 import com.wkclz.web.bean.IdReq;
 import com.wkclz.web.bean.RemoveReq;
 import io.swagger.v3.oas.annotations.Operation;
@@ -89,9 +89,9 @@ public class UserRest {
     }
 
     private void setLoginUser() {
-        UserInfo userinfo = new UserInfo();
-        userinfo.setUserCode("userCode");
-        userinfo.setUsername("username");
-        UserContext.setUserInfo(userinfo);
+        Principal principal = new Principal();
+        principal.setUserCode("userCode");
+        principal.setUsername("username");
+        PrincipalContext.cache(null, principal, null);
     }
 }

@@ -27,4 +27,7 @@ public class Principal implements Serializable {
 
     @Schema(description = "头像")
     private String avatar;
+
+    @Schema(description = "三方平台标识符")
+    private String authIdentifier;
 }

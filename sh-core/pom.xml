@@ -25,11 +25,14 @@
             <artifactId>sh-tool</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.wkclz.framework</groupId>
+            <artifactId>iam-contract-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
 
-        <!-- Test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

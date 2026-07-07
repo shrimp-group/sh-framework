@@ -1,7 +1,6 @@
 package com.wkclz.mybatis.mapper.impl;
 
 import com.wkclz.core.exception.ValidationException;
-import com.wkclz.core.user.UserContext;
 import com.wkclz.mybatis.bean.DbEntityProperty;
 import com.wkclz.tool.bean.JavaField;
 import lombok.extern.slf4j.Slf4j;
@@ -39,13 +38,10 @@ public class DeleteByIdsMapperProvider extends BaseMapperProvider {
         sql.append("UPDATE ").append(tableName).append(" SET ").append(deleted).append(" = DATE_FORMAT(NOW(6), '%Y%m%d%H%i%s%m')");
         sql.append(", ").append(version).append(" = ").append(version).append(" + 1");
         
-        // 处理updateBy字段
+        // 处理updateBy字段（始终拼接，值由 MyBatisBoundSqlInterceptor 注入）
         JavaField updateByField = property.getUpdateByField();
         if (updateByField != null) {
-            String userCode = UserContext.getUserCode();
-            if (userCode != null) {
-                sql.append(", ").append(updateByField.getColumnName()).append(" = #{updateBy, javaType=String}");
-            }
+            sql.append(", ").append(updateByField.getColumnName()).append(" = #{updateBy, javaType=String}");
         }
 
         // 构建ids IN条件

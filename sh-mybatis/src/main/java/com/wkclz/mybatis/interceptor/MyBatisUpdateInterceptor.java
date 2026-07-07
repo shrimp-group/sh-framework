@@ -1,7 +1,8 @@
 package com.wkclz.mybatis.interceptor;
 
 import com.wkclz.core.base.DbColumnEntity;
-import com.wkclz.core.user.UserContext;
+import com.wkclz.iam.contract.context.PrincipalContext;
+import com.wkclz.mybatis.bean.MyBatisConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.executor.Executor;
@@ -24,17 +25,17 @@ public class MyBatisUpdateInterceptor implements Interceptor {
     public Object intercept(Invocation invocation) throws Throwable {
         MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
         Object parameter = invocation.getArgs()[1];
-        
+
         // 获取SQL命令类型
         SqlCommandType sqlCommandType = mappedStatement.getSqlCommandType();
-        
-        // 获取当前用户
-        String userCode = UserContext.getUserCode();
-        
-        // 如果没有用户信息，直接执行
+
+        // 获取当前用户（从 IAM 契约层 PrincipalContext）
+        String userCode = PrincipalContext.getUserCode();
+
+        // 无用户信息时使用默认值 nobody
         if (userCode == null) {
-            log.debug("当前没有用户信息，跳过自动植入创建人和更新人信息");
-            return invocation.proceed();
+            log.debug("当前无用户信息，createBy/updateBy 使用默认值 nobody");
+            userCode = MyBatisConstants.DEFAULT_OPERATOR;
         }
 
         setOperatorUser(parameter, sqlCommandType, userCode);
@@ -71,13 +72,13 @@ public class MyBatisUpdateInterceptor implements Interceptor {
         }
     }
 
-    
+
     @Override
     public Object plugin(Object target) {
         // 生成代理对象
         return Plugin.wrap(target, this);
     }
-    
+
     @Override
     public void setProperties(Properties properties) {
         // 设置属性
