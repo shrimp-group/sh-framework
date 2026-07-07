@@ -219,6 +219,7 @@ Principal + Session 聚合，由 `AuthContract.authenticate()` 返回。
 | userCode | String | 用户编码 |
 | username | String | 用户名 |
 | nickname | String | 昵称 |
+| avatar | String | 头像 URL |
 | authType | String | 认证类型 |
 | authIdentifier | String | 认证标识符 |
 | clientIp | String | 客户端 IP |
@@ -234,6 +235,7 @@ Principal + Session 聚合，由 `AuthContract.authenticate()` 返回。
 | userCode | String | 用户编码 |
 | username | String | 用户名 |
 | nickname | String | 昵称 |
+| avatar | String | 头像 URL |
 
 ## PrincipalContext — 双存储上下文
 

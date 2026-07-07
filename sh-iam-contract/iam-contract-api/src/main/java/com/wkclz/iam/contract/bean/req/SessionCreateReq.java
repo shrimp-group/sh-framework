@@ -24,6 +24,9 @@ public class SessionCreateReq implements Serializable {
     @Schema(description = "昵称")
     private String nickname;
 
+    @Schema(description = "头像")
+    private String avatar;
+
     @Schema(description = "认证类型")
     private String authType;
 
