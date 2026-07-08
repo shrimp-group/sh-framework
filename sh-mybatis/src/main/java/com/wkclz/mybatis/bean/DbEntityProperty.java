@@ -1,6 +1,5 @@
 package com.wkclz.mybatis.bean;
 
-import com.wkclz.core.annotation.FieldDesc;
 import com.wkclz.core.base.BaseEntity;
 import com.wkclz.core.exception.SystemException;
 import com.wkclz.mybatis.annotation.Blob;
@@ -177,11 +176,6 @@ public class DbEntityProperty implements Serializable {
             javaField.setColumnName(StringUtil.camelToUnderline(field.getName()));
             javaField.setField(field);
             javaField.setClazz(field.getType());
-            javaField.setNotNull(false);
-            FieldDesc fieldDesc = field.getAnnotation(FieldDesc.class);
-            if (fieldDesc != null) {
-                javaField.setNotNull(fieldDesc.notNull());
-            }
 
             // 获取getter和setter方法
             try {

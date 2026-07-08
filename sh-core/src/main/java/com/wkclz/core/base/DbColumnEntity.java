@@ -1,6 +1,6 @@
 package com.wkclz.core.base;
 
-import com.wkclz.core.annotation.FieldDesc;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,28 +12,28 @@ import java.time.LocalDateTime;
 @Data
 public class DbColumnEntity implements Serializable {
 
-    @FieldDesc("主键ID")
+    @Schema(description = "主键ID")
     private Long id;
 
-    @FieldDesc("排序号，越大越往后")
+    @Schema(description = "排序号，越大越往后")
     private Integer sort;
 
-    @FieldDesc("创建时间")
+    @Schema(description = "创建时间")
     private LocalDateTime createTime;
 
-    @FieldDesc("创建人code")
+    @Schema(description = "创建人code")
     private String createBy;
 
-    @FieldDesc("更新时间")
+    @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 
-    @FieldDesc("更新人code")
+    @Schema(description = "更新人code")
     private String updateBy;
 
-    @FieldDesc("备注")
+    @Schema(description = "备注")
     private String remark;
 
-    @FieldDesc("数据版本")
+    @Schema(description = "数据版本")
     private Integer version;
 
 }

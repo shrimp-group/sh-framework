@@ -1,8 +1,6 @@
 package com.wkclz.web.helper;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.wkclz.core.annotation.ApiDesc;
-import com.wkclz.core.annotation.Desc;
 import com.wkclz.core.annotation.Router;
 import com.wkclz.tool.bean.GenericTypeInfo;
 import com.wkclz.tool.utils.ClassTypeHelper;
@@ -17,12 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * REST 注解解析工具类
@@ -312,27 +308,17 @@ public class RestAnnotationHelper {
             return;
         }
 
-        Map<String, List<RestInfo>> restsMap = rests.stream().collect(Collectors.groupingBy(RestInfo::getUri));
         for (Class<?> routerClazz : routerClassList) {
-            Field[] fields = routerClazz.getDeclaredFields();
             try {
                 Router routerAnno = routerClazz.getAnnotation(Router.class);
                 String module = null;
-                String prefix = null;
                 if (routerAnno != null) {
                     module = routerAnno.module();
-                    prefix = routerAnno.prefix();
-                    if (StringUtils.isBlank(routerAnno.prefix())) {
-                        prefix = "";
-                    }
                 }
-
 
                 // 填充 module
                 if (module != null) {
-                    // 获取 routerClazz 的包名
                     String routerPackage = routerClazz.getPackageName();
-
                     for (RestInfo rest : rests) {
                         if (rest.getClazz() == null) {
                             continue;
@@ -344,40 +330,7 @@ public class RestAnnotationHelper {
                         }
                     }
                 }
-
-                // 填充 desc
-                for (Field field : fields) {
-                    Object o = field.get(null);
-                    if (o == null) {
-                        continue;
-                    }
-                    Desc desc = field.getAnnotation(Desc.class);
-                    ApiDesc apiDesc = field.getAnnotation(ApiDesc.class);
-
-                    String value = null;
-                    if (desc != null) {
-                        value = desc.value();
-                    }
-                    if (apiDesc != null) {
-                        value = apiDesc.value();
-                    }
-                    if (StringUtils.isBlank(value)) {
-                        continue;
-                    }
-
-                    String uri = o.toString();
-                    String fullUri = prefix + uri;
-                    // 找到 restInfo
-                    List<RestInfo> restInfos = restsMap.get(fullUri);
-                    if (CollectionUtils.isEmpty(restInfos)) {
-                        continue;
-                    }
-                    for (RestInfo restInfo : restInfos) {
-                        restInfo.setDesc(value);
-                        restInfo.setWriteFlag(uri.contains("/public/") ? 1 : 0);
-                    }
-                }
-            } catch (IllegalAccessException e) {
+            } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }

@@ -433,7 +433,7 @@ public class OrderRest {
     private OrderService orderService;
 
     @GetMapping("/order/list")
-    @ApiDesc("查询当前用户的订单")
+    @Operation(summary = "查询当前用户的订单")
     public R<List<OrderResp>> list() {
         Principal principal = PrincipalContext.getPrincipal();
         String tenantCode = PrincipalContext.getTenantCode();

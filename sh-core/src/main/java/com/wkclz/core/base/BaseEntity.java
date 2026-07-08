@@ -1,8 +1,8 @@
 package com.wkclz.core.base;
 
-import com.wkclz.core.annotation.FieldDesc;
 import com.wkclz.core.exception.SystemException;
 import com.wkclz.tool.utils.BeanUtil;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -11,42 +11,42 @@ import java.util.List;
 @Data
 public class BaseEntity extends DbColumnEntity implements Pageable {
 
-    @FieldDesc("创建人姓名")
+    @Schema(description = "创建人姓名")
     private String createByName;
-    @FieldDesc("更新人姓名")
+    @Schema(description = "更新人姓名")
     private String updateByName;
 
-    @FieldDesc("用户编码")
+    @Schema(description = "用户编码")
     private String userCode;
-    @FieldDesc("租户编码")
+    @Schema(description = "租户编码")
     private String tenantCode;
 
     /**
      * 查询辅助
      */
-    @FieldDesc("查询排序规则")
+    @Schema(description = "查询排序规则")
     private String orderBy;
-    @FieldDesc("主键ID数组")
+    @Schema(description = "主键ID数组")
     private List<Long> ids;
-    @FieldDesc("模糊查询关键字")
+    @Schema(description = "模糊查询关键字")
     private String keyword;
-    @FieldDesc("创建时间从")
+    @Schema(description = "创建时间从")
     private LocalDateTime timeFrom;
-    @FieldDesc("创建时间到")
+    @Schema(description = "创建时间到")
     private LocalDateTime timeTo;
 
     /**
      * 分页辅助
      */
-    @FieldDesc("分页页码")
+    @Schema(description = "分页页码")
     private Long current;
-    @FieldDesc("分页大小")
+    @Schema(description = "分页大小")
     private Long size;
-    @FieldDesc("偏移量")
+    @Schema(description = "偏移量")
     private Long offset;
-    @FieldDesc("总数据量")
+    @Schema(description = "总数据量")
     private Long total;
-    @FieldDesc("统计数")
+    @Schema(description = "统计数")
     private Long count;
 
 

@@ -1,8 +1,6 @@
 package com.wkclz.web.helper;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.wkclz.core.annotation.ApiDesc;
-import com.wkclz.core.annotation.Desc;
 import com.wkclz.tool.utils.ClassUtil;
 import com.wkclz.tool.utils.StringUtil;
 import com.wkclz.web.bean.RestInfo;
@@ -177,16 +175,6 @@ public class RestHelper {
                 produces = request.produces();
                 continue;
             }
-            // 中文含义
-            if (Desc.class == annotation.annotationType()) {
-                Desc descAnno = (Desc) annotation;
-                desc = descAnno.value();
-            }
-            // 中文含义
-            if (ApiDesc.class == annotation.annotationType()) {
-                ApiDesc descAnno = (ApiDesc) annotation;
-                desc = descAnno.value();
-            }
             // Swagger @Operation
             if (annotation instanceof Operation) {
                 Operation operation = (Operation) annotation;
@@ -209,6 +197,13 @@ public class RestHelper {
             uri = prefix + uri;
         }
 
+        // desc 优先取 @Operation.summary，回退到 description
+        if (StringUtils.isBlank(desc) && StringUtils.isNotBlank(operationSummary)) {
+            desc = operationSummary;
+        } else if (StringUtils.isBlank(desc) && StringUtils.isNotBlank(operationDescription)) {
+            desc = operationDescription;
+        }
+
         // 确定是 rest 接口，提取信息
         RestInfo restInfo = new RestInfo();
         restInfo.setMethod(requestMethod.name());
@@ -220,6 +215,7 @@ public class RestHelper {
         restInfo.setDeprecated(operationDeprecated);
         restInfo.setConsumes(consumes);
         restInfo.setProduces(produces);
+        restInfo.setWriteFlag(uri.contains("/public/") ? 1 : 0);
 
         // 方法名
         String restName = uri.substring(1);

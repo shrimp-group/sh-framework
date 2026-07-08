@@ -401,7 +401,7 @@ String json = RestHelper.getMappingStr("com.wkclz.demo");
 
 **扫描功能**：
 - 读取类级别和方法级别@RequestMapping/@GetMapping/@PostMapping/@PutMapping/@DeleteMapping
-- 从@Desc和@ApiDesc注解获取接口描述
+- 从@Operation.summary获取接口描述
 - 扫描@Router注解补充uri与描述映射
 - URI以/public开头设置writeFlag=1（公开），否则writeFlag=0（需鉴权）
 
@@ -490,22 +490,17 @@ LocalThreadHelper.clear();
 
 #### 框架中的 Route 定义范式
 
-框架使用 `@Router` + `@ApiDesc` 注解在 Route 接口中集中定义 URI 常量：
+框架使用 `@Router` 注解在 Route 接口中集中定义 URI 常量：
 
 ```java
 @Router(module = Route.PREFIX, prefix = Route.PREFIX)
 public interface Route {
     String PREFIX = "/sh-demo";
 
-    @ApiDesc("1. 用户-分页查询")
     String USER_PAGE = "/user/page";
-    @ApiDesc("2. 用户-详情")
     String USER_INFO = "/user/info";
-    @ApiDesc("3. 用户-新增")
     String USER_CREATE = "/user/create";
-    @ApiDesc("4. 用户-更新")
     String USER_UPDATE = "/user/update";
-    @ApiDesc("5. 用户-删除")
     String USER_REMOVE = "/user/remove";
 }
 ```

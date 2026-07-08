@@ -57,7 +57,7 @@ sh-framework/
 │       └── utils/             # 通用工具（String/Date/Json/Bean/File/Network/Snowflake/QrCode/JS 等）
 ├── sh-core/                   # 核心模块（实体、异常、枚举、用户上下文、注解）
 │   └── src/main/java/com/wkclz/core/
-│       ├── annotation/        # @Router, @FieldDesc, @ApiDesc, @Desc
+│       ├── annotation/        # @Router
 │       ├── base/              # DbColumnEntity, BaseEntity, Pageable, PageData, R, UserInfo
 │       ├── enums/             # ResultCode, EnvType
 │       ├── exception/         # CommonException + 7 个子类
@@ -161,7 +161,7 @@ sh-parent (import sh-bom)
   │       spring-beans, guava, fastjson2, zxing, hutool-all, rhino]
   │
   ├─ sh-core ──> sh-tool
-  │    └─ [lombok, spring-boot-starter-test]
+  │    └─ [lombok, spring-boot-starter-test, swagger-annotations]
   │
   ├─ sh-mybatis ──> sh-core
   │    └─ [druid-spring-boot-4-starter, mysql-connector-j,
@@ -238,7 +238,7 @@ Database
    - `UserPageReq extends PageReq` — 分页请求（继承 current + size + offset）
    - `UserResp extends EntityResp` — 详情响应（继承审计字段）
    - `UserPageResp` — 分页列表响应
-5. **定义 Route** — `@Router(module, prefix)` 接口，常量定义 URI + `@ApiDesc`
+5. **定义 Route** — `@Router(module, prefix)` 接口，常量定义 URI
 6. **定义 REST 控制器** — `@RestController` + `@RequestMapping(Route.PREFIX)`
 
 ### 架构模式
@@ -395,10 +395,7 @@ pagehelper:
 
 | 注解 | 模块 | 作用域 | 用途 |
 |------|------|--------|------|
-| `@FieldDesc("描述")` | sh-core | FIELD | 字段描述 + notNull 标记 |
 | `@Router(module, prefix)` | sh-core | TYPE | 路由标识，定义模块和前缀 |
-| `@ApiDesc("描述")` | sh-core | 无限制 | API 描述（替代 @Desc） |
-| `@Desc("描述")` | sh-core | 无限制 | 描述注解（已 @Deprecated） |
 | `@Blob` | sh-mybatis | FIELD | 标记 Blob 字段，List 查询不返回 |
 | `@MqttController` | sh-mqtt | TYPE | MQTT 消息处理器（含 @Component） |
 | `@MqttTopicMapping` | sh-mqtt | METHOD | 订阅子 Topic |

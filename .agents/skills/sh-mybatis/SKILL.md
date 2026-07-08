@@ -47,7 +47,7 @@ com.wkclz.mybatis
 
 | 方法 | 说明 | 特性 |
 |------|------|------|
-| `int insert(T entity)` | 插入单条 | 自增主键回填(@Options)；跳过null字段；@FieldDesc(notNull=true)校验 |
+| `int insert(T entity)` | 插入单条 | 自增主键回填(@Options)；跳过null字段 |
 | `int insertBatch(List<T> entities)` | 批量插入 | 全量字段插入（含null）；sort默认0；OGNL:`entities[i].field` |
 
 ### 删除操作（逻辑删除）

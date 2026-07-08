@@ -1,7 +1,7 @@
 package com.wkclz.core.base;
 
-import com.wkclz.core.annotation.FieldDesc;
 import com.wkclz.tool.utils.BeanUtil;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
@@ -15,22 +15,22 @@ import java.util.List;
 @Data
 public class PageData<T> {
 
-    @FieldDesc("当前页码")
+    @Schema(description = "当前页码")
     private Long current;
 
-    @FieldDesc("每页大小")
+    @Schema(description = "每页大小")
     private Long size;
 
-    @FieldDesc("偏移量")
+    @Schema(description = "偏移量")
     private Long offset;
 
-    @FieldDesc("总数据量")
+    @Schema(description = "总数据量")
     private Long total;
 
-    @FieldDesc("统计数")
+    @Schema(description = "统计数")
     private Long count;
 
-    @FieldDesc("分页结果列表")
+    @Schema(description = "分页结果列表")
     private List<T> records;
 
     /**

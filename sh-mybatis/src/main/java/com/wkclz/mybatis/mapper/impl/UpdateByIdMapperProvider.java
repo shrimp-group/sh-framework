@@ -33,16 +33,10 @@ public class UpdateByIdMapperProvider extends BaseMapperProvider {
         String deleted = DbEntityProperty.DELETED_FIELD;
         String version = DbEntityProperty.VERSION_FIELD;
         StringBuilder updateSet = new StringBuilder();
-        
+
         for (JavaField field : property.getUpdateFields()) {
             if (!updateSet.isEmpty()) {
                 updateSet.append(", ");
-            }
-
-            Object value = getFieldValue(field, entity);
-            // 跳过空值字段
-            if (value == null && field.isNotNull()) {
-                throw ValidationException.of("字段 {}({})不能为空", field.getColumnName(), field.getFieldName());
             }
 
             updateSet.append(field.getColumnName());
@@ -50,7 +44,7 @@ public class UpdateByIdMapperProvider extends BaseMapperProvider {
             updateSet.append(field.getFieldName());
             updateSet.append("}");
         }
-        
+
         // 添加version自增
         updateSet.append(", ").append(version).append(" = ").append(version).append(" + 1");
 
@@ -68,7 +62,7 @@ public class UpdateByIdMapperProvider extends BaseMapperProvider {
         if (versionValue != null) {
             sql.append(" AND version = #{version}");
         }
-        
+
         log.debug("UpdateById SQL: {}", sql);
         return sql.toString();
     }

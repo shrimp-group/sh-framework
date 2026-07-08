@@ -1,12 +1,12 @@
 package com.wkclz.core.enums;
 
 
-import com.wkclz.core.annotation.FieldDesc;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 系统环境类型
  */
-@FieldDesc("系统环境")
+@Schema(description = "系统环境")
 public enum EnvType {
 
     /** 环境 */
