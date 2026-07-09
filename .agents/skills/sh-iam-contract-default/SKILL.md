@@ -36,7 +36,7 @@ com.wkclz.iam.contract.defaults
 | DefaultAuthContract | 无 token 返回 null | 有 token 抛 TOKEN_INVALID | 读宽容（放行 public）验证严格 |
 | DefaultAuthzContract | 返回空列表 / 原字段 | canAccessApi 抛 ACCESS_DENIED | 读不影响启动，验证防裸奔 |
 | DefaultAkSignContract | - | sign/verifySign 抛异常 | 功能性操作不该被调用 |
-| DefaultSsoFacadeContract | saveLog/logout 静默 | login 抛异常 | 日志不阻断业务，login 不该被调用 |
+| DefaultSsoFacadeContract | saveLog/logout 静默 | login 抛 UnsupportedOperationException | 日志不阻断业务，login 未配置实现属系统级错误 |
 
 ### DefaultAuthContract — 认证默认实现
 
@@ -82,7 +82,9 @@ com.wkclz.iam.contract.defaults
 | `saveLog(log)` | 静默跳过（debug 日志） | 不抛异常 |
 | `logout(token)` | 静默跳过（debug 日志） | 不抛异常 |
 
-设计意图：login 是功能性操作不该被调用；saveLog/logout 失败不阻断业务（日志丢失可容忍）。
+设计意图：login 未配置实现属系统级错误（非业务登录失败），抛 UnsupportedOperationException 而非返回 LoginResp.fail(UNKNOWN)——业务登录失败应由业务方实现的 SsoFacadeContract 通过 LoginResp.fail() 返回。saveLog/logout 失败不阻断业务（日志丢失可容忍）。
+
+> 语义边界：业务登录失败（密码错误/账号锁定等）通过 `LoginResp.fail(failType, failReason)` 返回；系统级错误（SSO 不可达/未配置实现等）抛 RuntimeException。详见 [sh-iam-contract-api](../sh-iam-contract-api/SKILL.md) skill 的 "### login() 语义边界" 章节。
 
 ## DefaultAuthFilter — 鉴权过滤器
 

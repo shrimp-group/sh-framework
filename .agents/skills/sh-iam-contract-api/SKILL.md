@@ -1,6 +1,6 @@
 ---
 name: "sh-iam-contract-api"
-description: "sh-framework IAM 契约层 API 模块知识库。包含认证(AuthContract)/鉴权(AuthzContract)/AK签名(AkSignContract)/SSO门面(SsoFacadeContract)四契约SPI、Principal/Session/AuthResult等10个中性模型、PrincipalContext双存储上下文、ContractSettings静态配置、AuthException+AuthErrorType异常体系。当涉及IAM契约集成、Principal读取、契约接口调用时调用。"
+description: "sh-framework IAM 契约层 API 模块知识库。包含认证(AuthContract)/鉴权(AuthzContract)/AK签名(AkSignContract)/SSO门面(SsoFacadeContract)四契约SPI、Principal/Session/AuthResult等10个中性模型、LoginFailType登录失败类型枚举(10值+中文message)、LoginResp失败建模(success+failType+failReason+静态工厂)、PrincipalContext双存储上下文、ContractSettings静态配置、AuthException+AuthErrorType异常体系。当涉及IAM契约集成、Principal读取、契约接口调用、登录失败建模时调用。"
 ---
 
 # sh-iam-contract-api 模块知识库
@@ -28,7 +28,7 @@ com.wkclz.iam.contract
 │   └── resp/        # LoginResp
 ├── context/         # PrincipalContext（双存储上下文）
 ├── config/          # ContractSettings（静态配置持有器）
-├── enums/           # AuthScene
+├── enums/           # AuthScene, LoginFailType
 └── exception/       # AuthException + AuthErrorType
 ```
 
@@ -92,10 +92,19 @@ com.wkclz.iam.contract
 
 | 方法 | 参数 | 返回值 | 异常 | 说明 |
 |------|------|--------|------|------|
-| `login` | `SessionCreateReq req` | `LoginResp` | — | 远程登录（创建会话并记录登录日志），返回含 JWT Token 的响应 |
+| `login` | `SessionCreateReq req` | `LoginResp` | — | 远程登录（创建会话并记录登录日志）。业务登录失败统一通过 LoginResp 返回（login 永不抛业务失败异常），仅系统级错误抛 RuntimeException |
 | `saveLog` | `RequestLog log` | `void` | — | 远程保存请求日志（客户端应用将请求日志上报到 SSO 服务端集中存储） |
 | `logout` | `String token` | `void` | — | 远程登出（指定 token） |
 | `logout`（default） | 无 | `void` | — | 重载：从 `PrincipalContext.getToken()` 获取 token |
+
+### login() 语义边界
+
+| 失败性质 | 传达方式 | 示例 |
+|---------|---------|------|
+| 业务登录失败 | `LoginResp.fail(failType, failReason)` 返回 | 密码错误、账号锁定、验证码错误 |
+| 系统级错误 | 抛 RuntimeException | SSO 不可达、未配置实现、序列化失败 |
+
+`login()` 永不抛业务登录失败异常，由调用方判断 `LoginResp.success`。
 
 ## 中性模型（10 个 bean）
 
@@ -227,15 +236,26 @@ Principal + Session 聚合，由 `AuthContract.authenticate()` 返回。
 
 ### LoginResp（bean/resp/）
 
-由 `SsoFacadeContract.login()` 返回。
+由 `SsoFacadeContract.login()` 返回，同时建模登录成功与失败。
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
-| token | String | JWT Token |
-| userCode | String | 用户编码 |
-| username | String | 用户名 |
-| nickname | String | 昵称 |
-| avatar | String | 头像 URL |
+| success | Boolean | 是否登录成功 |
+| failType | LoginFailType | 登录失败类型；成功时为 null |
+| failReason | String | 登录失败动态详情（如"请 300 秒后重试"）；成功时为 null |
+| token | String | JWT Token；失败时为 null |
+| userCode | String | 用户编码；失败时为 null |
+| username | String | 用户名；失败时为 null |
+| nickname | String | 昵称；失败时为 null |
+| avatar | String | 头像 URL；失败时为 null |
+
+**3 个静态工厂**：
+
+- `success(token, userCode, username, nickname, avatar)` → success=true，失败字段为 null
+- `fail(failType)` → success=false，failReason 为 null
+- `fail(failType, failReason)` → success=false，含动态详情
+
+**语义不变量**：成功时失败字段必为 null，失败时成功字段必为 null。前端展示优先 `failReason`，为空时回退到 `failType.getMessage()`。
 
 ## PrincipalContext — 双存储上下文
 
@@ -349,6 +369,33 @@ try {
 | `TOKEN` | JWT Token 认证 |
 | `AK_SIGN` | AK 签名认证 |
 | `PUBLIC` | 公开接口（无需认证） |
+
+## LoginFailType 枚举
+
+位于 `com.wkclz.iam.contract.enums.LoginFailType`。登录失败类型枚举，**纯枚举 + `private final String message` + `getMessage()`**，枚举内完成翻译，不带数字 code（保持契约层中性定位）。由 `SsoFacadeContract` 实现方在登录失败时选用，通过 `LoginResp.fail()` 返回。
+
+共 10 个值：
+
+| 枚举值 | 中文 message | 覆盖场景 |
+|--------|-------------|---------|
+| `USERNAME_OR_PASSWORD_ERROR` | 用户名或密码错误 | 密码登录 / LDAP 49 凭据无效；用户名错误与密码错误合并，防用户枚举 |
+| `ACCOUNT_DISABLED` | 账号已禁用 | LDAP 533 账号禁用 / 管理员停用 |
+| `ACCOUNT_LOCKED` | 账号已锁定 | LDAP 775 登录次数超限锁定 / 人工锁定 |
+| `CREDENTIALS_EXPIRED` | 凭据已过期 | LDAP 532/773 密码过期需修改 |
+| `CAPTCHA_REQUIRED` | 需要验证码 | 风控触发要求图形 / 短信验证码 |
+| `CAPTCHA_ERROR` | 验证码错误 | 图形 / 短信 / 邮箱验证码校验失败 |
+| `TENANT_INVALID` | 租户无效 | 租户不存在或已停用 |
+| `AUTH_TYPE_UNSUPPORTED` | 认证类型不支持 | authType 不在支持列表 |
+| `AUTH_IDENTIFIER_INVALID` | 三方标识无效 | authIdentifier 对应的三方账号无效 |
+| `UNKNOWN` | 登录失败 | 兜底，无法归类的失败 |
+
+### 设计要点
+
+- **枚举内完成翻译**：`getMessage()` 返回中文含义，前端可直接展示
+- **不带数字 code**：保持契约层中性定位，避免与 HTTP 状态码 / 业务码混淆
+- **USERNAME_OR_PASSWORD_ERROR 合并用户名与密码错误**：防用户枚举攻击（安全最佳实践）
+- **UNKNOWN 兜底**：无法归类的失败统一归入此值
+- **failReason 提供运行时补充**：`LoginResp.fail(type, reason)` 的 reason 为动态详情（如"请 300 秒后重试"），前端优先展示 failReason，为空时回退到 failType.getMessage()
 
 ## 集成指南
 

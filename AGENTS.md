@@ -126,10 +126,10 @@ sh-framework/
 │   │   └── src/main/java/com/wkclz/iam/contract/
 │   │       ├── bean/          # Principal, Session, AuthResult, Tenant, App, Menu, Api, FieldPermission, DataDimension, RequestLog
 │   │       ├── bean/req/      # SessionCreateReq
-│   │       ├── bean/resp/     # LoginResp
+│   │       ├── bean/resp/     # LoginResp（登录响应，含失败建模：success + failType + failReason + 静态工厂）
 │   │       ├── config/        # ContractSettings（静态配置持有器）
 │   │       ├── context/       # PrincipalContext（基于 RequestContextHolder + ThreadLocal 双存储）
-│   │       ├── enums/         # AuthScene
+│   │       ├── enums/         # AuthScene, LoginFailType（登录失败类型，10 值 + 中文 message）
 │   │       ├── exception/     # AuthException（含 AuthErrorType 枚举）
 │   │       ├── facade/        # SsoFacadeContract
 │   │       └── service/       # AuthContract, AuthzContract, AkSignContract
@@ -465,6 +465,7 @@ pagehelper:
 | `AkSignContract` | sh-iam-contract-api | AK 签名契约 SPI（sign + verifySign） |
 | `SsoFacadeContract` | sh-iam-contract-api | SSO 门面契约 SPI（login + saveLog + logout） |
 | `ContractSettings` | sh-iam-contract-api | 静态配置持有器（供 default 方法访问） |
+| `LoginFailType` | sh-iam-contract-api | 登录失败类型枚举（10 值 + 中文 message，枚举内完成翻译；USERNAME_OR_PASSWORD_ERROR 合并防枚举；UNKNOWN 兜底） |
 | `DefaultAuthFilter` | sh-iam-contract-default | 默认鉴权过滤器（调用 AuthContract SPI） |
 | `IamContractAutoConfig` | sh-iam-contract-default | 自动配置（@ConditionalOnMissingBean 注册默认实现） |
 
