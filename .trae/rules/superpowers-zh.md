@@ -39,6 +39,7 @@ Skills 位于 `.trae/skills/` 目录，每个 skill 有独立的 `SKILL.md` 文�
 | workflow-runner | 在 Claude Code / OpenClaw / Cursor 中直接运行 agency-orchestrator YAML 工作流——无需 API key，使用当前会话的 LLM 作为执行引擎。当用户提供 .yaml 工作流文件或要求多角色协作完成任务时触发。 |
 | writing-plans | 当你有规格说明或需求用于多步骤任务时使用，在动手写代码之前 |
 | writing-skills | 当创建新技能、编辑现有技能或在部署前验证技能是否有效时使用 |
+| sh-framework | 框架知识总索引——涉及框架编码、模块选择、依赖管理时调用。包含 13 个子技能。 |
 
 ## 如何使用
 
