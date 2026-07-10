@@ -1,6 +1,7 @@
 package com.wkclz.iam.contract.defaults.service;
 
 import com.wkclz.iam.contract.bean.AuthResult;
+import com.wkclz.iam.contract.enums.AuthErrorType;
 import com.wkclz.iam.contract.exception.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
@@ -51,13 +52,28 @@ class DefaultAuthContractTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         AuthException ex = assertThrows(AuthException.class, () -> contract.authenticate(request));
-        assertEquals(AuthException.AuthErrorType.TOKEN_INVALID, ex.getErrorType());
+        assertEquals(AuthErrorType.TOKEN_INVALID, ex.getErrorType());
     }
 
     @Test
-    void checkToken_alwaysThrowsTokenMissing() {
+    void checkToken_withToken_throwsTokenMissing() {
+        // 有 token 但无实现 → doAuthenticate 抛 TOKEN_MISSING
         AuthException ex = assertThrows(AuthException.class,
                 () -> contract.checkToken("any-token", "any-identifier"));
-        assertEquals(AuthException.AuthErrorType.TOKEN_MISSING, ex.getErrorType());
+        assertEquals(AuthErrorType.TOKEN_MISSING, ex.getErrorType());
+    }
+
+    @Test
+    void checkToken_nullToken_throwsTokenMissing() {
+        AuthException ex = assertThrows(AuthException.class,
+                () -> contract.checkToken(null, "any-identifier"));
+        assertEquals(AuthErrorType.TOKEN_MISSING, ex.getErrorType());
+    }
+
+    @Test
+    void checkToken_blankToken_throwsTokenMissing() {
+        AuthException ex = assertThrows(AuthException.class,
+                () -> contract.checkToken("", "any-identifier"));
+        assertEquals(AuthErrorType.TOKEN_MISSING, ex.getErrorType());
     }
 }

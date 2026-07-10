@@ -196,4 +196,13 @@ public final class PrincipalContext {
     }
 
 
+    public static Principal getPrincipal(HttpServletRequest request) {
+        return request != null ? (Principal) request.getAttribute(ATTR_PRINCIPAL) : null;
+    }
+
+    public static Session getSession(HttpServletRequest request) {
+        return request != null ? (Session) request.getAttribute(ATTR_SESSION) : null;
+    }
+
+
 }

@@ -1,8 +1,8 @@
 package com.wkclz.iam.contract.defaults.service;
 
 import com.wkclz.iam.contract.bean.AuthResult;
-import com.wkclz.iam.contract.bean.Session;
 import com.wkclz.iam.contract.context.PrincipalContext;
+import com.wkclz.iam.contract.enums.AuthErrorType;
 import com.wkclz.iam.contract.exception.AuthException;
 import com.wkclz.iam.contract.service.AuthContract;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,14 +27,14 @@ public class DefaultAuthContract implements AuthContract {
         }
         // 有 token 但无实现 → 严格拒绝
         log.warn("DefaultAuthContract: token 存在但无 AuthContract 实现，拒绝访问");
-        throw new AuthException(AuthException.AuthErrorType.TOKEN_INVALID,
+        throw new AuthException(AuthErrorType.TOKEN_INVALID,
                 "无认证实现，请配置 AuthContract");
     }
 
     @Override
-    public Session checkToken(String token, String authIdentifier) {
-        log.warn("DefaultAuthContract: checkToken 被调用但无实现");
-        throw new AuthException(AuthException.AuthErrorType.TOKEN_MISSING,
+    public AuthResult doAuthenticate(String token) {
+        log.warn("DefaultAuthContract: doAuthenticate 被调用但无实现");
+        throw new AuthException(AuthErrorType.TOKEN_MISSING,
                 "无认证实现，请配置 AuthContract");
     }
 }

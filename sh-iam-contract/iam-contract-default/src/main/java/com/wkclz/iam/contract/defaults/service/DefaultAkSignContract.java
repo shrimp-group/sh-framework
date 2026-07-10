@@ -1,5 +1,6 @@
 package com.wkclz.iam.contract.defaults.service;
 
+import com.wkclz.iam.contract.enums.AuthErrorType;
 import com.wkclz.iam.contract.exception.AuthException;
 import com.wkclz.iam.contract.service.AkSignContract;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ public class DefaultAkSignContract implements AkSignContract {
     @Override
     public boolean verifySign(String sign, String publicKey, String expectedAppId) {
         log.warn("DefaultAkSignContract: verifySign 无实现");
-        throw new AuthException(AuthException.AuthErrorType.AK_SIGN_INVALID,
+        throw new AuthException(AuthErrorType.AK_SIGN_INVALID,
                 "无 AK 签名实现，请配置 AkSignContract");
     }
 }

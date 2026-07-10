@@ -1,5 +1,6 @@
 package com.wkclz.iam.contract.defaults.config;
 
+import com.wkclz.iam.contract.config.FilterOrder;
 import com.wkclz.iam.contract.defaults.facade.DefaultSsoFacadeContract;
 import com.wkclz.iam.contract.defaults.filter.DefaultAuthFilter;
 import com.wkclz.iam.contract.defaults.service.DefaultAkSignContract;
@@ -16,7 +17,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.core.Ordered;
 
 /**
  * 契约层自动配置
@@ -83,7 +83,7 @@ public class IamContractAutoConfig {
         }
         FilterRegistrationBean<DefaultAuthFilter> registration = new FilterRegistrationBean<>(filter);
         registration.addUrlPatterns("/*");
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
+        registration.setOrder(FilterOrder.AUTH);
         registration.setName("defaultAuthFilter");
         log.info("注册 DefaultAuthFilter");
         return registration;

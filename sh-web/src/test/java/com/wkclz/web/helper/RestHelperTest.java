@@ -2,7 +2,9 @@ package com.wkclz.web.helper;
 
 import com.wkclz.core.base.R;
 import com.wkclz.web.bean.RestInfo;
+import io.swagger.v3.oas.annotations.Operation;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -50,6 +52,24 @@ class RestHelperTest {
      */
     public void testVoid() {
         // void 方法
+    }
+
+    /**
+     * 测试方法：带 @Operation 和 @GetMapping 的普通接口
+     */
+    @Operation(summary = "测试摘要", description = "测试描述")
+    @GetMapping("/test/path")
+    public R<String> testOperationDesc() {
+        return R.ok("test");
+    }
+
+    /**
+     * 测试方法：公开路径接口
+     */
+    @Operation(summary = "公开接口")
+    @GetMapping("/public/test")
+    public R<String> testPublicPath() {
+        return R.ok("test");
     }
 
     @Test
@@ -114,6 +134,36 @@ class RestHelperTest {
         System.out.println("  returnGenericInfo: " + voidInfo.getReturnGenericInfo());
     }
 
+    @Test
+    void testDescFromOperation() throws Exception {
+        // 测试 desc 从 @Operation.summary 获取
+        Method method = RestHelperTest.class.getMethod("testOperationDesc");
+        RestInfo restInfo = invokeGetRest(method, null, null);
+
+        assertNotNull(restInfo);
+        assertEquals("测试摘要", restInfo.getDesc());
+        assertEquals("/test/path", restInfo.getUri());
+        assertEquals(0, restInfo.getWriteFlag());
+        System.out.println("desc 从 @Operation.summary 获取:");
+        System.out.println("  desc: " + restInfo.getDesc());
+        System.out.println("  writeFlag: " + restInfo.getWriteFlag());
+    }
+
+    @Test
+    void testWriteFlagForPublicPath() throws Exception {
+        // 测试公开路径 writeFlag = 1
+        Method method = RestHelperTest.class.getMethod("testPublicPath");
+        RestInfo restInfo = invokeGetRest(method, null, null);
+
+        assertNotNull(restInfo);
+        assertEquals("公开接口", restInfo.getDesc());
+        assertEquals("/public/test", restInfo.getUri());
+        assertEquals(1, restInfo.getWriteFlag());
+        System.out.println("公开路径 writeFlag:");
+        System.out.println("  uri: " + restInfo.getUri());
+        System.out.println("  writeFlag: " + restInfo.getWriteFlag());
+    }
+
     /**
      * 反射调用 extractReturnType 方法
      */
@@ -122,5 +172,15 @@ class RestHelperTest {
             "extractReturnType", Method.class, RestInfo.class);
         extractMethod.setAccessible(true);
         extractMethod.invoke(null, method, restInfo);
+    }
+
+    /**
+     * 反射调用 getRest 方法
+     */
+    private RestInfo invokeGetRest(Method method, String prefix, String classTag) throws Exception {
+        java.lang.reflect.Method getRestMethod = RestHelper.class.getDeclaredMethod(
+            "getRest", Method.class, String.class, String.class);
+        getRestMethod.setAccessible(true);
+        return (RestInfo) getRestMethod.invoke(null, method, prefix, classTag);
     }
 }

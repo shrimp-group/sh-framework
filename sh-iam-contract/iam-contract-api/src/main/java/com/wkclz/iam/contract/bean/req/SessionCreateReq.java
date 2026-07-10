@@ -32,10 +32,4 @@ public class SessionCreateReq implements Serializable {
 
     @Schema(description = "认证标识符")
     private String authIdentifier;
-
-    @Schema(description = "客户端 IP")
-    private String clientIp;
-
-    @Schema(description = "User-Agent")
-    private String userAgent;
 }

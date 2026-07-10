@@ -6,6 +6,7 @@ import com.wkclz.iam.contract.bean.FieldPermission;
 import com.wkclz.iam.contract.bean.Menu;
 import com.wkclz.iam.contract.bean.Principal;
 import com.wkclz.iam.contract.bean.Tenant;
+import com.wkclz.iam.contract.enums.AuthErrorType;
 import com.wkclz.iam.contract.exception.AuthException;
 import com.wkclz.iam.contract.service.AuthzContract;
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +67,7 @@ public class DefaultAuthzContract implements AuthzContract {
     @Override
     public boolean canAccessApi(Principal principal, String appCode, String apiUri, String apiMethod) {
         log.warn("DefaultAuthzContract: canAccessApi 无实现，默认拒绝。apiUri={}, method={}", apiUri, apiMethod);
-        throw new AuthException(AuthException.AuthErrorType.ACCESS_DENIED,
+        throw new AuthException(AuthErrorType.ACCESS_DENIED,
                 "无鉴权实现，请配置 AuthzContract");
     }
 }

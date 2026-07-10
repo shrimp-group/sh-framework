@@ -68,6 +68,8 @@ flowchart TD
 - [场景4] Given DefaultAuthFilter 拦截请求, When 请求路径为 `/`（根路径）, Then 返回 403 Forbidden
 - [场景5] Given DefaultAuthFilter 拦截请求, When AuthContract.authenticate() 返回 null（无 token）, Then 返回 401 Unauthorized
 - [异常场景] Given DefaultAuthzContract.canAccessApi() 被调用, When 业务系统未实现 AuthzContract, Then 抛出 AuthException(ACCESS_DENIED) 防止裸奔
+- [HTTP 状态码映射] Given DefaultAuthFilter 捕获 AuthException, When 错误类型为 TOKEN_MISSING/TOKEN_INVALID/TOKEN_EXPIRED/SESSION_EXPIRED/AK_SIGN_*, Then 返回 401 Unauthorized
+- [HTTP 状态码映射] Given DefaultAuthFilter 捕获 AuthException, When 错误类型为 ACCESS_DENIED, Then 返回 403 Forbidden
 - [登录失败场景1] Given SsoFacadeContract 实现方处理登录, When 用户名或密码错误, Then 返回 LoginResp.fail(USERNAME_OR_PASSWORD_ERROR)（用户名错误与密码错误合并，防用户枚举攻击；login() 永不抛业务失败异常）
 - [登录失败场景2] Given SsoFacadeContract 实现方处理登录, When 账号锁定/禁用/凭据过期/验证码错误等, Then 返回 LoginResp.fail(对应 LoginFailType, 可选 failReason 动态详情)
 - [登录失败场景3] Given SsoFacadeContract 默认实现被调用, When 未配置业务实现, Then 抛 UnsupportedOperationException（系统级错误，非业务登录失败）
@@ -130,7 +132,8 @@ flowchart TD
 - `sh-iam-contract/iam-contract-api/src/main/java/com/wkclz/iam/contract/service/AuthzContract.java` (鉴权契约 SPI，六维度重载)
 - `sh-iam-contract/iam-contract-api/src/main/java/com/wkclz/iam/contract/service/AkSignContract.java` (AK 签名契约 SPI)
 - `sh-iam-contract/iam-contract-api/src/main/java/com/wkclz/iam/contract/facade/SsoFacadeContract.java` (SSO 门面契约 SPI)
-- `sh-iam-contract/iam-contract-api/src/main/java/com/wkclz/iam/contract/exception/AuthException.java` (契约层异常 + AuthErrorType 枚举)
+- `sh-iam-contract/iam-contract-api/src/main/java/com/wkclz/iam/contract/exception/AuthException.java` (契约层异常)
+- `sh-iam-contract/iam-contract-api/src/main/java/com/wkclz/iam/contract/enums/AuthErrorType.java` (认证错误类型枚举，8 值 + HTTP 状态码 + 友好提示)
 
 默认实现模块（sh-iam-contract/iam-contract-default）：
 - `sh-iam-contract/iam-contract-default/src/main/java/com/wkclz/iam/contract/defaults/service/DefaultAuthContract.java` (认证默认实现：读宽容验证严格)

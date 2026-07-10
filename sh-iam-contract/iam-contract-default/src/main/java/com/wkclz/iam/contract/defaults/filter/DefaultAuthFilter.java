@@ -18,14 +18,14 @@ import java.io.IOException;
 
 /**
  * 默认鉴权过滤器
- * 调用 AuthContract SPI 完成认证，认证失败返回 401
+ * 调用 AuthContract SPI 完成认证，认证失败时根据 AuthErrorType.httpStatus 返回对应状态码
  *
  * 流程：
  * 1. 根路径拒绝
  * 2. public 路径放行（可配置 publicPathPattern）
  * 3. 调用 AuthContract.authenticate()
  * 4. 认证成功 → 缓存 PrincipalContext → 放行
- * 5. 认证失败 → 返回 401
+ * 5. 认证失败 → 返回 AuthErrorType 对应的 HTTP 状态码
  *
  * @author shrimp
  */
@@ -76,7 +76,7 @@ public class DefaultAuthFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
         } catch (AuthException e) {
             log.warn("DefaultAuthFilter: 认证失败: {} - {}, uri={}", e.getErrorType(), e.getMessage(), uri);
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setStatus(e.getErrorType().getHttpStatus());
         } finally {
             PrincipalContext.clear();
         }

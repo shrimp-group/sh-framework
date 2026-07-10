@@ -1,5 +1,6 @@
 package com.wkclz.iam.contract.defaults.service;
 
+import com.wkclz.iam.contract.enums.AuthErrorType;
 import com.wkclz.iam.contract.exception.AuthException;
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +26,6 @@ class DefaultAkSignContractTest {
     void verifySign_throwsAkSignInvalid() {
         AuthException ex = assertThrows(AuthException.class,
                 () -> contract.verifySign("any-sign", "publicKey", "appId"));
-        assertEquals(AuthException.AuthErrorType.AK_SIGN_INVALID, ex.getErrorType());
+        assertEquals(AuthErrorType.AK_SIGN_INVALID, ex.getErrorType());
     }
 }

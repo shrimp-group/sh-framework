@@ -6,6 +6,7 @@ import com.wkclz.iam.contract.bean.FieldPermission;
 import com.wkclz.iam.contract.bean.Menu;
 import com.wkclz.iam.contract.bean.Principal;
 import com.wkclz.iam.contract.bean.Tenant;
+import com.wkclz.iam.contract.enums.AuthErrorType;
 import com.wkclz.iam.contract.exception.AuthException;
 import org.junit.jupiter.api.Test;
 
@@ -80,6 +81,6 @@ class DefaultAuthzContractTest {
         // 接口鉴权无实现 → 抛 ACCESS_DENIED
         AuthException ex = assertThrows(AuthException.class,
                 () -> contract.canAccessApi(principal, "app-001", "/api/test", "GET"));
-        assertEquals(AuthException.AuthErrorType.ACCESS_DENIED, ex.getErrorType());
+        assertEquals(AuthErrorType.ACCESS_DENIED, ex.getErrorType());
     }
 }

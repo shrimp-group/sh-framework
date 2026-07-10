@@ -129,8 +129,8 @@ sh-framework/
 │   │       ├── bean/resp/     # LoginResp（登录响应，含失败建模：success + failType + failReason + 静态工厂）
 │   │       ├── config/        # ContractSettings（静态配置持有器）
 │   │       ├── context/       # PrincipalContext（基于 RequestContextHolder + ThreadLocal 双存储）
-│   │       ├── enums/         # AuthScene, LoginFailType（登录失败类型，10 值 + 中文 message）
-│   │       ├── exception/     # AuthException（含 AuthErrorType 枚举）
+│   │       ├── enums/         # AuthScene, LoginFailType（登录失败类型，10 值 + 中文 message）, AuthErrorType（认证错误类型，8 值 + HTTP 状态码 + 友好提示）
+│   │       ├── exception/     # AuthException
 │   │       ├── facade/        # SsoFacadeContract
 │   │       └── service/       # AuthContract, AuthzContract, AkSignContract
 │   └── iam-contract-default/  # 默认实现（读宽容验证严格 + DefaultAuthFilter + AutoConfig）
