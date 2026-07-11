@@ -25,8 +25,6 @@ description: sh-framework 框架知识总索引——涉及框架编码、模块
 | sh-dynamicdb | `sh-dynamicdb/SKILL.md` | 涉及多数据源切换、运行时动态添加/销毁数据源、租户隔离数据源时 |
 | sh-mqtt | `sh-mqtt/SKILL.md` | 涉及 MQTT 消息收发、IoT 设备通信、@MqttController 注解驱动订阅/分发时 |
 | sh-xxljob | `sh-xxljob/SKILL.md` | 涉及 XXL-Job 定时任务开发、@XxlJob 注解任务处理器编写时 |
-| sh-iam-contract-api | `sh-iam-contract-api/SKILL.md` | 涉及 IAM 契约接口（AuthContract/AuthzContract/AkSignContract/SsoFacadeContract）、Principal/Session/AuthResult 等模型、PrincipalContext、LoginFailType 枚举、AuthException 异常时 |
-| sh-iam-contract-default | `sh-iam-contract-default/SKILL.md` | 涉及 IAM 默认实现（DefaultAuthFilter）、@ConditionalOnMissingBean 替换默认实现、IAM 自动配置时 |
 | sh-bom | `sh-bom/SKILL.md` | 涉及依赖版本管理、新增第三方依赖、版本冲突排查时 |
 | sh-demo | `sh-demo/SKILL.md` | 需要参考框架标准使用范式（Entity→Mapper→Service→VO→Route→Controller CRUD 全链路）时 |
 
@@ -39,7 +37,6 @@ description: sh-framework 框架知识总索引——涉及框架编码、模块
 第3层: sh-dynamicdb → sh-mybatis + sh-spring
        sh-redis → sh-core
        sh-web / sh-mqtt / sh-xxljob → sh-spring
-       sh-iam-contract（api 零内部依赖；default → api）
 第4层: sh-demo → sh-mybatis + sh-web
 ```
 
