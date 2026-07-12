@@ -39,12 +39,6 @@ public class UpdateByIdMapperProvider extends BaseMapperProvider {
                 updateSet.append(", ");
             }
 
-            Object value = getFieldValue(field, entity);
-            // 跳过空值字段
-            if (value == null && field.isNotNull()) {
-                throw ValidationException.of("字段 {}({})不能为空", field.getColumnName(), field.getFieldName());
-            }
-
             updateSet.append(field.getColumnName());
             updateSet.append(" = #{");
             updateSet.append(field.getFieldName());
