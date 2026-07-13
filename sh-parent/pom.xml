@@ -85,12 +85,7 @@
             </dependency>
             <dependency>
                 <groupId>com.wkclz.framework</groupId>
-                <artifactId>iam-contract-api</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.wkclz.framework</groupId>
-                <artifactId>iam-contract-default</artifactId>
+                <artifactId>sh-auth</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -106,7 +101,7 @@
             </dependency>
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
-                <artifactId>micro-file</artifactId>
+                <artifactId>micro-fileos</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
