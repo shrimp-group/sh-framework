@@ -20,6 +20,9 @@ public class Principal implements Serializable {
     @Schema(description = "头像")
     private String avatar;
 
+    @Schema(description = "租户编码")
+    private String tenantCode;
+
     @Schema(description = "应用编码")
     private String appCode;
 

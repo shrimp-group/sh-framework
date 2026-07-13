@@ -71,6 +71,14 @@ public class PrincipalContext {
     }
 
     /**
+     * 获取租户编码
+     */
+    public static String getTenantCode() {
+        Principal p = HOLDER.get();
+        return p == null ? null : p.getTenantCode();
+    }
+
+    /**
      * 获取认证标识
      */
     public static String getAuthIdentifier() {
