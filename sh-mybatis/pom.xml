@@ -23,11 +23,6 @@
             <groupId>com.wkclz.framework</groupId>
             <artifactId>sh-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.wkclz.framework</groupId>
-            <artifactId>iam-contract-api</artifactId>
-        </dependency>
-
         <!-- 数据库工具 -->
         <dependency>
             <groupId>com.alibaba</groupId>

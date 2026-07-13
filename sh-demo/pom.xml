@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>com.wkclz.framework</groupId>
-            <artifactId>iam-contract-api</artifactId>
+            <artifactId>sh-auth</artifactId>
         </dependency>
     </dependencies>
 
