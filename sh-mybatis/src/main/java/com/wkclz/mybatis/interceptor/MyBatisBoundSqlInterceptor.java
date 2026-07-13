@@ -1,6 +1,6 @@
 package com.wkclz.mybatis.interceptor;
 
-import com.wkclz.iam.contract.context.PrincipalContext;
+import com.wkclz.core.user.PrincipalContext;
 import com.wkclz.mybatis.bean.MyBatisConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.statement.StatementHandler;
