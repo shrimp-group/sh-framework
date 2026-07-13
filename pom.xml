@@ -28,7 +28,6 @@
         <module>sh-dynamicdb</module>
         <module>sh-redis</module>
         <module>sh-web</module>
-        <module>sh-auth</module>
         <module>sh-xxljob</module>
         <module>sh-mqtt</module>
         <module>sh-demo</module>
