@@ -1,7 +1,7 @@
 package com.wkclz.mybatis.interceptor;
 
 import com.wkclz.core.base.DbColumnEntity;
-import com.wkclz.core.user.PrincipalContext;
+import com.wkclz.core.identity.IdentityContext;
 import com.wkclz.mybatis.bean.MyBatisConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.binding.MapperMethod;
@@ -30,7 +30,7 @@ public class MyBatisUpdateInterceptor implements Interceptor {
         SqlCommandType sqlCommandType = mappedStatement.getSqlCommandType();
 
         // 获取当前用户（从 IAM 契约层 PrincipalContext）
-        String userCode = PrincipalContext.getUserCode();
+        String userCode = IdentityContext.getUserCode();
 
         // 无用户信息时使用默认值 nobody
         if (userCode == null) {

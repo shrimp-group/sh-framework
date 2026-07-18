@@ -1,10 +1,10 @@
 package com.wkclz.demo.rest;
 
 import com.wkclz.core.base.PageData;
-import com.wkclz.core.base.Principal;
 import com.wkclz.core.base.R;
 import com.wkclz.core.exception.NotFoundException;
-import com.wkclz.core.user.PrincipalContext;
+import com.wkclz.core.identity.IdentityContext;
+import com.wkclz.core.identity.UserIdentity;
 import com.wkclz.demo.bean.entity.User;
 import com.wkclz.demo.bean.vo.user.*;
 import com.wkclz.demo.service.UserService;
@@ -89,9 +89,9 @@ public class UserRest {
     }
 
     private void setLoginUser() {
-        Principal principal = new Principal();
-        principal.setUserCode("userCode");
-        principal.setUsername("username");
-        PrincipalContext.cache(principal);
+        UserIdentity id = new UserIdentity();
+        id.setUserCode("userCode");
+        id.setUsername("username");
+        IdentityContext.set(id, null);
     }
 }

@@ -1,6 +1,6 @@
 package com.wkclz.mybatis.interceptor;
 
-import com.wkclz.core.user.PrincipalContext;
+import com.wkclz.core.identity.IdentityContext;
 import com.wkclz.mybatis.bean.MyBatisConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -30,7 +30,7 @@ public class MyBatisBoundSqlInterceptor implements Interceptor {
         List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
         boolean hasUpdateBy = parameterMappings.stream().anyMatch(pm -> "updateBy".equals(pm.getProperty()));
         if (hasUpdateBy) {
-            String userCode = PrincipalContext.getUserCode();
+            String userCode = IdentityContext.getUserCode();
             if (userCode == null) {
                 userCode = MyBatisConstants.DEFAULT_OPERATOR;
             }
