@@ -90,7 +90,7 @@
             <dependency>
                 <groupId>com.wkclz.iam</groupId>
                 <artifactId>iam-session</artifactId>
-                <version>${iam.revision}</version>
+                <version>${iam.version}</version>
             </dependency>
 
             <dependency>
