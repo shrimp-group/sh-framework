@@ -20,6 +20,9 @@
     <properties>
         <revision>5.0.1-SNAPSHOT</revision>
 
+        <microapp.version>5.0.1-SNAPSHOT</microapp.version>
+        <iam.version>5.0.1-SNAPSHOT</iam.version>
+
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <maven.compiler.release>25</maven.compiler.release>
@@ -83,81 +86,82 @@
                 <artifactId>sh-web</artifactId>
                 <version>${revision}</version>
             </dependency>
+
             <dependency>
-                <groupId>com.wkclz.framework</groupId>
-                <artifactId>sh-auth</artifactId>
-                <version>${revision}</version>
+                <groupId>com.wkclz.iam</groupId>
+                <artifactId>iam-session</artifactId>
+                <version>${iam.revision}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
                 <artifactId>micro-audit</artifactId>
-                <version>${revision}</version>
+                <version>${microapp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
                 <artifactId>micro-dict</artifactId>
-                <version>${revision}</version>
+                <version>${microapp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
                 <artifactId>micro-fileos</artifactId>
-                <version>${revision}</version>
+                <version>${microapp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
                 <artifactId>micro-liteflow</artifactId>
-                <version>${revision}</version>
+                <version>${microapp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
                 <artifactId>micro-form</artifactId>
-                <version>${revision}</version>
+                <version>${microapp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
                 <artifactId>micro-fun</artifactId>
-                <version>${revision}</version>
+                <version>${microapp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
                 <artifactId>micro-mask</artifactId>
-                <version>${revision}</version>
+                <version>${microapp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
                 <artifactId>micro-msg</artifactId>
-                <version>${revision}</version>
+                <version>${microapp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
                 <artifactId>micro-pay</artifactId>
-                <version>${revision}</version>
+                <version>${microapp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
                 <artifactId>micro-pdf</artifactId>
-                <version>${revision}</version>
+                <version>${microapp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
                 <artifactId>micro-rmcheck</artifactId>
-                <version>${revision}</version>
+                <version>${microapp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
                 <artifactId>micro-seq</artifactId>
-                <version>${revision}</version>
+                <version>${microapp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
                 <artifactId>micro-wxapp</artifactId>
-                <version>${revision}</version>
+                <version>${microapp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wkclz.microapp</groupId>
                 <artifactId>micro-wxmp</artifactId>
-                <version>${revision}</version>
+                <version>${microapp.version}</version>
             </dependency>
 
         </dependencies>
