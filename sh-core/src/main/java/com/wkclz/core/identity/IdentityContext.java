@@ -1,5 +1,9 @@
 package com.wkclz.core.identity;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Map;
+
 /**
  * 身份上下文 — 请求级 ThreadLocal 实现，零外部依赖。
  *
@@ -94,6 +98,15 @@ public final class IdentityContext {
         UserIdentity id = HOLDER.get().identity;
         return id != null ? id.getAvatar() : null;
     }
+    public static String getAttribute(String attributeKey) {
+        if (StringUtils.isBlank(attributeKey)) {
+            return null;
+        }
+        UserIdentity id = HOLDER.get().identity;
+        Map<String, Object> attributes = id != null ? id.getAttributes() : null;
+        return attributes != null ? (String) attributes.get("attribute") : null;
+    }
+
 
     // ========== 应用/租户上下文 ==========
 
