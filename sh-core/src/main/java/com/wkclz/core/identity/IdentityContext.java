@@ -135,7 +135,8 @@ public final class IdentityContext {
      * 获取当前线程的租户编码。
      */
     public static String getTenantCode() {
-        return HOLDER.get().tenantCode;
+        String tenantCode = HOLDER.get().tenantCode;
+        return tenantCode == null ? "default" : tenantCode;
     }
 
     // ========== 清理 ==========
