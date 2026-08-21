@@ -20,7 +20,10 @@ public class CursorPageData<T> implements Serializable {
     private List<T> records;
 
     @Schema(description = "是否还有下一页")
-    private Boolean hasMore;
+    private Integer hasMore;
+
+    @Schema(description = "下一页游标（本页最后一条记录 id），无更多时为 null")
+    private Long nextCursor;
 
     /**
      * 快速创建游标分页结果
@@ -28,10 +31,11 @@ public class CursorPageData<T> implements Serializable {
      * @param records 数据列表（调用方已按 size 截断）
      * @param hasMore 是否还有下一页
      */
-    public static <T> CursorPageData<T> of(List<T> records, boolean hasMore) {
+    public static <T> CursorPageData<T> of(List<T> records, Integer hasMore, Long nextCursor) {
         CursorPageData<T> pageData = new CursorPageData<>();
         pageData.setRecords(records);
         pageData.setHasMore(hasMore);
+        pageData.setNextCursor(nextCursor);
         return pageData;
     }
 
@@ -39,6 +43,6 @@ public class CursorPageData<T> implements Serializable {
      * 创建空游标分页结果
      */
     public static <T> CursorPageData<T> empty() {
-        return of(Collections.emptyList(), false);
+        return of(Collections.emptyList(), 0, null);
     }
 }

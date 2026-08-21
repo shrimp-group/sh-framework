@@ -1,4 +1,4 @@
-package com.wkclz.web.bean;
+package com.wkclz.web.bean.customer;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
