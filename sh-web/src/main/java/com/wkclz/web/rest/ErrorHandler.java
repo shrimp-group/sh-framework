@@ -28,6 +28,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.sql.SQLSyntaxErrorException;
@@ -158,6 +159,17 @@ public class ErrorHandler {
         return R.error(message);
     }
 
+    /**
+     * 客户端断开连接（关闭页面/停止 SSE 流式输出等）时 Servlet 容器通知 Spring 异步请求不可用，
+     * 属预期行为，不按系统错误记录，避免日志告警噪音。
+     */
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    public R asyncRequestNotUsableExceptionHandler(AsyncRequestNotUsableException e, HttpServletRequest request) {
+        logger.info("客户端连接已断开（异步请求不可用）, request: {} {}, msg: {}",
+            request.getMethod(), request.getRequestURI(), e.getMessage());
+        return null;
+    }
+
 
     /**
      * Throwable 找 CommonException，找二级原因
@@ -173,6 +185,25 @@ public class ErrorHandler {
             throwable = throwable.getCause();
         }
         return null;
+    }
+
+    /**
+     * 是否客户端断开连接导致的预期异常（SSE 流中断、文件下载中断等）。
+     * 用类名/消息判断，避免硬依赖具体 Servlet 容器类（如 Tomcat 的 ClientAbortException）。
+     */
+    private static boolean isClientDisconnectException(Throwable e) {
+        if (e == null) {
+            return false;
+        }
+        if (e instanceof AsyncRequestNotUsableException) {
+            return true;
+        }
+        String className = e.getClass().getName();
+        if (className.contains("ClientAbortException")) {
+            return true;
+        }
+        String message = String.valueOf(e.getMessage());
+        return message.contains("Broken pipe") || message.contains("Connection reset by peer");
     }
 
     private static void printErrorLog(
@@ -194,6 +225,12 @@ public class ErrorHandler {
 
         if (e instanceof UserException) {
             logger.error("biz error: {} {}, {}", method, uri, errorMsg);
+            return;
+        }
+
+        // 客户端断开连接（SSE 流中断、文件下载中断等）导致的预期异常，不按系统错误记录，也不触发告警邮件
+        if (isClientDisconnectException(e)) {
+            logger.warn("client disconnect: {} {}, {}", method, uri, errorMsg);
             return;
         }
 
