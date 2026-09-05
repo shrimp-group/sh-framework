@@ -1,5 +1,7 @@
 package com.wkclz.web.annotation.validator;
 
+import com.wkclz.tool.bean.JavaField;
+import com.wkclz.tool.utils.BeanUtil;
 import com.wkclz.web.annotation.AtLeastOneNotNull;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -7,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Map;
 
 @Slf4j
 public class AtLeastOneNotNullValidator implements ConstraintValidator<AtLeastOneNotNull, Object> {
@@ -23,11 +26,15 @@ public class AtLeastOneNotNullValidator implements ConstraintValidator<AtLeastOn
         if (value == null) {
             return true;
         }
-        
         try {
+            Map<String, JavaField> javaFieldMap = BeanUtil.getJavaField(value.getClass());
             // 遍历指定的字段，只要有一个不为空，就返回 true
             for (String fieldName : fields) {
-                Field field = value.getClass().getDeclaredField(fieldName);
+                JavaField javaField = javaFieldMap.get(fieldName);
+                if (javaField == null) {
+                    continue;
+                }
+                Field field = javaField.getField();
                 field.setAccessible(true);
                 Object fieldValue = field.get(value);
                 if (fieldValue != null) {
