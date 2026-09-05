@@ -265,6 +265,7 @@ public class BeanUtil {
         for (Field field : fields) {
             JavaField f = new JavaField();
             f.setClazz(field.getType());
+            f.setField(field);
 
             String name = field.getName();
             f.setFieldName(name);
