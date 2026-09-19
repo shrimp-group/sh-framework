@@ -35,7 +35,8 @@ public class DeleteByIdEntityMapperProvider extends BaseMapperProvider {
         }
         
         StringBuilder sql = new StringBuilder();
-        sql.append("UPDATE ").append(tableName).append(" SET ").append(deleted).append(" = DATE_FORMAT(NOW(6), '%Y%m%d%H%i%s%m')");
+        // 2026-09-19 修复：%m 为月份导致同秒删除值相同，改 %f 微秒保证唯一性
+        sql.append("UPDATE ").append(tableName).append(" SET ").append(deleted).append(" = DATE_FORMAT(NOW(6), '%Y%m%d%H%i%s%f')");
         sql.append(", ").append(version).append(" = ").append(version).append(" + 1");
 
         // 处理updateBy字段
