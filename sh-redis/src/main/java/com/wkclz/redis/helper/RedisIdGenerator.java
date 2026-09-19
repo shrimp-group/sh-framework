@@ -18,6 +18,12 @@ import java.util.concurrent.TimeUnit;
  * 考虑时间回拨问题，确保ID尽可能短且永不重复
  * 每秒最多生成1w个ID
  *
+ * <p>对外暴露 4 个方法，按返回类型分为两组：</p>
+ * <ul>
+ *   <li>数字组：{@link #generateNumericId(String)} / {@link #generateNumericIdWithPrefix(String)} 返回压缩前的纯数字</li>
+ *   <li>编码组：{@link #generateBase62Id(String)} / {@link #generateBase62IdWithPrefix(String)} 返回 Base62 压缩后的短编码</li>
+ * </ul>
+ *
  * @author wkclz
  * @date 2024-07-15
  */
@@ -27,24 +33,30 @@ public class RedisIdGenerator {
 
     @Autowired
     private RedisHelper redisHelper;
-    
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
-    
+
     // 基础时间（2024-01-01 00:00:00）
     private static final long BASE_TIME = 1704067200000L;
-    
     // 序列号位数（14位，最大支持每秒16384个ID）
     private static final long SEQUENCE_BITS = 14L;
     private static final long MAX_SEQUENCE = (1 << SEQUENCE_BITS) - 1; // 16383
-    
     // 机器标识位数（6位，最大支持64台机器）
     private static final long MACHINE_BITS = 6L;
     private static final long MAX_MACHINE_ID = (1 << MACHINE_BITS) - 1; // 63
-    
     // 机器标识
     private Long machineId = null;
-    
+    // Redis键前缀
+    private static final String ID_GENERATOR_KEY_PREFIX = "id:generator:";
+    // 上次生成ID的时间戳（用于处理时间回拨）
+    private volatile long lastTimestamp = -1L;
+    // 上次生成的序列号
+    private volatile long lastSequence = 0L;
+    // 62进制字符集
+    private static final char[] BASE62_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+
+
+
     /**
      * 初始化机器标识
      */
@@ -66,61 +78,110 @@ public class RedisIdGenerator {
             }
         }
     }
-    
-    // Redis键前缀
-    private static final String ID_GENERATOR_KEY_PREFIX = "id:generator:";
-    
-    // 上次生成ID的时间戳（用于处理时间回拨）
-    private volatile long lastTimestamp = -1L;
 
-    // 上次生成的序列号
-    private volatile long lastSequence = 0L;
-    
-    // 62进制字符集
-    private static final char[] BASE62_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+    /**
+     * 生成纯数字 ID（不含前缀，压缩前）
+     *
+     * @param businessType 业务类型（用于 Redis key 隔离，null/空 时使用 "default"）
+     * @return 原始数字 ID
+     */
+    public long generateNumericId(String businessType) {
+        return generateRawId(businessType);
+    }
 
-
-    public String generateIdWithPrefix(String prefix) {
+    /**
+     * 生成带前缀的纯数字 ID（压缩前）
+     *
+     * @param prefix ID 前缀（如 "user_"），不可为空
+     * @return 前缀 + 纯数字字符串
+     */
+    public String generateNumericIdWithPrefix(String prefix) {
         if (StringUtils.isBlank(prefix)) {
             throw SystemException.of("prefix 不能为空！");
         }
-        String s = generateIdWithType(prefix);
-        return prefix + s;
+        return prefix + generateRawId(prefix);
     }
 
+    /**
+     * 生成 Base62 编码 ID（不含前缀，压缩后）
+     *
+     * @param businessType 业务类型（用于 Redis key 隔离，null/空 时使用 "default"）
+     * @return Base62 编码字符串
+     */
+    public String generateBase62Id(String businessType) {
+        return base62Encode(generateRawId(businessType));
+    }
 
     /**
-     * 生成ID
+     * 生成带前缀的 Base62 编码 ID（压缩后）
+     *
+     * @param prefix ID 前缀（如 "user_"），不可为空
+     * @return 前缀 + Base62 编码字符串
+     */
+    public String generateBase62IdWithPrefix(String prefix) {
+        if (StringUtils.isBlank(prefix)) {
+            throw SystemException.of("prefix 不能为空！");
+        }
+        return prefix + base62Encode(generateRawId(prefix));
+    }
+
+    /**
+     * 生成 ID（Base62 编码，不含前缀）
      *
      * @param businessType 业务类型
      * @return 生成的ID
+     * @deprecated 命名未体现返回 Base62 编码的特性，请使用 {@link #generateBase62Id(String)}
      */
+    @Deprecated
     public String generateIdWithType(String businessType) {
+        return generateBase62Id(businessType);
+    }
+
+    /**
+     * 生成带前缀的 ID（Base62 编码）
+     *
+     * @param prefix 前缀
+     * @return 前缀 + Base62 编码
+     * @deprecated 命名未体现返回 Base62 编码的特性，请使用 {@link #generateBase62IdWithPrefix(String)}
+     */
+    @Deprecated
+    public String generateIdWithPrefix(String prefix) {
+        return generateBase62IdWithPrefix(prefix);
+    }
+
+    /**
+     * 核心方法：生成原始数字 ID（时间戳 + 机器标识 + Redis 序列号）
+     * Redis 不可用时降级为本地内存序列号
+     *
+     * @param businessType 业务类型（用于 Redis key 隔离，null/空 时使用 "default"）
+     * @return 原始数字 ID
+     */
+    private long generateRawId(String businessType) {
         if (businessType == null || businessType.isEmpty()) {
             businessType = "default";
         }
-        
+
         // 懒加载初始化机器标识
         initMachineId();
-        
+
         long timestamp = System.currentTimeMillis();
-        
+
         // 处理时间回拨问题
         if (timestamp < lastTimestamp) {
             log.warn("Clock moved backwards. Refusing to generate id for {} milliseconds", lastTimestamp - timestamp);
             timestamp = lastTimestamp;
         }
-        
+
         // Redis键
         String key = ID_GENERATOR_KEY_PREFIX + businessType;
-        
+
         try {
             // 获取当前时间戳对应的序列号，同时设置过期时间
             Long sequence = redisHelper.increment(key, 5, TimeUnit.SECONDS);
             if (sequence == null) {
                 sequence = 1L;
             }
-            
+
             // 如果是同一毫秒
             if (timestamp == lastTimestamp) {
                 // 如果序列号超过最大值，等待下一毫秒
@@ -136,32 +197,29 @@ public class RedisIdGenerator {
                 // 新的毫秒，重置序列号
                 sequence = 1L;
             }
-            
+
             // 更新上次生成ID的时间戳和序列号
             lastTimestamp = timestamp;
             lastSequence = sequence;
-            
+
             // 使用 setNumber 来确保是纯数字格式
             redisHelper.setNumber(key, sequence, 5, TimeUnit.SECONDS);
-            
+
             // 计算相对时间戳（当前时间戳 - 基础时间）
             long relativeTimestamp = timestamp - BASE_TIME;
-            
+
             // 组合时间戳、机器标识和序列号
-            long id = (relativeTimestamp << (MACHINE_BITS + SEQUENCE_BITS)) 
-                    | (machineId << SEQUENCE_BITS) 
+            return (relativeTimestamp << (MACHINE_BITS + SEQUENCE_BITS))
+                    | (machineId << SEQUENCE_BITS)
                     | sequence;
-            
-            // 转换为62进制，使其更短
-            return base62Encode(id);
-            
+
         } catch (Exception e) {
             log.error("Redis generateId error: ", e);
             // 如果Redis不可用，使用本地生成策略
-            return generateLocalId(timestamp);
+            return generateLocalRawId(timestamp);
         }
     }
-    
+
     /**
      * 等待下一毫秒
      *
@@ -175,14 +233,14 @@ public class RedisIdGenerator {
         }
         return timestamp;
     }
-    
+
     /**
-     * 本地生成ID（当Redis不可用时）
+     * 本地降级生成原始数字 ID（当 Redis 不可用时）
      *
      * @param timestamp 时间戳
-     * @return 生成的ID
+     * @return 原始数字 ID
      */
-    private String generateLocalId(long timestamp) {
+    private long generateLocalRawId(long timestamp) {
         // 使用当前时间戳 + 本地自增序列号
         long sequence;
         if (timestamp == lastTimestamp) {
@@ -194,18 +252,16 @@ public class RedisIdGenerator {
         } else {
             sequence = 0;
         }
-        
+
         lastTimestamp = timestamp;
         lastSequence = sequence;
-        
+
         long relativeTimestamp = timestamp - BASE_TIME;
-        long id = (relativeTimestamp << (MACHINE_BITS + SEQUENCE_BITS)) 
-                | (machineId << SEQUENCE_BITS) 
+        return (relativeTimestamp << (MACHINE_BITS + SEQUENCE_BITS))
+                | (machineId << SEQUENCE_BITS)
                 | sequence;
-        
-        return base62Encode(id);
     }
-    
+
     /**
      * 62进制编码
      *
@@ -216,17 +272,17 @@ public class RedisIdGenerator {
         if (number == 0) {
             return "0";
         }
-        
+
         StringBuilder sb = new StringBuilder();
         while (number > 0) {
             sb.append(BASE62_CHARS[(int) (number % 62)]);
             number = number / 62;
         }
-        
+
         // 反转字符串，因为我们是从低位开始构建的
         return sb.reverse().toString();
     }
-    
+
     /**
      * 获取当前时间戳（用于测试）
      *
@@ -235,7 +291,7 @@ public class RedisIdGenerator {
     public long getCurrentTimestamp() {
         return System.currentTimeMillis();
     }
-    
+
     /**
      * 获取基础时间（用于测试）
      *
@@ -244,7 +300,7 @@ public class RedisIdGenerator {
     public long getBaseTime() {
         return BASE_TIME;
     }
-    
+
     /**
      * 获取当前时间与基础时间的差值（用于测试）
      *
