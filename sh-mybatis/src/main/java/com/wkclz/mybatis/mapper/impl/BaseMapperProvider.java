@@ -22,11 +22,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class BaseMapperProvider {
 
+    // 逻辑删除时间戳表达式：毫秒精度 yyyyMMddHHmmssSSS（17 位，BIGINT 安全）,MySQL 无毫秒占位符，NOW(3) 截断到毫秒后经 %f 输出 6 位（毫秒+000），LEFT(…, 17) 截取真实毫秒 3 位
+    protected static final String DELETE_TIME_EXPR = "LEFT(DATE_FORMAT(NOW(3), '%Y%m%d%H%i%s%f'), 17)";
+
     private static final Map<Class<?>, DbEntityProperty> ENTITY_CACHE = new ConcurrentHashMap<>();
     protected static DbEntityProperty getDbEntityProperty(Class<?> entityClass) {
         return ENTITY_CACHE.computeIfAbsent(entityClass, k -> DbEntityProperty.createInstance(entityClass));
     }
-    
+
     /**
      * 从ProviderContext中获取泛型类型参数
      * @param context ProviderContext对象

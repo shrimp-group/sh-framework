@@ -35,7 +35,7 @@ public class DeleteByIdsMapperProvider extends BaseMapperProvider {
         String version = DbEntityProperty.VERSION_FIELD;
 
         StringBuilder sql = new StringBuilder();
-        sql.append("UPDATE ").append(tableName).append(" SET ").append(deleted).append(" = DATE_FORMAT(NOW(6), '%Y%m%d%H%i%s%m')");
+        sql.append("UPDATE ").append(tableName).append(" SET ").append(deleted).append(" = ").append(DELETE_TIME_EXPR);
         sql.append(", ").append(version).append(" = ").append(version).append(" + 1");
         
         // 处理updateBy字段（始终拼接，值由 MyBatisBoundSqlInterceptor 注入）

@@ -33,10 +33,9 @@ public class DeleteByIdEntityMapperProvider extends BaseMapperProvider {
         if (id == null) {
             throw ValidationException.of("ID不能为空");
         }
-        
+
         StringBuilder sql = new StringBuilder();
-        // 2026-09-19 修复：%m 为月份导致同秒删除值相同，改 %f 微秒保证唯一性
-        sql.append("UPDATE ").append(tableName).append(" SET ").append(deleted).append(" = DATE_FORMAT(NOW(6), '%Y%m%d%H%i%s%f')");
+        sql.append("UPDATE ").append(tableName).append(" SET ").append(deleted).append(" = ").append(DELETE_TIME_EXPR);
         sql.append(", ").append(version).append(" = ").append(version).append(" + 1");
 
         // 处理updateBy字段
