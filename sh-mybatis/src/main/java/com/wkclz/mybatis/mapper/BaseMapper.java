@@ -56,12 +56,14 @@ public interface BaseMapper<T extends BaseEntity> {
 
     /**
      * 根据ID更新单条数据（全字段更新），带乐观锁
+     * version 必填，为 null 时抛出 ValidationException
      */
     @UpdateProvider(type = UpdateByIdMapperProvider.class, method = "updateById")
     int updateById(T entity);
 
     /**
      * 根据ID更新单条数据（只更新非空字段），带乐观锁
+     * version 必填，为 null 时抛出 ValidationException
      */
     @UpdateProvider(type = UpdateByIdSelectiveMapperProvider.class, method = "updateByIdSelective")
     int updateByIdSelective(T entity);

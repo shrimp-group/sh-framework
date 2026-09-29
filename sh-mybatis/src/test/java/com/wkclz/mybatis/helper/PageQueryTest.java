@@ -1,6 +1,7 @@
 package com.wkclz.mybatis.helper;
 
 import com.github.pagehelper.Page;
+import com.github.pagehelper.page.PageMethod;
 import com.wkclz.core.base.BaseEntity;
 import com.wkclz.core.base.PageData;
 import com.wkclz.core.base.Pageable;
@@ -123,7 +124,7 @@ class PageQueryTest {
     @Test
     @DisplayName("测试基于 BaseEntity 的分页查询 - 正常情况")
     void testPageWithBaseEntity() {
-        try (MockedStatic<com.github.pagehelper.PageHelper> pageHelperMock = mockStatic(com.github.pagehelper.PageHelper.class)) {
+        try (MockedStatic<PageMethod> pageHelperMock = mockStatic(PageMethod.class)) {
             // 准备测试数据
             TestEntity param = new TestEntity();
             param.setCurrent(1L);
@@ -159,7 +160,7 @@ class PageQueryTest {
     @Test
     @DisplayName("测试基于 Pageable 接口的分页查询 - 正常情况")
     void testPageWithPageableInterface() {
-        try (MockedStatic<com.github.pagehelper.PageHelper> pageHelperMock = mockStatic(com.github.pagehelper.PageHelper.class)) {
+        try (MockedStatic<PageMethod> pageHelperMock = mockStatic(PageMethod.class)) {
             // 准备测试数据
             when(mockPageable.getCurrent()).thenReturn(2L);
             when(mockPageable.getSize()).thenReturn(20L);
@@ -246,7 +247,7 @@ class PageQueryTest {
     @Test
     @DisplayName("测试基于 Pageable 接口的分页查询 - 分页参数自动初始化")
     void testPageWithPageableAutoInit() {
-        try (MockedStatic<com.github.pagehelper.PageHelper> pageHelperMock = mockStatic(com.github.pagehelper.PageHelper.class)) {
+        try (MockedStatic<PageMethod> pageHelperMock = mockStatic(PageMethod.class)) {
             // 准备测试数据 - 模拟 init 方法设置默认值
             when(mockPageable.getCurrent()).thenReturn(null, 1L);
             when(mockPageable.getSize()).thenReturn(null, 10L);
@@ -287,7 +288,7 @@ class PageQueryTest {
     @Test
     @DisplayName("测试基于 Pageable 接口的分页查询 - 空结果")
     void testPageWithPageableEmptyResult() {
-        try (MockedStatic<com.github.pagehelper.PageHelper> pageHelperMock = mockStatic(com.github.pagehelper.PageHelper.class)) {
+        try (MockedStatic<PageMethod> pageHelperMock = mockStatic(PageMethod.class)) {
             // 准备测试数据
             when(mockPageable.getCurrent()).thenReturn(1L);
             when(mockPageable.getSize()).thenReturn(10L);
@@ -318,7 +319,7 @@ class PageQueryTest {
     @Test
     @DisplayName("测试 PageHelper.clearPage() 在异常情况下也会被调用")
     void testPageHelperClearPageOnException() {
-        try (MockedStatic<com.github.pagehelper.PageHelper> pageHelperMock = mockStatic(com.github.pagehelper.PageHelper.class)) {
+        try (MockedStatic<PageMethod> pageHelperMock = mockStatic(PageMethod.class)) {
             // 准备测试数据
             when(mockPageable.getCurrent()).thenReturn(1L);
             when(mockPageable.getSize()).thenReturn(10L);
@@ -348,7 +349,7 @@ class PageQueryTest {
     @Test
     @DisplayName("测试基于 BaseEntity 的分页查询 - 参数自动初始化")
     void testPageWithBaseEntityAutoInit() {
-        try (MockedStatic<com.github.pagehelper.PageHelper> pageHelperMock = mockStatic(com.github.pagehelper.PageHelper.class)) {
+        try (MockedStatic<PageMethod> pageHelperMock = mockStatic(PageMethod.class)) {
             // 准备测试数据 - 不设置分页参数，验证自动初始化
             TestEntity param = new TestEntity();
 
@@ -381,7 +382,7 @@ class PageQueryTest {
     @Test
     @DisplayName("测试基于 Pageable 接口的分页查询（分页参数与查询参数合一）- 正常情况")
     void testPageWithPageableParamCombined() {
-        try (MockedStatic<com.github.pagehelper.PageHelper> pageHelperMock = mockStatic(com.github.pagehelper.PageHelper.class)) {
+        try (MockedStatic<PageMethod> pageHelperMock = mockStatic(PageMethod.class)) {
             // 准备测试数据
             TestPageableQueryParam param = new TestPageableQueryParam();
             param.setCurrent(3L);
@@ -448,7 +449,7 @@ class PageQueryTest {
     @Test
     @DisplayName("测试基于 Pageable 接口的分页查询（分页参数与查询参数合一）- 分页参数自动初始化")
     void testPageWithPageableParamCombinedAutoInit() {
-        try (MockedStatic<com.github.pagehelper.PageHelper> pageHelperMock = mockStatic(com.github.pagehelper.PageHelper.class)) {
+        try (MockedStatic<PageMethod> pageHelperMock = mockStatic(PageMethod.class)) {
             // 准备测试数据 - 不设置分页参数，验证自动初始化
             TestPageableQueryParam param = new TestPageableQueryParam();
             param.setKeyword("auto-init");

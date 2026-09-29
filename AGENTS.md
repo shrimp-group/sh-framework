@@ -300,7 +300,7 @@ Database
   - `MyBatisQueryInterceptor`：空字符串替换为 null
   - `MyBatisBoundSqlInterceptor`：向 BoundSql 注入 updateBy 参数（用于非实体参数方法）
 - 逻辑删除：deleted 字段，查询条件自动追加 `deleted = 0`
-- 乐观锁：version 字段，更新时自动追加 `version = version + 1` 条件
+- 乐观锁：version 字段必填强校验，updateById / updateByIdSelective 在 version 为 null 时抛 ValidationException；SQL 自动追加 `version = version + 1`（SET）与 `AND version = #{version}`（WHERE）
 - `@Blob` 标注的字段在 List 查询时不返回（selectListFields 排除）
 - 排序安全：`buildOrderByClause()` 白名单校验防止 SQL 注入
 
@@ -482,6 +482,7 @@ pagehelper:
 - **拦截器自动填充**：createBy / updateBy 由 `MyBatisUpdateInterceptor` 从 `PrincipalContext` 自动设置，不要在业务代码中手动赋值。
 - **PageHelper 分页**：`BaseService.selectPage()` 内部使用 `selectCountByEntity` + `selectByEntityWithLimit` 实现分页，不要在 Service 层再调用 PageHelper.startPage()。
 - **逻辑删除**：`deleted` 字段由 `buildWhereClause()` 自动追加 `deleted = 0`，不要在业务 SQL 中手动添加此条件。
+- **乐观锁强校验**：按 id 更新（`updateById` / `updateByIdSelective`）时实体 version 必填，为 null 时抛 `ValidationException`，调用方必须携带查询所得的 version 值。
 - **UserNameBodyAdvice**：响应体自动填充 createByName / updateByName，通过 SPI 接口 `UserNameProvider` 实现，不要在 Service 层手动查询用户名。
 - **DynamicDataSourceAop**：Mapper 方法执行后自动清理 ThreadLocal，不要手动调用 `DynamicDataSourceHolder.clear()`。
 

@@ -27,6 +27,11 @@ public class UpdateByIdMapperProvider extends BaseMapperProvider {
         if (id == null) {
             throw ValidationException.of("ID不能为空");
         }
+        // 获取version
+        Object versionValue = getFieldValue(property.getVersionField(), entity);
+        if (versionValue == null) {
+            throw ValidationException.of("version不能为空");
+        }
 
         String tableName = property.getTableName();
         String primaryKey = DbEntityProperty.PRIMARY_KEY;
@@ -54,14 +59,9 @@ public class UpdateByIdMapperProvider extends BaseMapperProvider {
             updateSet.append(", ").append(updateByField.getColumnName()).append(" = #{").append(updateByField.getFieldName()).append("}");
         }
 
-        // 获取id和version字段值
-        Object versionValue = getFieldValue(property.getVersionField(), entity);
-
         StringBuilder sql = new StringBuilder();
         sql.append("UPDATE ").append(tableName).append(" SET ").append(updateSet).append(" WHERE ").append(primaryKey).append(" = #{").append(primaryKey).append("} AND ").append(deleted).append(" = 0");
-        if (versionValue != null) {
-            sql.append(" AND version = #{version}");
-        }
+        sql.append(" AND ").append(version).append(" = #{version}");
 
         log.debug("UpdateById SQL: {}", sql);
         return sql.toString();

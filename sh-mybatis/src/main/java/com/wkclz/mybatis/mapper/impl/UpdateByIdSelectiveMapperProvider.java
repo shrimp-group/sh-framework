@@ -33,6 +33,11 @@ public class UpdateByIdSelectiveMapperProvider extends BaseMapperProvider {
         if (id == null) {
             throw ValidationException.of("ID不能为空");
         }
+        // 获取version
+        Object versionValue = getFieldValue(property.getVersionField(), entity);
+        if (versionValue == null) {
+            throw ValidationException.of("version不能为空");
+        }
 
         StringBuilder updateSet = new StringBuilder();
         for (JavaField field : property.getUpdateFields()) {
@@ -61,12 +66,7 @@ public class UpdateByIdSelectiveMapperProvider extends BaseMapperProvider {
             updateSet.append(", ").append(updateByField.getColumnName()).append(" = #{").append(updateByField.getFieldName()).append("}");
         }
 
-        // 获取id和version字段值
-        Object versionValue = getFieldValue(property.getVersionField(), entity);
-        String sql = "UPDATE " + tableName + " SET " + updateSet + " WHERE " + primaryKey + " = #{" + primaryKey + "}" + " AND " + deleted + " = 0";
-        if (versionValue != null) {
-            sql += " AND " + version + " = #{" + property.getVersionField().getFieldName() + "}";
-        }
+        String sql = "UPDATE " + tableName + " SET " + updateSet + " WHERE " + primaryKey + " = #{" + primaryKey + "}" + " AND " + deleted + " = 0" + " AND " + version + " = #{version}";
         
         log.debug("UpdateByIdSelective SQL: {}", sql);
         return sql;
