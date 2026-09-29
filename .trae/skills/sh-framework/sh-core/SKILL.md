@@ -128,17 +128,18 @@ throw UnauthorizedException.of(ResultCode.UNAUTHORIZED);
 | ApiException | 调用外部API失败 |
 | ApplicationException | 其他应用级业务异常 |
 
-## ResultCode 枚举（28个值）
+## ResultCode 枚举（6 个值）
 
-| 分类 | 码段 | 示例 |
-|------|------|------|
-| HTTP标准 | 200/400/401/403/404/500 | SUCCESS, VALIDATION_ERROR, UNAUTHORIZED, ERROR |
-| Token/登录 | 10001-10102 | TOKEN_NULL(10001), TOKEN_ERROR(10002), LOGIN_TIMEOUT(10007), TENANT_NULL(10102) |
-| 跨域/路由 | 20001-20004 | CLIENT_CHANGE(20001), API_CORS(20002), ERROR_ROUTER(20004) |
-| 登录/验证码 | 30001-30005 | USERNAME_PASSWORD_ERROR(30001), CAPTCHA_ERROR(30002) |
-| 数据操作 | 40001-40006 | UPDATE_NO_VERSION(40001), RECORD_NOT_EXIST(40003), RECORD_DUPLICATE(40006) |
-| 网络 | 50001-50003 | NETWORK_ERROR(50001), NO_AVAILABLE_SERVER(50002) |
-| 订单 | 60001-60003 | ORDER_TIMEOUT(60001), ORDER_PAYED(60002) |
+仅定义 HTTP 标准语义码，业务异常用字符串消息描述（如 `ValidationException.of("数据不存在")`）：
+
+| code | 枚举值 | 含义 |
+|------|--------|------|
+| 200 | SUCCESS | 请求成功 |
+| 400 | VALIDATION_ERROR | 参数校验失败 |
+| 401 | UNAUTHORIZED | 未授权 |
+| 403 | FORBIDDEN | 禁止访问 |
+| 404 | NOT_FOUND | 资源不存在 |
+| 500 | ERROR | 系统错误 |
 
 ## R\<T\> — 统一响应结果
 

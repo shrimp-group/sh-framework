@@ -580,59 +580,26 @@ public class R<T> implements Serializable {
 R.ok(data)                          // 成功：code=200, msg="Success"
 R.error("异常消息")                  // 系统错误：code=500
 R.error(commonException)            // 业务异常：code=exception.code
-R.warn("提示消息")                   // 业务提示：code=0
+R.warn("提示消息")                   // 业务提示：code=400
 ```
 
 ### 返回码 (ResultCode) 对照表
 
-框架在 `ResultCode` 枚举中定义了标准 code，与 API 规范完全对应：
+框架在 `ResultCode` 枚举中仅定义 HTTP 标准语义码，业务异常使用字符串消息描述（无预定义业务数字码）：
 
 | code | 枚举值 | 提示语 | 说明 |
-|------|--------|-------|------|
-| **HTTP 标准** | | | |
+|------|--------|--------|------|
 | 200 | `SUCCESS` | Success | 请求成功 |
 | 400 | `VALIDATION_ERROR` | Parameter validation error | 参数校验失败 |
-| 401 | `UNAUTHORIZED` | Unauthorized | 未授权 |
+| 401 | `UNAUTHORIZED` | Unauthorized | 未授权（UnauthorizedException 或会话过滤器拦截） |
 | 403 | `FORBIDDEN` | Forbidden | 禁止访问 |
-| 404 | `NOT_FOUND` | Resource Not Found | 资源不存在 |
+| 404 | `NOT_FOUND` | Resource Not Found | 资源不存在（NotFoundException 或路由不存在） |
 | 500 | `ERROR` | Internal Server Error | 系统错误 |
-| **Token/登录 (10001-10102)** | | | |
-| 10001 | `TOKEN_NULL` | token 为空！ | 需要 header 附带正确 token |
-| 10002 | `TOKEN_ERROR` | token 不正确或已失效！ | token 不正确或已失效 |
-| 10003 | `TOKEN_ILLEGAL_TRANSFER` | 非法传输 token！ | token 放在了不合理的位置 |
-| 10004 | `TOKEN_ILLEGAL_LENGTH` | 非法长度的 token！ | token 出现干扰字符 |
-| 10005 | `TOKEN_SIGN_FAILED` | token 签名校验失败！ | token 内容被修改 |
-| 10006 | `TOKEN_NOT_RIGHT` | token 签发者不正确！ | 确认 token 来源 |
-| 10007 | `LOGIN_TIMEOUT` | 登录已失效，请重新登录！ | — |
-| 10009 | `LOGIN_FORCE_TIMEOUT` | 登录时间过长，强制失效！ | — |
-| 10101 | `APP_CODE_NULL` | 无法识别应用编码！ | 设置请求头或应用域名 |
-| 10102 | `TENANT_NULL` | 无法识别租户编码！ | 设置请求头或租户域名 |
-| **跨域/路由 (20001-20004)** | | | |
-| 20001 | `CLIENT_CHANGE` | 用户登录环境改变！ | 终端改变，需重新登录 |
-| 20002 | `API_CORS` | api url can not be cors | 接口地址不被允许 |
-| 20003 | `ORIGIN_CORS` | origin url can not be cors | 前端域名不被允许 |
-| 20004 | `ERROR_ROUTER` | err routers, check the uri! | 错误的路由 |
-| **登录/验证码 (30001-30005)** | | | |
-| 30001 | `USERNAME_PASSWORD_ERROR` | 登录名或密码错误 | 用户名密码错误使用同一提示 |
-| 30002 | `CAPTCHA_ERROR` | 图片验证码错误 | — |
-| 30003 | `CAPTCHA_NEED` | 需要图片验证码 | — |
-| 30004 | `MOBILE_CAPTCHA_ERROR` | 验证码错误 | 手机验证码 |
-| 30005 | `EMAIL_CAPTCHA_ERROR` | 验证码错误 | 邮箱验证码 |
-| **数据操作 (40001-40006)** | | | |
-| 40001 | `UPDATE_NO_VERSION` | 操作需要带数据版本号！ | 需提交 version 字段 |
-| 40002 | `RECORD_NOT_EXIST_OR_OUT_OF_DATE` | 数据不存在或已不是最新的！ | id 不正确或已被更新 |
-| 40003 | `RECORD_NOT_EXIST` | 数据不存在！ | — |
-| 40004 | `PARAM_NO_ID` | ID 不存在！ | 需要带 id 操作 |
-| 40005 | `PARAM_NULL` | 参数不存在！ | — |
-| 40006 | `RECORD_DUPLICATE` | 数据重复，唯一性校验失败！ | — |
-| **网络 (50001-50003)** | | | |
-| 50001 | `NETWORK_ERROR` | network error！ | — |
-| 50002 | `NO_AVAILABLE_SERVER` | no available server！ | — |
-| 50003 | `UNKNOWN_RIBBON_ERROR` | unknown ribbon error！ | — |
-| **订单 (60001-60003)** | | | |
-| 60001 | `ORDER_TIMEOUT` | 订单支付超时已自动取消，请重新下单！ | — |
-| 60002 | `ORDER_PAYED` | 订单已完成支付，请不要重复支付！ | — |
-| 60003 | `ORDER_ERROR` | 订单状态异常，不能支付 | — |
+
+### 未授权与限流响应说明
+
+- 鉴权失败由会话过滤器（SessionAuthFilter）统一拦截，返回 HTTP 401，响应体为非标准结构 `{"message": "缺少认证 Token" | "会话无效或已过期"}`
+- 限流由请求控制过滤器（RequestControlFilter）拦截，返回 code=429 与提示消息
 
 ### 权限校验
 
