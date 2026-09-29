@@ -10,7 +10,7 @@ import com.wkclz.tool.utils.StringFormat;
 public class NotFoundException extends CommonException {
     
     public NotFoundException(String message) {
-        super(message);
+        super(ResultCode.NOT_FOUND.getCode(), message);
     }
     
     public NotFoundException(ResultCode resultCode) {

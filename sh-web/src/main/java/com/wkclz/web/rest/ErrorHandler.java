@@ -5,6 +5,8 @@ import cn.hutool.json.JSONUtil;
 import com.mysql.cj.jdbc.exceptions.MysqlDataTruncation;
 import com.wkclz.core.base.R;
 import com.wkclz.core.exception.CommonException;
+import com.wkclz.core.exception.NotFoundException;
+import com.wkclz.core.exception.UnauthorizedException;
 import com.wkclz.core.exception.UserException;
 import com.wkclz.core.exception.ValidationException;
 import com.wkclz.spring.config.SpringContextHolder;
@@ -131,6 +133,27 @@ public class ErrorHandler {
         String message = fieldError != null ? fieldError.getDefaultMessage() : "参数绑定失败";
         printErrorLog(request, response, status, e);
         return R.error(status.value(), message);
+    }
+
+    @ExceptionHandler(UserException.class)
+    public R userExceptionHandler(UserException e, HttpServletRequest request, HttpServletResponse response) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        printErrorLog(request, response, status, e);
+        return R.error(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public R unauthorizedExceptionHandler(UnauthorizedException e, HttpServletRequest request, HttpServletResponse response) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        printErrorLog(request, response, status, e);
+        return R.error(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public R notFoundExceptionHandler(NotFoundException e, HttpServletRequest request, HttpServletResponse response) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        printErrorLog(request, response, status, e);
+        return R.error(e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(CommonException.class)

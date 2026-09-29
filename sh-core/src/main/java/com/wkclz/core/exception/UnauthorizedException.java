@@ -10,7 +10,7 @@ import com.wkclz.tool.utils.StringFormat;
 public class UnauthorizedException extends CommonException {
     
     public UnauthorizedException(String message) {
-        super(message);
+        super(ResultCode.UNAUTHORIZED.getCode(), message);
     }
     
     public UnauthorizedException(ResultCode resultCode) {
