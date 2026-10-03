@@ -12,6 +12,7 @@ public enum ResultCode {
     FORBIDDEN(403, "Forbidden"),
     NOT_FOUND(404, "Resource Not Found"),
     // 记录级语义码，复用 HTTP 状态码：与通用码同码时由 message 区分具体场景
+    PARAM_NO_ID(400, "Id Not Present"),
     RECORD_NOT_EXIST(404, "Record Not Found"),
     RECORD_DUPLICATE(409, "Duplicate Record"),
     ERROR(500, "Internal Server Error"),
