@@ -162,6 +162,12 @@ public class BaseMapperProvider {
             }
         }
 
+        // 处理 ids 主键批量查询
+        Object ids = getFieldValue(property.getIdsField(), entity);
+        if (ids instanceof List<?> idList && !idList.isEmpty()) {
+            whereClause.append(" AND ").append(DbEntityProperty.PRIMARY_KEY).append(" IN ").append(buildInClause(idList, "ids"));
+        }
+
         // 处理时间范围查询
         LocalDateTime timeFrom = entity.getTimeFrom();
         if (timeFrom != null) {

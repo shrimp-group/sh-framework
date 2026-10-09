@@ -300,6 +300,7 @@ Database
   - `MyBatisQueryInterceptor`：空字符串替换为 null
   - `MyBatisBoundSqlInterceptor`：向 BoundSql 注入 updateBy 参数（用于非实体参数方法）
 - 逻辑删除：deleted 字段，查询条件自动追加 `deleted = 0`
+- ids 与时间范围：实体条件查询（selectByEntity / selectByEntityWithLimit / selectCountByEntity / selectOneByEntity 共用 `buildWhereClause()`）在入参 ids 非空时自动追加 `id IN (...)`，timeFrom / timeTo 任一非空时自动作用于 create_time 范围查询（`>=` / `<=`），count 与 list 条件一致保证分页正确
 - 乐观锁：version 字段必填强校验，updateById / updateByIdSelective 在 version 为 null 时抛 ValidationException；SQL 自动追加 `version = version + 1`（SET）与 `AND version = #{version}`（WHERE）
 - `@Blob` 标注的字段在 List 查询时不返回（selectListFields 排除）
 - 排序安全：`buildOrderByClause()` 白名单校验防止 SQL 注入

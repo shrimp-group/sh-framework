@@ -47,6 +47,8 @@ flowchart TD
 - [场景1] Given 定义 UserMapper extends BaseMapper<User>, When 注入 UserMapper, Then 自动拥有 insert/insertBatch/deleteById/deleteByIds/updateById/updateByIdSelective/updateBatch/selectById/selectByIds/selectAll/selectByEntity/selectByEntityWithLimit/selectCountByEntity/selectOneByEntity 共 14 个方法
 - [场景2] Given 调用 insert(entity), When 实体 id 为 null, Then 插入后 id 自动回填（useGeneratedKeys=true）
 - [场景3] Given 调用 insertBatch(entities), When 列表超过 1000 条, Then BaseService 自动分批插入，每批最多 1000 条
+- [场景4] Given 实体条件查询（selectByEntity/selectByEntityWithLimit/selectCountByEntity/selectOneByEntity）入参 ids 为非空集合, When 构建查询, Then WHERE 自动追加 id IN (...) 条件；ids 为 null 或空集合时不追加（count 与 list 条件一致，保证分页正确）
+- [场景5] Given 实体条件查询入参 timeFrom / timeTo 任一非空, When 构建查询, Then WHERE 自动追加 create_time >= #{timeFrom} / create_time <= #{timeTo} 范围条件
 - [异常场景] Given 实体中 @FieldDesc(notNull=true) 的字段为 null, When 调用 insert, Then 抛出 ValidationException
 
 ## 3. 涉及代码与上下文 (AI开发关键)
