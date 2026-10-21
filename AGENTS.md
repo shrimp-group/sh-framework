@@ -281,7 +281,7 @@ Database
 
 ### 结果码
 
-- `ResultCode`：枚举类，仅定义 HTTP 标准语义码（共 6 个）：200/400/401/403/404/500
+- `ResultCode`：枚举类，定义 HTTP 标准语义码（200/400/401/403/404/500）与记录级语义码（PARAM_NO_ID=400、RECORD_NOT_EXIST=404、RECORD_DUPLICATE=409）；记录级语义码复用 HTTP 状态码，与通用码同码时由 message 区分具体场景
 - 业务异常不使用预定义数字码，通过异常字符串消息描述（如 `ValidationException.of("数据不存在")`）；需要数字码时使用 `CommonException.of(code, msg)` 自定义
 - 鉴权失败由会话过滤器（SessionAuthFilter）返回 HTTP 401 + `{"message"}` 裸结构；限流由请求控制过滤器返回 code=429
 
