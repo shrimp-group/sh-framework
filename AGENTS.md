@@ -427,7 +427,7 @@ pagehelper:
 | `Md5Tool` / `ShaTool` / `Base64Tool` | sh-tool | 摘要/编码 |
 | `RedisHelper` | sh-redis | Redis 全数据类型操作（String/Hash/List/Set/ZSet） |
 | `RedisLock` | sh-redis | 分布式锁（SETNX + Lua + Watchdog） |
-| `RedisIdGenerator` | sh-redis | ID 生成器（时间戳 + 机器标识 + Redis 自增，Base62 编码） |
+| `RedisIdGenerator` | sh-redis | ID 生成器（时间戳 + 机器标识 + Redis 自增，Base32 编码，规避大小写不敏感场景唯一性问题） |
 | `RedisMessageQueue` | sh-redis | Redis List 消息队列 |
 | `IpHelper` | sh-web | IP 地址解析（x-forwarded-for 链路） |
 | `RequestHelper` | sh-web | 请求工具（路径匹配、域名解析） |

@@ -18,10 +18,10 @@ import java.util.concurrent.TimeUnit;
  * 考虑时间回拨问题，确保ID尽可能短且永不重复
  * 每秒最多生成1w个ID
  *
- * <p>对外暴露 4 个方法，按返回类型分为两组：</p>
+ * <p>对外方法按返回类型分为三组：</p>
  * <ul>
  *   <li>数字组：{@link #generateNumericId(String)} / {@link #generateNumericIdWithPrefix(String)} 返回压缩前的纯数字</li>
- *   <li>编码组：{@link #generateBase62Id(String)} / {@link #generateBase62IdWithPrefix(String)} 返回 Base62 压缩后的短编码</li>
+ *   <li>编码组：{@link #generateBase32Id(String)} / {@link #generateBase32IdWithPrefix(String)} 返回 Base32 压缩后的短编码，全小写 + 数字，适用于大小写不敏感场景</li>
  * </ul>
  *
  * @author wkclz
@@ -52,8 +52,8 @@ public class RedisIdGenerator {
     private volatile long lastTimestamp = -1L;
     // 上次生成的序列号
     private volatile long lastSequence = 0L;
-    // 62进制字符集
-    private static final char[] BASE62_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+    // 32进制字符集（Crockford 变体，排除易混淆的 i/l/o/u）
+    private static final char[] BASE32_CHARS = "0123456789abcdefghjkmnpqrstvwxyz".toCharArray();
 
 
 
@@ -103,50 +103,74 @@ public class RedisIdGenerator {
     }
 
     /**
-     * 生成 Base62 编码 ID（不含前缀，压缩后）
+     * 生成编码 ID（不含前缀，兼容方法名，内部为 Base32 编码）
      *
      * @param businessType 业务类型（用于 Redis key 隔离，null/空 时使用 "default"）
-     * @return Base62 编码字符串
+     * @return Base32 编码字符串
+     * @deprecated Base62 编码包含大小写字母，在大小写不敏感场景存在唯一性冲突风险，内部已切换为 Base32 编码，请使用 {@link #generateBase32Id(String)}
      */
+    @Deprecated
     public String generateBase62Id(String businessType) {
-        return base62Encode(generateRawId(businessType));
+        return generateBase32Id(businessType);
     }
 
     /**
-     * 生成带前缀的 Base62 编码 ID（压缩后）
+     * 生成带前缀的编码 ID（兼容方法名，内部为 Base32 编码）
      *
      * @param prefix ID 前缀（如 "user_"），不可为空
-     * @return 前缀 + Base62 编码字符串
+     * @return 前缀 + Base32 编码字符串
+     * @deprecated Base62 编码包含大小写字母，在大小写不敏感场景存在唯一性冲突风险，内部已切换为 Base32 编码，请使用 {@link #generateBase32IdWithPrefix(String)}
      */
+    @Deprecated
     public String generateBase62IdWithPrefix(String prefix) {
+        return generateBase32IdWithPrefix(prefix);
+    }
+
+    /**
+     * 生成 Base32 编码 ID（不含前缀，压缩后）
+     * 推荐使用，全小写 + 数字字符集，适用于大小写不敏感场景（如 MySQL CI collation、URL、Windows 文件名）
+     *
+     * @param businessType 业务类型（用于 Redis key 隔离，null/空 时使用 "default"）
+     * @return Base32 编码字符串
+     */
+    public String generateBase32Id(String businessType) {
+        return base32Encode(generateRawId(businessType));
+    }
+
+    /**
+     * 生成带前缀的 Base32 编码 ID（压缩后）
+     * 推荐使用，全小写 + 数字字符集，适用于大小写不敏感场景（如 MySQL CI collation、URL、Windows 文件名）
+     *
+     * @param prefix ID 前缀（如 "user_"），不可为空
+     * @return 前缀 + Base32 编码字符串
+     */
+    public String generateBase32IdWithPrefix(String prefix) {
         if (StringUtils.isBlank(prefix)) {
             throw SystemException.of("prefix 不能为空！");
         }
-        return prefix + base62Encode(generateRawId(prefix));
+        return prefix + base32Encode(generateRawId(prefix));
     }
 
     /**
-     * 生成 ID（Base62 编码，不含前缀）
+     * 生成 ID（Base32 编码，不含前缀）
      *
      * @param businessType 业务类型
      * @return 生成的ID
-     * @deprecated 命名未体现返回 Base62 编码的特性，请使用 {@link #generateBase62Id(String)}
+     * @deprecated 命名未体现返回 Base32 编码的特性，请使用 {@link #generateBase32Id(String)}
      */
-    @Deprecated
     public String generateIdWithType(String businessType) {
-        return generateBase62Id(businessType);
+        return generateBase32Id(businessType);
     }
 
     /**
-     * 生成带前缀的 ID（Base62 编码）
+     * 生成带前缀的 ID（Base32 编码）
      *
      * @param prefix 前缀
-     * @return 前缀 + Base62 编码
-     * @deprecated 命名未体现返回 Base62 编码的特性，请使用 {@link #generateBase62IdWithPrefix(String)}
+     * @return 前缀 + Base32 编码
+     * @deprecated 命名未体现返回 Base32 编码的特性，请使用 {@link #generateBase32IdWithPrefix(String)}
      */
-    @Deprecated
     public String generateIdWithPrefix(String prefix) {
-        return generateBase62IdWithPrefix(prefix);
+        return generateBase32IdWithPrefix(prefix);
     }
 
     /**
@@ -263,20 +287,20 @@ public class RedisIdGenerator {
     }
 
     /**
-     * 62进制编码
+     * 32进制编码（Crockford 变体）
      *
      * @param number 数字
-     * @return 62进制字符串
+     * @return 32进制字符串
      */
-    private String base62Encode(long number) {
+    private String base32Encode(long number) {
         if (number == 0) {
             return "0";
         }
 
         StringBuilder sb = new StringBuilder();
         while (number > 0) {
-            sb.append(BASE62_CHARS[(int) (number % 62)]);
-            number = number / 62;
+            sb.append(BASE32_CHARS[(int) (number % 32)]);
+            number = number / 32;
         }
 
         // 反转字符串，因为我们是从低位开始构建的
