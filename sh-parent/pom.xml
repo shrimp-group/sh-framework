@@ -20,8 +20,8 @@
     <properties>
         <revision>5.0.1-SNAPSHOT</revision>
 
+        <iam.version>5.1.0-SNAPSHOT</iam.version>
         <microapp.version>5.0.1-SNAPSHOT</microapp.version>
-        <iam.version>5.0.1-SNAPSHOT</iam.version>
 
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
