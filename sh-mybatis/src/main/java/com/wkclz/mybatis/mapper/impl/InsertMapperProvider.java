@@ -1,7 +1,6 @@
 package com.wkclz.mybatis.mapper.impl;
 
 import com.wkclz.core.base.BaseEntity;
-import com.wkclz.core.exception.ValidationException;
 import com.wkclz.mybatis.bean.DbEntityProperty;
 import com.wkclz.tool.bean.JavaField;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +28,6 @@ public class InsertMapperProvider extends BaseMapperProvider {
             // 跳过空值字段
             if (value == null) {
                 continue;
-//                if (f.isNotNull()) {
-//                    throw ValidationException.of("字段 {}({})不能为空", f.getColumnName(), f.getFieldName());
-//                }
             }
             if (!columns.isEmpty()) {
                 columns.append(", ");

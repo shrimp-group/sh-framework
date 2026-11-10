@@ -1,7 +1,6 @@
 package com.wkclz.mybatis.mapper.impl;
 
 import com.wkclz.core.base.BaseEntity;
-import com.wkclz.core.exception.ValidationException;
 import com.wkclz.mybatis.bean.DbEntityProperty;
 import com.wkclz.tool.bean.JavaField;
 import lombok.extern.slf4j.Slf4j;
@@ -24,21 +23,6 @@ public class InsertBatchMapperProvider extends BaseMapperProvider {
         if (entities == null || entities.isEmpty()) {
             return "";
         }
-//        List<JavaField> notNullfields = getDbEntityProperty(entities.getFirst().getClass())
-//                .getInsertFields().stream().filter(JavaField::isNotNull).toList();
-//        for (BaseEntity entity : entities) {
-//            // 给定默认值
-//            if (entity.getSort() == null) {
-//                entity.setSort(0);
-//            }
-//            // 表定义不为空，不无论值，字段值为空的情况
-//            for (JavaField f : notNullfields) {
-//                Object value = getFieldValue(f, entity);
-//                if (value == null) {
-//                    throw ValidationException.of("字段 {}({})不能为空", f.getColumnName(), f.getFieldName());
-//                }
-//            }
-//        }
         BaseEntity firstEntity = entities.get(0);
         DbEntityProperty property = getDbEntityProperty(firstEntity.getClass());
         String tableName = property.getTableName();
