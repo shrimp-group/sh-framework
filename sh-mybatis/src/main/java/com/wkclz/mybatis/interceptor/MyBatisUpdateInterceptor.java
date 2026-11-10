@@ -66,6 +66,9 @@ public class MyBatisUpdateInterceptor implements Interceptor {
             db.setUpdateBy(userCode);
             if (SqlCommandType.INSERT == sqlCommandType) {
                 db.setCreateBy(userCode);
+                if (db.getSort() == null) {
+                    db.setSort(0);
+                }
             } else {
                 db.setCreateBy(null);
             }
