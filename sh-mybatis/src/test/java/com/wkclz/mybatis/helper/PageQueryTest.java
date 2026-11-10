@@ -150,6 +150,8 @@ class PageQueryTest {
             assertNotNull(result, "分页结果不应为 null");
             assertEquals(10, result.getRecords().size(), "结果记录数应为 10");
             assertEquals(100L, result.getTotal(), "总记录数应为 100");
+            assertEquals(1L, result.getCurrent(), "返回页码应为 1");
+            assertEquals(10L, result.getSize(), "返回每页大小应为 10");
 
             // 验证 PageHelper 调用
             pageHelperMock.verify(() -> com.github.pagehelper.PageHelper.startPage(1, 10), times(1));
@@ -188,6 +190,8 @@ class PageQueryTest {
             assertNotNull(result, "分页结果不应为 null");
             assertEquals(3, result.getRecords().size(), "结果记录数应为 3");
             assertEquals(50L, result.getTotal(), "总记录数应为 50");
+            assertEquals(2L, result.getCurrent(), "返回页码应为 2");
+            assertEquals(20L, result.getSize(), "返回每页大小应为 20");
 
             // 验证 Pageable 的 init 方法被调用
             verify(mockPageable, times(1)).init();
@@ -409,6 +413,8 @@ class PageQueryTest {
             assertNotNull(result, "分页结果不应为 null");
             assertEquals(4, result.getRecords().size(), "结果记录数应为 4");
             assertEquals(200L, result.getTotal(), "总记录数应为 200");
+            assertEquals(3L, result.getCurrent(), "返回页码应为 3");
+            assertEquals(30L, result.getSize(), "返回每页大小应为 30");
 
             // 验证 PageHelper 调用使用了正确的分页参数
             pageHelperMock.verify(() -> com.github.pagehelper.PageHelper.startPage(3, 30), times(1));

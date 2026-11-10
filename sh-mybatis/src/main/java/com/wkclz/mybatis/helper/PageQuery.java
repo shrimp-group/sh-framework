@@ -43,7 +43,7 @@ public class PageQuery {
             PageHelper.startPage(current, size);
 
             Page listPage = (Page)function.apply(param);
-            PageData<T> pageData = PageData.of(listPage.getResult(), listPage.getTotal());
+            PageData<T> pageData = PageData.of(listPage.getResult(), listPage.getTotal(), (long) current, (long) size);
             return pageData;
         } finally {
             PageHelper.clearPage();
@@ -95,7 +95,7 @@ public class PageQuery {
 
             // 执行查询
             Page listPage = (Page) function.apply(param);
-            PageData<T> pageData = PageData.of(listPage.getResult(), listPage.getTotal());
+            PageData<T> pageData = PageData.of(listPage.getResult(), listPage.getTotal(), (long) current, (long) size);
 
             log.debug("Page query completed, total records={}", pageData.getTotal());
             return pageData;
@@ -145,7 +145,7 @@ public class PageQuery {
 
             // 执行查询
             Page listPage = (Page) function.apply(param);
-            PageData<T> pageData = PageData.of(listPage.getResult(), listPage.getTotal());
+            PageData<T> pageData = PageData.of(listPage.getResult(), listPage.getTotal(), (long) current, (long) size);
 
             log.debug("Page query completed, total records={}", pageData.getTotal());
             return pageData;
