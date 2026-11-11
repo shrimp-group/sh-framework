@@ -27,6 +27,9 @@ public class UserIdentity implements Serializable {
     /** 头像地址 */
     private String avatar;
 
+    /** 性别：0-未知，1-男，2-女 */
+    private Integer gender;
+
     /** 扩展属性 */
     private Map<String, Object> attributes = Collections.emptyMap();
 
